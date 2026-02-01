@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Chatbox Luật Biển Đảo Quốc Tế</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+    }
+    .chatbox {
+      width: 400px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .messages {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+    .user { color: blue; }
+    .bot { color: green; }
+  </style>
+</head>
+<body>
+
+<div class="chatbox">
+  <h3>🤖 Chatbox Luật Biển Đảo Quốc Tế</h3>
+  <div class="messages" id="messages"></div>
+  <input id="input" placeholder="Hỏi về UNCLOS, EEZ..." style="width:75%">
+  <button onclick="send()">Gửi</button>
+</div>
+
+<script>
+const API_KEY = "AIzaSyBrvRQgjXp6BMYDgz7g2Kvin5DJSFcYWmE";
+
+async function send() {
+  const input = document.getElementById("input");
+  const msg = input.value;
+  if (!msg) return;
+
+  add("Bạn", msg, "user");
+  input.value = "";
+
+  const res = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + API_KEY,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: msg + 
+          "\nTrả lời ngắn gọn, dễ hiểu cho học sinh về luật biển đảo quốc tế." }] }]
+      })
+    }
+  );
+
+  const data = await res.json();
+  const reply = data.candidates[0].content.parts[0].text;
+  add("AI", reply, "bot");
+}
+
+function add(sender, text, cls) {
+  const div = document.createElement("div");
+  div.className = cls;
+  div.innerText = sender + ": " + text;
+  document.getElementById("messages").appendChild(div);
+}
+</script>
+
+</body>
+</html>
