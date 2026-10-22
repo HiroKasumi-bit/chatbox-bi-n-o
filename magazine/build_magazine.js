@@ -189,7 +189,7 @@ function stages(s, list, x, y, w, rowH, color, o = {}) {
     text(s, [
       { text: head, options: { fontFace: HEAD, fontSize: 15, bold: true, color: C.background1, breakLine: true, paraSpaceAfter: 3 } },
       { text: sub, options: { fontSize: 10.5, color: C.background2, breakLine: true, paraSpaceAfter: 3 } },
-      { text: page, options: { fontSize: 8, bold: true, charSpacing: 2, color: C.accent1 } },
+      { text: page, options: { fontSize: 8, bold: true, charSpacing: 2, color: C.background1 } },
     ], { x, y, w, h: 1.45, align, lineSpacingMultiple: 1.05, shadow: { type: 'outer', color: '06102A', blur: 6, offset: 1, angle: 90, opacity: 0.6 } });
   };
   line(M, 2.5, 2.3, "The city's own sun", 'A compact fusion station keeps 45,000 people warm through the polar night', 'PAGE 8', 'left');

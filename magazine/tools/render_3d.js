@@ -43,6 +43,7 @@ function patchApp(html) {
   page.setDefaultTimeout(0);
   page.on('dialog', (d) => d.accept());
   page.on('pageerror', (e) => console.log('page error:', e.message));
+  page.on('console', (m) => { if (m.text().includes('horizon at')) console.log(m.text()); });
   await page.route(APP, async (route) => {
     const res = await route.fetch();
     route.fulfill({ response: res, body: patchApp(await res.text()), headers: { ...res.headers(), 'content-type': 'text/html' } });
@@ -51,6 +52,8 @@ function patchApp(html) {
   await page.waitForFunction(() => window.__app, null, { timeout: 60000 });
   await page.setInputFiles('#file-load-project', path.resolve(cityFile));
   await page.waitForFunction(() => window.__done, null, { timeout: 600000, polling: 1000 });
+
+  await page.addScriptTag({ path: path.join(__dirname, 'night_sky.js') });
 
   // Stop the app's render loop; every shot is rendered once, by hand.
   await page.evaluate(() => { window.requestAnimationFrame = () => 0; });
@@ -70,6 +73,44 @@ function patchApp(html) {
     L.shadow.bias = -0.0004;
     L.shadow.normalBias = 0.03;
     a.scene.add(L.target);
+
+    // A snowfield that runs to the horizon, for the night shots. The city's own "Polar Snow
+    // Ground" takes its colour from a palette texture, so the field reuses that material and
+    // points every UV at the snow colour of the tile's top face.
+    let tile = null;
+    let bestArea = -1;
+    a.cityGroup.children.forEach((ch) => {
+      if (((ch.userData.details || {}).name || '') !== 'Polar Snow Ground') return;
+      ch.traverse((o) => {
+        if (!o.isMesh) return;
+        const b = new T.Box3().setFromObject(o);
+        const area = (b.max.x - b.min.x) * (b.max.z - b.min.z);
+        if (area > bestArea) { bestArea = area; tile = o; }
+      });
+    });
+    const geo = new T.PlaneGeometry(8000, 8000).rotateX(-Math.PI / 2);
+    let mat = new T.MeshStandardMaterial({ color: 0xf2f5f8 });
+    let fieldY = -0.06;
+    if (tile) {
+      const pos = tile.geometry.attributes.position;
+      const uv = tile.geometry.attributes.uv;
+      let top = 0;
+      for (let i = 1; i < pos.count; i++) if (pos.getY(i) > pos.getY(top)) top = i;
+      if (uv) {
+        const u = uv.getX(top);
+        const v = uv.getY(top);
+        const uvs = geo.attributes.uv;
+        for (let i = 0; i < uvs.count; i++) uvs.setXY(i, u, v);
+      }
+      mat = tile.material.clone();
+      fieldY = new T.Box3().setFromObject(tile).max.y - 0.06;
+    }
+    const field = new T.Mesh(geo, mat);
+    field.position.y = fieldY;
+    field.receiveShadow = true;
+    field.visible = false;
+    a.scene.add(field);
+    a.field = field;
   });
 
   for (const s of shots) {
@@ -91,6 +132,10 @@ function patchApp(html) {
       a.ambientLight.intensity = s.amb ?? 0.75;
       a.hemiLight.intensity = s.hemi ?? 0.9;
       a.directionalLight.intensity = s.sunI ?? 2.4;
+      a.ambientLight.color.set(s.ambColor || '#ffffff');
+      a.hemiLight.color.set(s.hemiSky || '#ffffff');
+      a.hemiLight.groundColor.set(s.hemiGround || '#444444');
+      a.directionalLight.color.set(s.sunColor || '#ffffff');
 
       const L = a.directionalLight;
       const sun = s.sun || [-60, 90, 50];
@@ -103,7 +148,23 @@ function patchApp(html) {
       c.updateProjectionMatrix();
       L.target.updateMatrixWorld();
 
-      if (s.sky === 'transparent') {
+      a.field.visible = !!s.night;
+      a.scene.fog = null;
+      if (s.night) {
+        // The horizon is where a point at the camera's height, far away, lands on the picture.
+        a.camera.updateMatrixWorld();
+        const p = a.camera.position.clone();
+        const f = new T.Vector3(s.target[0] - p.x, 0, s.target[2] - p.z).normalize();
+        const q = p.clone().add(f.multiplyScalar(1e5)).project(a.camera);
+        const horizonY = Math.round(((1 - q.y) / 2) * s.h);
+        console.log(`${s.name}: horizon at ${(horizonY / s.h).toFixed(3)} of the height`);
+        const fogColor = s.night.fogColor || s.night.sky[s.night.sky.length - 1];
+        const [near, far] = s.night.fog || [400, 2600];
+        a.scene.fog = new T.Fog(fogColor, near, far);
+        const tex = new T.CanvasTexture(window.paintNightSky(s.night, s.w, s.h, horizonY));
+        tex.colorSpace = T.SRGBColorSpace;
+        a.scene.background = tex;
+      } else if (s.sky === 'transparent') {
         a.scene.background = null;
         a.renderer.setClearColor(0x000000, 0);
       } else {

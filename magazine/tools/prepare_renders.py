@@ -21,18 +21,23 @@ def save_jpg(im, name):
 
 
 def main(raw):
+    """Converts whichever renders are in `raw`, so a partial re-render updates only those."""
     os.makedirs(OUT, exist_ok=True)
-    for name in PHOTOS:
+    has = lambda name: os.path.exists(os.path.join(raw, name + '.png'))
+    for name in filter(has, PHOTOS):
         save_jpg(Image.open(os.path.join(raw, name + '.png')), name)
 
-    snow = Image.open(os.path.join(raw, 'snowbreak.png'))
-    save_jpg(snow.crop((0, 0, snow.width, int(snow.height * 0.8))), 'snowbreak')
+    if has('snowbreak'):
+        snow = Image.open(os.path.join(raw, 'snowbreak.png'))
+        save_jpg(snow.crop((0, 0, snow.width, int(snow.height * 0.8))), 'snowbreak')
 
-    overview = Image.open(os.path.join(raw, 'overview.png')).convert('RGBA')
-    overview.crop(overview.getbbox()).save(os.path.join(OUT, 'overview.png'), optimize=True)
+    if has('overview'):
+        overview = Image.open(os.path.join(raw, 'overview.png')).convert('RGBA')
+        overview.crop(overview.getbbox()).save(os.path.join(OUT, 'overview.png'), optimize=True)
 
-    tower = Image.open(os.path.join(raw, 'cover_tower.png')).convert('RGBA')
-    tower.crop((0, 0, tower.width, int(tower.height * 0.32))).save(os.path.join(OUT, 'cover_tower_top.png'), optimize=True)
+    if has('cover_tower'):
+        tower = Image.open(os.path.join(raw, 'cover_tower.png')).convert('RGBA')
+        tower.crop((0, 0, tower.width, int(tower.height * 0.32))).save(os.path.join(OUT, 'cover_tower_top.png'), optimize=True)
 
 
 if __name__ == '__main__':
