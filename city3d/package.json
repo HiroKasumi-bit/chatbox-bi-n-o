@@ -1,0 +1,9 @@
+{
+  "name": "aurora-haven-city3d",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aurora Haven polar city, built from scratch in three.js",
+  "dependencies": {
+    "three": "0.160.0"
+  }
+}

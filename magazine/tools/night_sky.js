@@ -2,7 +2,8 @@
 // vertical rays, distant mountains and a misty horizon. Loaded into the Eco-Polis page by
 // render_3d.js; window.paintNightSky(opts, w, h, horizonY) returns a canvas of w × h pixels.
 //
-// Positions in opts are fractions of the picture: x of its width; y and heights of its height.
+// Positions in opts are fractions of the picture: x of its width; y and heights of its height,
+// or, with opts.relative, of the height of the sky above the horizon.
 (function () {
   function rng(seed) {
     let a = seed >>> 0;
@@ -50,7 +51,8 @@
 
   const rgba = (c, a) => `rgba(${c},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
 
-  function drawCurtain(g, w, h, c, seed) {
+  function drawCurtain(g, w, h, c, seed, unit) {
+    // `unit` is the height that y positions are fractions of: the picture, or the sky above the horizon.
     const base = curve(c.base); // bottom edge of the curtain
     const height = curve(c.height); // height of the rays
     const env = c.fade ? curve(c.fade) : () => 1; // brightness along the curtain
@@ -64,8 +66,8 @@
       const patch = 0.15 + 0.85 * Math.pow(n[2](px / (55 * k)), 1.3);
       const a = c.intensity * env(t) * Math.pow(fine, c.sharp || 1.6) * patch * 1.5;
       if (a < 0.008) continue;
-      const yb = (base(t) + (n[3](px / (35 * k)) - 0.5) * 0.025 + (n[4](px / (5 * k)) - 0.5) * 0.003) * h;
-      const hh = height(t) * h * (0.8 + 0.35 * n[5](px / (25 * k)));
+      const yb = (base(t) + (n[3](px / (35 * k)) - 0.5) * 0.025 + (n[4](px / (5 * k)) - 0.5) * 0.003) * unit;
+      const hh = height(t) * unit * (0.8 + 0.35 * n[5](px / (25 * k)));
       // A faint glow just below the lower edge.
       const dg = g.createLinearGradient(0, yb, 0, yb + 0.025 * h);
       dg.addColorStop(0, rgba(c.edge, a * 0.3));
@@ -185,7 +187,7 @@
     layer.height = h;
     const lg = layer.getContext('2d');
     lg.globalCompositeOperation = 'lighter';
-    (o.curtains || []).forEach((c, i) => drawCurtain(lg, w, h, c, seed * 31 + i * 101));
+    (o.curtains || []).forEach((c, i) => drawCurtain(lg, w, h, c, seed * 31 + i * 101, o.relative ? horizonY : h));
     const k = w / 1600;
     g.filter = `blur(${Math.round(42 * k)}px)`;
     // A glow above 1 adds the blurred layer more than once.

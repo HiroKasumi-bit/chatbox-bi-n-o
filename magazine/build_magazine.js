@@ -1,18 +1,28 @@
 // Builds the Aurora Haven magazine (A4 portrait) as an editable PowerPoint file.
 // Text comes from source/Aurora_Haven_Slide_Content.docx and the place cards in
-// source/Aurora_Haven_v13.json; pictures come from assets/.
+// source/Aurora_Haven_v13.json; pictures come from the edition's assets folder.
 //
-//   cd magazine && npm install && node build_magazine.js
+//   cd magazine && npm install
+//   node build_magazine.js        # edition v1, the Eco-Polis city
+//   node build_magazine.js v2     # edition v2, the city modelled in three.js
 //
-// Output: ../output/Aurora_Haven_Magazine.pptx
+// Output: ../output/<edition file name>.pptx (see editions.js)
 
 const path = require('path');
 const pptxgen = require('pptxgenjs');
 const { applyTheme } = require('./tools/apply_theme.js');
 
-const ASSETS = path.join(__dirname, 'assets');
-const OUT = path.join(__dirname, '..', 'output', 'Aurora_Haven_Magazine.pptx');
+const ED = require('./editions.js')[process.argv[2] || 'v1'];
+if (!ED) throw new Error(`Unknown edition "${process.argv[2]}"; use v1 or v2`);
+const ASSETS = path.join(__dirname, ED.assets);
+const OUT = path.join(__dirname, '..', 'output', ED.out);
 const img = (p) => path.join(ASSETS, p);
+// image-size ships with pptxgenjs; it gives each picture's proportions.
+const sizeOf = require(require.resolve('image-size', { paths: [require.resolve('pptxgenjs')] }));
+const ratio = (p) => {
+  const d = sizeOf(img(p));
+  return d.height / d.width;
+};
 
 const THEME = {
   name: 'Aurora Haven',
@@ -58,7 +68,7 @@ function folio(dark) {
   return [
     {
       text: {
-        text: 'AURORA HAVEN  ·  ISSUE 01',
+        text: ED.folio,
         options: { x: M, y: 11.12, w: 4, h: 0.22, fontSize: 7.5, bold: true, charSpacing: 2, color: dark ? C.background2 : C.text2, margin: 0 },
       },
     },
@@ -178,11 +188,12 @@ function stages(s, list, x, y, w, rowH, color, o = {}) {
   pres.addSection({ title: 'Cover' });
   const s = pres.addSlide({ masterName: 'COVER', sectionTitle: 'Cover' });
   s.addImage({ path: img('renders/cover.jpg'), x: 0, y: 0, w: W, h: H, objectName: 'cover-picture' });
-  text(s, 'ISSUE 01   ·   POLAR / ICE CITY   ·   ECO-POLIS 3D BUILDER', { x: M, y: 0.38, w: CW, h: 0.22, fontSize: 8.5, bold: true, charSpacing: 3, color: C.background1, align: 'center' });
+  text(s, ED.coverLine, { x: M, y: 0.38, w: CW, h: 0.22, fontSize: 8.5, bold: true, charSpacing: 3, color: C.background1, align: 'center' });
   text(s, 'AURORA HAVEN', { x: 0.2, y: 0.6, w: W - 0.4, h: 1.15, fontFace: HEAD, fontSize: 64, bold: true, color: C.background1, align: 'center', charSpacing: 1 });
   // The tower is drawn again on top of the masthead, so its spire rises in front of the letters.
-  s.addImage({ path: img('renders/cover_tower_top.png'), x: 0, y: 0, w: W, h: (W * 724) / 1600, objectName: 'cover-tower-overlay' });
-  text(s, 'A polar city that thrives', { x: M, y: 1.78, w: 2.6, h: 0.35, fontFace: HEAD, italic: true, fontSize: 15, color: C.background1 });
+  s.addImage({ path: img('renders/cover_tower_top.png'), x: 0, y: 0, w: W, h: W * ratio('renders/cover_tower_top.png'), objectName: 'cover-tower-overlay' });
+  const cv = ED.cover;
+  text(s, 'A polar city that thrives', { ...cv.tagline, y: 1.78, h: 0.35, fontFace: HEAD, italic: true, fontSize: 15, color: C.background1 });
 
   // One text box per cover line, so the headline, the sell and the page reference flow together.
   const line = (x, y, w, head, sub, page, align) => {
@@ -192,10 +203,16 @@ function stages(s, list, x, y, w, rowH, color, o = {}) {
       { text: page, options: { fontSize: 8, bold: true, charSpacing: 2, color: C.background1 } },
     ], { x, y, w, h: 1.45, align, lineSpacingMultiple: 1.05, shadow: { type: 'outer', color: '06102A', blur: 6, offset: 1, angle: 90, opacity: 0.6 } });
   };
-  line(M, 2.5, 2.3, "The city's own sun", 'A compact fusion station keeps 45,000 people warm through the polar night', 'PAGE 8', 'left');
-  line(M, 4.1, 2.3, 'Bread and water\nfrom snow and air', 'Inside the plant that feeds a city with no farmland', 'PAGE 10', 'left');
-  line(W - M - 2.35, 2.5, 2.35, 'A warm heart\ninside the ice', 'Four geothermal spa levels hidden in a 35-metre snow peak', 'PAGE 12', 'right');
-  line(W - M - 2.35, 4.1, 2.35, '−45 °C. 120 km/h.\nNo sun.', 'The polar challenge, and the five ideas that answer it', 'PAGE 4', 'right');
+  const lines = [
+    ["The city's own sun", 'A compact fusion station keeps 45,000 people warm through the polar night', 'PAGE 8'],
+    ['Bread and water\nfrom snow and air', 'Inside the plant that feeds a city with no farmland', 'PAGE 10'],
+    ['A warm heart\ninside the ice', 'Four geothermal spa levels hidden in a 35-metre snow peak', 'PAGE 12'],
+    ['−45 °C. 120 km/h.\nNo sun.', 'The polar challenge, and the five ideas that answer it', 'PAGE 4'],
+  ];
+  lines.forEach(([head, sub, pg], i) => {
+    const [x, y, w, align] = cv.lines[i];
+    line(x, y, w, head, sub, pg, align);
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -220,7 +237,7 @@ function stages(s, list, x, y, w, rowH, color, o = {}) {
     ['17', 'Getting Around Fossil-Free', 'Metro, trams, heated roads and the airport'],
     ['18', 'A Livable City Every Day', 'Homes, schools, health, shops and culture'],
     ['19', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
-    ['20', 'Take the Tour', 'Eight stops in the live 3D city'],
+    ['20', 'Take the Tour', ED.tourItem],
     ['21', 'Places to Visit', '35 key places and what they do'],
     ['23', 'Aurora Haven by the Numbers', 'The key figures in one place'],
     ['24', 'Warm, Green and Ready', 'Until next time'],
@@ -238,18 +255,18 @@ function stages(s, list, x, y, w, rowH, color, o = {}) {
   const rx = 4.85;
   const rw = W - M - rx;
   picture(s, 'renders/lagoon.jpg', rx, 1.85, rw, 1.85);
-  caption(s, 'The Aurora Lagoon and the North Portal of Mount Aurora under the northern lights.', rx, 3.78, rw, 0.4);
+  caption(s, ED.captions.contents, rx, 3.78, rw, 0.4);
   kicker(s, 'From the editors', rx, 4.4, C.accent6);
   paras(s, [
     'Welcome to the first issue of Aurora Haven, a magazine about our city for the Polar / Ice environment.',
     'Aurora Haven is a compact city of about 45,000 people on a frozen tundra plateau, below a 35-metre snow peak called Mount Aurora. Our goal was not only to survive the cold but to build a city where people really want to live.',
-    'In these pages you will find the challenge we faced, our design ideas, our three signature districts and everyday life in the city. At the back, a self-guided tour shows you how to explore Aurora Haven yourself in 3D.',
+    `In these pages you will find the challenge we faced, our design ideas, our three signature districts and everyday life in the city. ${ED.letterEnd}`,
   ], rx, 4.75, rw, 2.9, { fontSize: 10.5 });
   text(s, '[Group name]', { x: rx, y: 7.75, w: rw, h: 0.25, fontFace: HEAD, italic: true, fontSize: 12, bold: true });
   text(s, '[Member names] · [Class] · [Date]', { x: rx, y: 8.02, w: rw, h: 0.4, fontSize: 9, color: C.text2 });
   card(s, rx, 9.3, rw, 1.55, C.background2);
   kicker(s, 'On the cover', rx + 0.15, 9.45, C.accent6, { w: rw - 0.4 });
-  text(s, 'Aurora 81 – Polar Landmark Tower, named in honour of Landmark 81 in Ho Chi Minh City, with Mount Aurora behind it under the northern lights. Its nine bundled glass tubes step back like bamboo stalks and cut blizzard wind load by about 25%.', {
+  text(s, ED.onCover, {
     x: rx + 0.15, y: 9.73, w: rw - 0.3, h: 1.07, fontSize: 9, lineSpacingMultiple: 1.05,
   });
 }
@@ -260,8 +277,9 @@ function stages(s, list, x, y, w, rowH, color, o = {}) {
 {
   const s = addPage('PAGE_ICE', 'Welcome');
   pageHead(s, 'City overview', 'Welcome to Aurora Haven', C.accent6);
-  s.addImage({ path: img('renders/overview.png'), x: 0.35, y: 1.55, w: W - 0.7, h: ((W - 0.7) * 1349) / 2400, objectName: 'overview-picture' });
-  caption(s, 'Aurora Haven seen from the south-east, rendered from the Eco-Polis 3D city file.', M, 5.85, CW, 0.25);
+  if (ED.overview.transparent) s.addImage({ path: img(ED.overview.file), x: 0.35, y: 1.55, w: W - 0.7, h: (W - 0.7) * ratio(ED.overview.file), objectName: 'overview-picture' });
+  else picture(s, ED.overview.file, 0, 1.6, W, 4.1);
+  caption(s, ED.captions.overview, M, 5.85, CW, 0.25);
   paras(s, [
     'Aurora Haven is a compact polar city of around 45,000 people, built on a frozen tundra plateau beneath the snow peak of Mount Aurora. Winters fall to −45 °C, the sun disappears for two months of polar night, and almost nothing can grow. Aurora Haven is designed not just to survive these conditions but to make life here warm, healthy and sustainable.',
     'The whole city is shaped around one idea: heat, energy, water and food should never be wasted. Every building shares a single heating network, the city runs on zero-carbon energy, and nearly all of its water and waste is recycled.',
@@ -299,7 +317,7 @@ function stages(s, list, x, y, w, rowH, color, o = {}) {
     ['Permafrost', 'frozen ground that heaves under heat'],
   ];
   st.forEach(([n, l], i) => stat(s, n, l, sx, 6.65 + i * 1.0, sw, C.accent1, { size: 26, labelColor: C.background2, lh: 0.4 }));
-  caption(s, 'The windy northern edge, with the Ice-Proof Wind Farm on the horizon.', M, 4.6, CW, 0.22, { color: C.background2 });
+  caption(s, ED.captions.challenge, M, 4.6, CW, 0.22, { color: C.background2 });
 }
 
 // ---------------------------------------------------------------------------
@@ -310,7 +328,7 @@ function stages(s, list, x, y, w, rowH, color, o = {}) {
   pageHead(s, 'The ideas', 'Five Design Principles', C.accent6);
   standfirst(s, 'Heat, energy, water and food should never be wasted.', M, 1.6, CW, 0.4);
   picture(s, 'renders/downtown.jpg', M, 2.2, CW, 3.3);
-  caption(s, 'Downtown around the Aurora Roundabout, with the Snow-to-Food plant and Mount Aurora behind.', M, 5.58, CW, 0.25);
+  caption(s, ED.captions.principles, M, 5.58, CW, 0.25);
   const pr = [
     ['Heat is life', 'One district-heating loop, fed by the fusion station and the geothermal plant, warms every building. Triple-glazed buildings on insulated piles do not thaw the permafrost.'],
     ['Zero carbon', 'No fossil fuel burns anywhere in the city. Power comes from fusion, wind, sun and geothermal heat.'],
@@ -332,9 +350,9 @@ function stages(s, list, x, y, w, rowH, color, o = {}) {
 {
   const s = addPage('PAGE_LIGHT', 'The City');
   pageHead(s, 'The map', 'The Whole City Plan', C.accent6);
-  const ph = (CW * 1445) / 2000;
+  const ph = CW * ratio('plans/01_city_master_plan.png');
   s.addImage({ path: img('plans/01_city_master_plan.png'), x: M, y: 1.7, w: CW, h: ph, objectName: 'master-plan' });
-  caption(s, 'Aurora Haven – City Master Plan. North is up; one grid unit is one metre. Drawn from the 3D map.', M, 1.7 + ph + 0.06, CW, 0.25);
+  caption(s, ED.captions.masterPlan, M, 1.7 + ph + 0.06, CW, 0.25);
   const zones = [
     ['Downtown', 'Nine blocks around the Aurora Roundabout and the President Ho Chi Minh Monument, with the hospital, schools, shops and the metro interchange.', C.text1],
     ['North', 'The windy north holds the Northern Renewable Park, the energy hub, the Polar Rescue and Resilience Station and the airport.', C.accent6],
@@ -369,7 +387,7 @@ function stages(s, list, x, y, w, rowH, color, o = {}) {
   const s = addPage('PAGE_LIGHT', 'The City');
   pageHead(s, 'Downtown', 'Nine Blocks, One Short Walk', C.accent6);
   picture(s, 'renders/liberty.jpg', 0, 1.65, W, 3.9);
-  caption(s, 'Looking south down Liberty Mall from the Aurora Roundabout to Mount Aurora.', M, 5.62, CW, 0.25);
+  caption(s, ED.captions.downtown, M, 5.62, CW, 0.25);
   text(s, 'Downtown is laid out in nine blocks around the Aurora Roundabout. Shops, schools, healthcare and homes are within a short walk of each other, and the metro interchange lies under Liberty Mall. The map below follows the city plan, with north at the top.', { x: M, y: 6.0, w: CW, h: 0.65, fontSize: 10.5, lineSpacingMultiple: 1.1 });
   const blocks = [
     ['Polaris Quarter', 'Aurora Core – AI Control Tower · Aurora Haven Police Headquarters · Polaris Green Office Tower'],
@@ -418,10 +436,11 @@ opener({
 {
   const s = addPage('PAGE_LIGHT', 'Signature Districts');
   pageHead(s, 'Fusion Power Station · How it works', 'Five Stages, One Sun', C.accent3);
-  const ph = (CW * 930) / 2000;
+  const ph = CW * ratio('plans/02_fusion_power_station_plan.png');
   s.addImage({ path: img('plans/02_fusion_power_station_plan.png'), x: M, y: 1.7, w: CW, h: ph, objectName: 'fusion-plan' });
   caption(s, 'Fusion Power Station – District Plan. Signature district 1: a compact D-T tokamak.', M, 1.7 + ph + 0.05, CW, 0.25);
-  const ly = 5.45;
+  const ly = Math.max(5.45, 1.7 + ph + 0.45);
+  const rowH = Math.min(0.9, (10.95 - ly) / 6);
   stages(s, [
     { n: '1', name: 'Heavy-water separation', text: 'Takes deuterium from the deuterium-rich water left by the food plant’s electrolysers and purifies it to 99.8% heavy water.' },
     { n: '2', name: 'Lithium blanket & tritium fuel cycle', text: 'Breeds slightly more tritium than the reactor burns, so none is imported. Recovered helium cools the hospital’s MRI scanners.' },
@@ -429,11 +448,11 @@ opener({
     { n: '4', name: 'Power conversion & heat export', text: 'Supercritical-CO₂ turbines make about 300 MW of electricity and send about 450 MW of heat to the city.' },
     { n: '5', name: 'Plasma waste converter', text: 'Torches hotter than 5,000 °C turn about 20 t of rubbish a day into clean gas, metals and paving blocks.' },
     { n: 'C', name: 'Control & visitor centre', text: 'Operators and an AI digital twin can stop the plasma in milliseconds; a public gallery faces the reactor.', color: C.text1 },
-  ], M, ly, 4.55, 0.9, C.accent3);
+  ], M, ly, 4.55, rowH, C.accent3);
   const sx = 5.55;
   const sw = W - M - sx;
   [['800 MW', 'of heat from the plasma'], ['300 MW', 'of electricity'], ['450 MW', 'of district heat for the city'], ['170 g', 'of fuel a day, about 70 g of it deuterium'], ['1 litre', 'of liquid helium a day for MRI scanners']]
-    .forEach(([n, l], i) => stat(s, n, l, sx, ly - 0.1 + i * 1.08, sw, C.accent3, { size: 24, lh: 0.42 }));
+    .forEach(([n, l], i) => stat(s, n, l, sx, ly - 0.1 + i * rowH * 1.2, sw, C.accent3, { size: 24, lh: 0.42 }));
 }
 
 // ---------------------------------------------------------------------------
@@ -454,7 +473,7 @@ opener({
 {
   const s = addPage('PAGE_LIGHT', 'Signature Districts');
   pageHead(s, 'Snow-to-Food & Water Plant · How it works', 'Six Stages from Snow to Supper', C.accent4);
-  const ph = (CW * 1033) / 2000;
+  const ph = CW * ratio('plans/03_snow_to_food_water_plant_plan.png');
   s.addImage({ path: img('plans/03_snow_to_food_water_plant_plan.png'), x: M, y: 1.7, w: CW, h: ph, objectName: 'food-plan' });
   caption(s, 'Snow-to-Food & Water Plant – District Plan. All drinking water and about half of the city’s protein, from snow and air.', M, 1.7 + ph + 0.05, CW, 0.25);
   const ly = 5.8;
@@ -490,7 +509,7 @@ opener({
 {
   const s = addPage('PAGE_LIGHT', 'Signature Districts');
   pageHead(s, 'Mount Aurora · Level by level', 'Four Floors of Warmth', C.accent5);
-  const ph = (CW * 1095) / 2000;
+  const ph = CW * ratio('plans/04_mount_aurora_spa_resort_plan.png');
   s.addImage({ path: img('plans/04_mount_aurora_spa_resort_plan.png'), x: M, y: 1.7, w: CW, h: ph, objectName: 'spa-plan' });
   caption(s, 'Mount Aurora Geothermal Spa Resort – Level Plans. The glass lift links all four levels.', M, 1.7 + ph + 0.05, CW, 0.25);
   const levels = [
@@ -499,7 +518,7 @@ opener({
     ['Level 3 · 9 m', 'Treatment Suites & Himalayan Salt Sauna', 'Hot-stone massage, arctic kelp wraps and a 75 °C pink salt sauna heated by the geothermal loop.'],
     ['Level 4 · 13.5 m', 'Summit Sanctuary & Aurora Eye', 'A 35 °C float pool, a meditation circle and a heated glass bubble for watching the northern lights.'],
   ];
-  const gy = 5.95;
+  const gy = Math.max(5.95, 1.7 + ph + 0.4);
   const cw2 = (CW - 0.2) / 2;
   levels.forEach(([lv, t, d], i) => {
     const x = M + (i % 2) * (cw2 + 0.2);
@@ -605,7 +624,7 @@ opener({
   const s = addPage('PAGE_LIGHT', 'Living in Aurora Haven');
   pageHead(s, 'Clean energy, day and polar night', 'Energy for the Polar Night', C.accent6);
   picture(s, 'renders/renewable.jpg', 0, 1.65, W, 3.75);
-  caption(s, 'Northern Renewable Park: the Ice-Proof Wind Farm and the Bifacial Solar Farm.', M, 5.45, CW, 0.25);
+  caption(s, ED.captions.renewable, M, 5.45, CW, 0.25);
   standfirst(s, 'The sun disappears for two months, so the city uses sources that cover for each other.', M, 5.8, CW, 0.4);
   const src = [
     ['Steady', 'Fusion', 'Steady power and heat all year, even in total darkness.', C.accent3],
@@ -633,7 +652,7 @@ opener({
   const s = addPage('PAGE_LIGHT', 'Living in Aurora Haven');
   pageHead(s, 'Water and waste', 'Nothing Is Wasted', C.accent4);
   picture(s, 'renders/water.jpg', 0, 1.65, W, 4.0);
-  caption(s, 'The Water Recycling Line in the Northern Renewable Park, with the wind farm behind.', M, 5.7, CW, 0.25);
+  caption(s, ED.captions.water, M, 5.7, CW, 0.25);
   text(s, 'THE SIX-STAGE WATER RECYCLING LINE', { x: M, y: 6.15, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.accent4 });
   const st = ['Snowmelt & greywater intake', 'Intake pumps & bar screen', 'Settling basins', 'Sand & membrane filters', 'UV disinfection', 'Recycled water tower'];
   const sw = CW / 6;
@@ -662,7 +681,7 @@ opener({
   const s = addPage('PAGE_LIGHT', 'Living in Aurora Haven');
   pageHead(s, 'Transport', 'Getting Around Fossil-Free', C.accent6);
   picture(s, 'renders/airport.jpg', 0, 1.65, W, 3.6);
-  caption(s, 'Compact Polar Airport: the glass terminal, the control tower and Flight VN-81 taking off.', M, 5.3, CW, 0.25);
+  caption(s, ED.captions.airport, M, 5.3, CW, 0.25);
   paras(s, [
     'Transport in Aurora Haven is electric and built for the cold. The heart of it is the metro: the north–south Aurora Line and the deep east–west Glacier Line meet at the Central Interchange Station under Liberty Mall. The driverless trains run underground, so blizzards never stop them.',
     'On the streets there are electric trams, buses and shared robotaxis, and people wait in heated bus shelters. The roads are warmed from below, so no salt is needed, and an outer ring keeps trucks out of downtown.',
@@ -691,7 +710,7 @@ opener({
   const s = addPage('PAGE_LIGHT', 'Living in Aurora Haven');
   pageHead(s, 'Everyday life', 'A Livable City Every Day', C.accent6);
   picture(s, 'renders/stadium.jpg', 0, 1.65, W, 3.9);
-  caption(s, 'Aurora Snow Stadium, home of school sports days and the Midwinter Aurora Festival.', M, 5.6, CW, 0.25);
+  caption(s, ED.captions.stadium, M, 5.6, CW, 0.25);
   const cats = [
     ['Homes', 'Family houses in Snowpine Residences, the western eco-homes, towers such as the Aurora 81 Residences and Ice Crystal Apartments, co-living, student and senior housing.'],
     ['Learning', 'Three kindergartens, Snow Lantern Primary School, the Northern Lights School for ages 6 to 18, and Arctic University.'],
@@ -717,7 +736,7 @@ opener({
   const s = addPage('PAGE_LIGHT', 'Living in Aurora Haven');
   pageHead(s, 'Safety', 'Safe and Ready for Any Storm', C.accent2);
   picture(s, 'renders/rescue.jpg', 0, 1.65, W, 4.2);
-  caption(s, 'The Polar Rescue and Resilience Station in the Energy Hub, north of downtown.', M, 5.9, CW, 0.25);
+  caption(s, ED.captions.rescue, M, 5.9, CW, 0.25);
   paras(s, [
     'In the polar night, safety comes first. The Polar Rescue and Resilience Station is home to the fire brigade, ambulances, ice rescue and the 112 emergency centre, and its vehicles leave within 60 seconds.',
     'The West Market Fire & Ambulance Station reaches any downtown address in about four minutes, and a rescue helicopter is ready day and night.',
@@ -737,18 +756,9 @@ opener({
 {
   pres.addSection({ title: 'Guide' });
   const s = addPage('PAGE_ICE', 'Guide');
-  pageHead(s, 'Explore', 'Take the Tour: Eight Stops in 3D', C.accent6);
-  standfirst(s, 'Open the city file in Eco-Polis 3D Builder and click Full Screen. The app locks into View mode, so nothing can move by accident. Then click each place to open its card.', M, 1.6, CW, 0.75);
-  const stops = [
-    ['President Ho Chi Minh Monument', 'The civic heart of the city on the Aurora Roundabout.'],
-    ['Metro Entrance – Central Interchange Station', 'Escalators down to the metro and the shelters.'],
-    ['Snowflake General Hospital', 'About 250 beds and a 24-hour emergency department.'],
-    ['[Fusion Power Station – Stage 3] Fusion Core – Compact D-T Tokamak', 'The city’s own sun.'],
-    ['[Snow-to-Food & Water Plant – Stage 1] Snow Harvest & Melt Hall', 'Melts about 3,000 t of snow a day with spare fusion heat.'],
-    ['[Mount Aurora] Ama Dablam-Style Snow Peak & Hanging Glacier', 'The 35 m peak with the spa inside.'],
-    ['[Northern Renewable Park] Ice-Proof Wind Farm', 'Two rows of turbines making about 60 MW.'],
-    ['Polar Rescue and Resilience Station', 'Home of the 112 emergency centre.'],
-  ];
+  pageHead(s, 'Explore', ED.tour.title, C.accent6);
+  standfirst(s, ED.tour.standfirst, M, 1.6, CW, 0.75);
+  const stops = ED.tour.stops;
   const lx = M;
   const ly = 2.65;
   const rh = 0.86;
@@ -761,22 +771,16 @@ opener({
       { text: d, options: { fontSize: 9, color: C.text2 } },
     ], { x: lx + 0.6, y: y + 0.02, w: 3.75, h: rh - 0.08, lineSpacingMultiple: 1.0 });
   });
-  text(s, 'If there is time: the Aurora Lagoon, the Bifacial Solar Farm and the Recycled Water Tower.', { x: lx, y: ly + 8 * rh - 0.05, w: 4.35, h: 0.45, fontSize: 9, italic: true, color: C.text2 });
+  text(s, ED.tour.extra, { x: lx, y: ly + 8 * rh - 0.05, w: 4.35, h: 0.45, fontSize: 9, italic: true, color: C.text2 });
 
   const bx = 5.25;
   const bw = W - M - bx;
   card(s, bx, 2.65, bw, 8.2, C.background1);
   kicker(s, 'Behind the build', bx + 0.18, 2.85, C.accent6, { w: bw - 0.4 });
-  [['3,700', '3D items arranged to one scale'], ['241', 'named places, each with a Name, Purpose and Special Features card'], ['1 m', 'per grid unit on every plan']]
+  ED.tour.build
     .forEach(([n, l], i) => stat(s, n, l, bx + 0.18, 3.2 + i * 1.05, bw - 0.36, C.accent6, { size: 22, lh: 0.45 }));
   text(s, 'MEETING THE BRIEF', { x: bx + 0.18, y: 6.45, w: bw - 0.36, h: 0.22, fontSize: 8.5, bold: true, charSpacing: 2, color: C.text2 });
-  const brief = [
-    ['Smart design', 'polar answers to cold, darkness, wind and permafrost'],
-    ['Sustainability', 'clean energy, closed loops, green spaces, electric transport'],
-    ['Livability', 'homes, schools, hospital, shops, parks, cinema, roads'],
-    ['Detail', '241 places annotated'],
-    ['Timeline', 'built in rounds; final .json submitted 17 October 2026'],
-  ];
+  const brief = ED.tour.brief;
   brief.forEach(([t, d], i) => {
     const y = 6.8 + i * 0.78;
     marker(s, String(i + 1), bx + 0.18, y, 0.3, C.text1, { size: 10 });
@@ -828,12 +832,12 @@ const PLACES = [
 function placesPage(from, to, title, kick) {
   const s = addPage('PAGE_LIGHT', 'Guide');
   pageHead(s, kick, title, C.accent6);
-  const head = ['#', 'Name of the place (as in the app)', 'District', 'Purpose'].map((t) => ({ text: t, options: { bold: true, color: C.background1, fill: { color: C.text1 }, fontSize: 9 } }));
+  const head = ['#', ED.placesHeader, 'District', 'Purpose'].map((t) => ({ text: t, options: { bold: true, color: C.background1, fill: { color: C.text1 }, fontSize: 9 } }));
   const rows = PLACES.slice(from, to).map((p, i) => {
     const fill = { color: i % 2 ? C.background1 : C.background2 };
     return [
       { text: String(from + i + 1), options: { bold: true, color: C.accent6, fill, fontFace: HEAD, fontSize: 11 } },
-      { text: p[0], options: { bold: true, fill, fontSize: 9.5 } },
+      { text: ED.placeNames ? ED.placeNames[from + i] : p[0], options: { bold: true, fill, fontSize: 9.5 } },
       { text: p[1], options: { fill, fontSize: 8.5, color: C.text2 } },
       { text: p[2], options: { fill, fontSize: 9.5 } },
     ];
@@ -853,7 +857,7 @@ placesPage(18, 35, 'Places to Visit, Continued', 'Guide · 35 key places');
   const s = addPage('PAGE_DARK', 'Guide');
   pageHead(s, 'Key figures', 'Aurora Haven by the Numbers', C.accent1, true);
   const groups = [
-    ['The city', C.accent1, [['45,000', 'residents'], ['241', 'named places'], ['3,700', '3D items']]],
+    ['The city', C.accent1, ED.cityNumbers],
     ['Climate', C.accent6, [['−45 °C', 'winter lows'], ['2 months', 'of polar night'], ['120 km/h', 'blizzards']]],
     ['Fusion Power Station', C.accent3, [['300 MW', 'electricity'], ['450 MW', 'district heat'], ['99.8%', 'heavy-water purity']]],
     ['Snow-to-Food & Water Plant', C.accent4, [['5 t', 'hydrogen a day'], ['4 t', 'starch a day'], ['1 t', 'fat a day']]],
@@ -889,7 +893,7 @@ placesPage(18, 35, 'Places to Visit, Continued', 'Guide · 35 key places');
     x: M, y: 1.8, w: 3.3, h: 2.6, fontSize: 11, color: C.background1, lineSpacingMultiple: 1.12, shadow: shadow(),
   });
   text(s, 'AURORA HAVEN', { x: M, y: 3.5, w: 2.8, h: 0.35, fontFace: HEAD, fontSize: 16, bold: true, charSpacing: 2, color: C.accent1, shadow: shadow() });
-  text(s, '[Group name] · [Member names]\n[Class] · [Date]\nBuilt in Eco-Polis 3D Builder\nPolar / Ice City', { x: M, y: 3.87, w: 2.8, h: 0.85, fontSize: 9, color: C.background1, shadow: shadow() });
+  text(s, ED.backCredit, { x: M, y: 3.87, w: 2.8, h: 0.85, fontSize: 9, color: C.background1, shadow: shadow() });
 }
 
 (async () => {
