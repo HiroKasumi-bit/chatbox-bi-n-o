@@ -27,7 +27,7 @@ Tạp chí khổ A4 (24 trang, tiếng Anh) giới thiệu **Aurora Haven**, th�
 
 Toàn bộ chữ lấy từ file `magazine/source/Aurora_Haven_Slide_Content.docx` và các thẻ Name/Purpose/Feature trong file 3D `magazine/source/Aurora_Haven_v13.json`. Không có số liệu nào được bịa thêm.
 
-Ảnh 3D được chụp từ chính file JSON trên app Eco-Polis 3D. Để ảnh đẹp như tạp chí, mình thêm đổ bóng và vẽ bầu trời. Bìa trước, bìa sau và ảnh hồ ở trang 2 là cảnh đêm vùng cực: trời sao, cực quang, núi xa và cánh đồng tuyết kéo dài tới chân trời. Phần trời đêm do script `tools/night_sky.js` tự vẽ, không dùng ảnh có sẵn. Mô hình thành phố giữ nguyên như trong app.
+Ảnh 3D được chụp từ chính file JSON trên app Eco-Polis 3D. Để ảnh đẹp như tạp chí, mình thêm đổ bóng và vẽ bầu trời. Bìa trước, bìa sau và ảnh hồ ở trang 2 là cảnh đêm vùng cực: trời sao, cực quang và cánh đồng tuyết kéo dài tới chân trời. Phần trời đêm do script `tools/night_sky.js` tự vẽ, không dùng ảnh có sẵn. Mô hình thành phố giữ nguyên như trong app.
 
 ## Cấu trúc thư mục
 
