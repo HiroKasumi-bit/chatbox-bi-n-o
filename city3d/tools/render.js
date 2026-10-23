@@ -3,7 +3,9 @@
 //   node tools/render.js tools/shots.json renders [name,name,...]
 //
 // The page is served straight from the repository folder through Playwright, so no web
-// server is needed. Each shot in shots.json gives the size, camera and look (sun or night).
+// server is needed. Each shot in shots.json gives the size, camera, look (sun, dusk, night
+// or storm) and, for interiors, the set to photograph. Pictures are saved as JPEG, or PNG
+// when only part of the scene is drawn on a transparent background.
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
@@ -36,7 +38,9 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'applic
     if (only && !only.includes(s.name)) continue;
     const t = Date.now();
     const data = await page.evaluate((shot) => window.renderShot(shot), s);
-    fs.writeFileSync(path.join(outDir, `${s.name}.png`), Buffer.from(data.split(',')[1], 'base64'));
+    // Pictures on a transparent background stay PNG; the rest are saved as high-quality JPEG.
+    const ext = s.only ? 'png' : 'jpg';
+    fs.writeFileSync(path.join(outDir, `${s.name}.${ext}`), Buffer.from(data.split(',')[1], 'base64'));
     console.log(s.name, `${((Date.now() - t) / 1000).toFixed(1)}s`);
   }
   await browser.close();

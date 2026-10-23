@@ -21,7 +21,7 @@ export function neighbourhoods(b) {
   // South-east apartment blocks between the Aurora 81 District and the fusion station.
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 2; j++) {
-      building(b, { x: 102 + j * 20, z: 140 + i * 30, w: 14, d: 22, h: 18 + ((i + j) % 2) * 7.2, facade: (i + j) % 2 ? 'residential' : 'brick' });
+      building(b, { x: 102 + j * 20, z: 140 + i * 30, w: 14, d: 22, h: 18 + ((i + j) % 2) * 7.2, facade: (i + j) % 2 ? 'residential' : 'brick', balconies: true });
     }
   }
   for (let i = 0; i < 8; i++) pine(b, 112 + (R() - 0.5) * 8, 130 + i * 11, 0.8);

@@ -2,10 +2,11 @@
   "name": "aurora-haven-magazine",
   "version": "1.0.0",
   "private": true,
-  "description": "Aurora Haven magazine (A4, PowerPoint) built from the Eco-Polis 3D city file",
+  "description": "Aurora Haven magazine (A4, PowerPoint) with pictures rendered from the 3D city in ../city3d",
   "scripts": {
     "build": "node build_magazine.js",
-    "render": "node tools/render_3d.js source/Aurora_Haven_v13.json tools/shots.json renders_raw"
+    "prepare-renders": "python3 tools/prepare_renders.py renders_raw",
+    "shades": "python3 tools/make_shades.py"
   },
   "dependencies": {
     "pptxgenjs": "3.12.0"

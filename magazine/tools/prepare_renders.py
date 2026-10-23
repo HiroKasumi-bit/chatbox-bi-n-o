@@ -1,44 +1,50 @@
-"""Turns the PNGs from tools/render_3d.js into the pictures in assets/renders.
+"""Turns the raw pictures from the 3D city into the files the magazine uses.
 
-    python3 tools/prepare_renders.py renders_raw
+    python3 tools/prepare_renders.py ../magazine/renders_raw
 
-Photos become JPEGs; the overview keeps its transparent background; the cover tower is cut to
-the top of the page (it is laid over the masthead); the tundra shot loses its foreground tree.
+- every JPEG is copied to assets/renders (re-saved at quality 90 to keep the file small);
+- pictures that run across a double-page spread are cut into a left and a right half
+  (<name>_L.jpg and <name>_R.jpg), one for each page; so is the city master plan;
+- the transparent picture of Aurora 81 is cut down to the part that rises in front of the
+  masthead on the cover (cover_tower_top.png).
 """
-import os
 import sys
+from pathlib import Path
 
 from PIL import Image
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', 'assets', 'renders')
-PHOTOS = ['cover', 'downtown', 'liberty', 'fusion', 'food', 'mount', 'renewable', 'water',
-          'airport', 'stadium', 'rescue', 'lagoon', 'back']
-
-
-def save_jpg(im, name):
-    im.convert('RGB').save(os.path.join(OUT, name + '.jpg'), quality=90, optimize=True, progressive=True)
+ASSETS = Path(__file__).resolve().parent.parent / "assets" / "renders"
+SPREADS = ["welcome_pano", "liberty_dusk", "fusion_spread", "grotto"]
+PLANS = Path(__file__).resolve().parent.parent / "assets" / "plans"
+SPREAD_PLANS = ["01_city_master_plan.png"]  # plans laid across a spread, centred on the fold
+COVER_TOP = 0.2  # share of the cover height kept for the tower overlay
 
 
 def main(raw):
-    """Converts whichever renders are in `raw`, so a partial re-render updates only those."""
-    os.makedirs(OUT, exist_ok=True)
-    has = lambda name: os.path.exists(os.path.join(raw, name + '.png'))
-    for name in filter(has, PHOTOS):
-        save_jpg(Image.open(os.path.join(raw, name + '.png')), name)
+    raw = Path(raw)
+    ASSETS.mkdir(parents=True, exist_ok=True)
+    for src in sorted(raw.glob("*.jpg")):
+        img = Image.open(src).convert("RGB")
+        if src.stem in SPREADS:
+            half = img.width // 2
+            img.crop((0, 0, half, img.height)).save(ASSETS / f"{src.stem}_L.jpg", quality=90)
+            img.crop((half, 0, img.width, img.height)).save(ASSETS / f"{src.stem}_R.jpg", quality=90)
+        else:
+            img.save(ASSETS / src.name, quality=90)
+        print("prepared", src.name)
+    for name in SPREAD_PLANS:
+        img = Image.open(PLANS / name)
+        half = img.width // 2
+        stem = name[:-4]
+        img.crop((0, 0, half, img.height)).save(PLANS / f"{stem}_L.png", optimize=True)
+        img.crop((half, 0, img.width, img.height)).save(PLANS / f"{stem}_R.png", optimize=True)
+        print("split", name)
+    tower = raw / "cover_tower.png"
+    if tower.exists():
+        img = Image.open(tower)
+        img.crop((0, 0, img.width, round(img.height * COVER_TOP))).save(ASSETS / "cover_tower_top.png", optimize=True)
+        print("prepared cover_tower_top.png")
 
-    if has('snowbreak'):
-        snow = Image.open(os.path.join(raw, 'snowbreak.png'))
-        save_jpg(snow.crop((0, 0, snow.width, int(snow.height * 0.8))), 'snowbreak')
 
-    if has('overview'):
-        overview = Image.open(os.path.join(raw, 'overview.png')).convert('RGBA')
-        overview.crop(overview.getbbox()).save(os.path.join(OUT, 'overview.png'), optimize=True)
-
-    if has('cover_tower'):
-        tower = Image.open(os.path.join(raw, 'cover_tower.png')).convert('RGBA')
-        tower.crop((0, 0, tower.width, int(tower.height * 0.32))).save(os.path.join(OUT, 'cover_tower_top.png'), optimize=True)
-
-
-if __name__ == '__main__':
-    main(sys.argv[1] if len(sys.argv) > 1 else 'renders_raw')
+if __name__ == "__main__":
+    main(sys.argv[1] if len(sys.argv) > 1 else "renders_raw")

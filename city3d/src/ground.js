@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { matrix, noise2D, fbm, smoothstep, rng } from './util.js';
 import { materials } from './materials.js';
 import { PITCH, RING, STREET } from './layout.js';
-import { lamp } from './kit.js';
+import { lamp, crowd } from './kit.js';
 
 const R = rng(77);
 
@@ -62,7 +62,24 @@ export function road(b, x1, z1, x2, z2, o = {}) {
   const at = (lx, lz) => matrix(cx, 0, cz, ang).multiply(matrix(lx, 0, lz));
   b.add(o.surface || 'asphalt', new THREE.BoxGeometry(w, 0.12, len), at(0, 0).multiply(matrix(0, 0.06, 0)));
   if (o.sidewalk !== false) {
-    for (const s of [-1, 1]) b.add('sidewalk', new THREE.BoxGeometry(3, 0.22, len), at(s * (w / 2 + 1.5), 0).multiply(matrix(0, 0.11, 0)));
+    for (const s of [-1, 1]) {
+      b.add('sidewalk', new THREE.BoxGeometry(3, 0.22, len), at(s * (w / 2 + 1.5), 0).multiply(matrix(0, 0.11, 0)));
+      b.add('curb', new THREE.BoxGeometry(0.25, 0.24, len), at(s * (w / 2 + 0.12), 0).multiply(matrix(0, 0.12, 0)));
+    }
+    // People on both sidewalks, `o.people` per 100 m.
+    if (o.people) {
+      for (const s of [-1, 1]) {
+        const a = new THREE.Vector3().setFromMatrixPosition(at(s * (w / 2 + 1.6), -len / 2 + 3));
+        const c = new THREE.Vector3().setFromMatrixPosition(at(s * (w / 2 + 1.6), len / 2 - 3));
+        crowd(b, a.x, a.z, c.x, c.z, Math.round((o.people * len) / 100), 2.2);
+      }
+    }
+  }
+  if (o.crossings) {
+    // Zebra crossings near both ends.
+    for (const t of [-len / 2 + o.crossings, len / 2 - o.crossings]) {
+      for (let k = -w / 2 + 0.8; k < w / 2 - 0.5; k += 1.2) b.add('marking', new THREE.BoxGeometry(0.6, 0.02, 3), at(k, t).multiply(matrix(0, 0.13, 0)));
+    }
   }
   if (o.marking !== false) {
     const dash = 3;
@@ -92,12 +109,12 @@ export function streets(b) {
   const half = RING;
   // Downtown grid: two streets each way between the blocks, and the ring road.
   for (const s of [-PITCH / 2, PITCH / 2]) {
-    road(b, s, -half, s, half, { width: STREET - 6, lamps: 24 });
-    road(b, -half, s, half, s, { width: STREET - 6, lamps: 24 });
+    road(b, s, -half, s, half, { width: STREET - 6, lamps: 24, people: 9, crossings: 14 });
+    road(b, -half, s, half, s, { width: STREET - 6, lamps: 24, people: 9, crossings: 14 });
   }
   for (const s of [-half, half]) {
-    road(b, s, -half - 7, s, half + 7, { width: 12, lamps: 26 });
-    road(b, -half - 7, s, half + 7, s, { width: 12, lamps: 26 });
+    road(b, s, -half - 7, s, half + 7, { width: 12, lamps: 26, people: 4 });
+    road(b, -half - 7, s, half + 7, s, { width: 12, lamps: 26, people: 4 });
   }
   // Avenues out of downtown.
   road(b, 0, -half - 7, 0, -212, { width: 12, banks: true, lamps: 30 }); // Aurora Avenue north

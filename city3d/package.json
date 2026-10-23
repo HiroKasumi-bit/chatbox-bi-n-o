@@ -5,5 +5,9 @@
   "description": "Aurora Haven polar city, built from scratch in three.js",
   "dependencies": {
     "three": "0.160.0"
+  },
+  "scripts": {
+    "render": "node tools/render.js tools/shots.json ../magazine/renders_raw",
+    "plans": "node tools/plans.js ../magazine/assets/plans"
   }
 }

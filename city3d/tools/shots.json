@@ -1,8 +1,8 @@
 [
  {
   "name": "cover",
-  "w": 1600,
-  "h": 2263,
+  "w": 1700,
+  "h": 2403,
   "fov": 24,
   "pos": [
    40,
@@ -13,12 +13,6 @@
    30,
    20,
    170
-  ],
-  "shadowRadius": 350,
-  "shadowCentre": [
-   40,
-   0,
-   40
   ],
   "look": {
    "mode": "night",
@@ -281,12 +275,18 @@
     ],
     "relative": true
    }
-  }
+  },
+  "shadowRadius": 350,
+  "shadowCentre": [
+   40,
+   0,
+   40
+  ]
  },
  {
   "name": "cover_tower",
-  "w": 1600,
-  "h": 2263,
+  "w": 1700,
+  "h": 2403,
   "fov": 24,
   "pos": [
    40,
@@ -297,12 +297,6 @@
    30,
    20,
    170
-  ],
-  "shadowRadius": 350,
-  "shadowCentre": [
-   40,
-   0,
-   40
   ],
   "look": {
    "mode": "night",
@@ -568,345 +562,672 @@
   },
   "only": [
    "aurora81"
-  ]
+  ],
+  "ss": 1
  },
  {
-  "name": "overview",
-  "w": 2400,
-  "h": 1600,
-  "fov": 36,
+  "name": "welcome_pano",
+  "w": 4000,
+  "h": 1693,
+  "fov": 27,
   "pos": [
-   430,
-   260,
-   470
+   360,
+   160,
+   390
   ],
   "target": [
-   30,
+   -58,
    0,
-   -10
+   50
   ],
-  "shadowRadius": 600,
   "look": {
-   "mode": "sun",
-   "sunElevation": 9,
-   "sunAzimuth": 230,
-   "sunColor": 16764822,
-   "sunIntensity": 5,
-   "exposure": 0.6,
-   "hemi": 0.4,
-   "env": 0.25,
-   "fog": 13293292
-  }
+   "mode": "dusk",
+   "sky": {
+    "zenith": "#0b1530",
+    "upper": "#22407a",
+    "horizon": "#a08eb4",
+    "glow": "#d27a4a",
+    "glowAzimuth": 200,
+    "ground": "#1c2436"
+   },
+   "exposure": 1.05,
+   "grade": {
+    "contrast": 1.06,
+    "saturation": 1.06,
+    "lift": "#05070f",
+    "vignette": 0.28
+   },
+   "hemi": 0.55
+  },
+  "shadowRadius": 550,
+  "ss": 1.5
  },
  {
-  "name": "snowbreak",
-  "w": 2400,
-  "h": 1600,
-  "fov": 48,
+  "name": "storm",
+  "w": 1700,
+  "h": 2403,
+  "fov": 56,
   "pos": [
-   -135,
-   10,
-   -245
+   -110,
+   4,
+   -168
   ],
   "target": [
-   -175,
-   24,
-   -330
+   -125,
+   14,
+   -320
   ],
-  "shadowRadius": 200,
   "look": {
-   "mode": "storm"
+   "mode": "storm",
+   "fogNear": 30,
+   "fogFar": 280,
+   "exposure": 0.85,
+   "grade": {
+    "contrast": 1.05,
+    "saturation": 0.9,
+    "vignette": 0.25
+   },
+   "snowSize": 0.12
   },
   "snowAround": [
-   -160,
+   -110,
    0,
-   -290
+   -168
   ]
  },
  {
-  "name": "downtown",
+  "name": "principles",
   "w": 2400,
-  "h": 1600,
-  "fov": 42,
+  "h": 1250,
+  "fov": 34,
   "pos": [
-   -120,
-   70,
-   -150
+   -150,
+   90,
+   -170
   ],
   "target": [
    10,
    0,
    10
   ],
-  "shadowRadius": 220,
   "look": {
    "mode": "sun",
-   "sunElevation": 18,
-   "sunAzimuth": 215,
-   "sunColor": 16773596,
-   "sunIntensity": 4,
+   "sunElevation": 6,
+   "sunAzimuth": 235,
+   "sunColor": "#ffbe85",
+   "sunIntensity": 4.5,
    "exposure": 0.62,
-   "hemi": 0.45,
+   "hemi": 0.38,
    "env": 0.3,
-   "fog": 13622511
-  }
+   "fog": "#d9cdc6",
+   "fogNear": 700,
+   "fogFar": 4500,
+   "grade": {
+    "lift": "#080c18",
+    "gain": "#fff6ec",
+    "contrast": 1.08,
+    "saturation": 1.08,
+    "vignette": 0.22
+   }
+  },
+  "shadowRadius": 260
  },
  {
-  "name": "liberty",
-  "w": 2400,
-  "h": 1600,
-  "fov": 46,
+  "name": "liberty_dusk",
+  "w": 3400,
+  "h": 2403,
+  "fov": 55,
   "pos": [
-   0,
-   14,
-   24
+   0.8,
+   1.7,
+   20.5
+  ],
+  "target": [
+   2.5,
+   5,
+   0
+  ],
+  "look": {
+   "mode": "dusk",
+   "sky": {
+    "zenith": "#0b1530",
+    "upper": "#22407a",
+    "horizon": "#a08eb4",
+    "glow": "#d27a4a",
+    "glowAzimuth": 200,
+    "ground": "#1c2436"
+   },
+   "exposure": 0.95,
+   "grade": {
+    "contrast": 1.06,
+    "saturation": 1.06,
+    "lift": "#05070f",
+    "vignette": 0.28
+   }
+  },
+  "ss": 1.5
+ },
+ {
+  "name": "downtown_aerial",
+  "w": 2400,
+  "h": 1250,
+  "fov": 34,
+  "pos": [
+   170,
+   150,
+   210
   ],
   "target": [
    0,
-   8,
-   230
-  ],
-  "shadowRadius": 250,
-  "shadowCentre": [
    0,
-   0,
-   120
+   0
   ],
   "look": {
    "mode": "sun",
-   "sunElevation": 18,
+   "sunElevation": 16,
    "sunAzimuth": 215,
-   "sunColor": 16773596,
+   "sunColor": "#fff0dc",
    "sunIntensity": 4,
    "exposure": 0.62,
    "hemi": 0.45,
    "env": 0.3,
-   "fog": 13622511
+   "fog": "#cfdcef",
+   "grade": {
+    "lift": "#060a14",
+    "contrast": 1.07,
+    "saturation": 1.08,
+    "vignette": 0.2
+   }
+  },
+  "shadowRadius": 220
+ },
+ {
+  "name": "street_dusk",
+  "w": 2400,
+  "h": 1500,
+  "fov": 50,
+  "pos": [
+   -29.5,
+   1.7,
+   -74
+  ],
+  "target": [
+   -36,
+   5,
+   -10
+  ],
+  "look": {
+   "mode": "dusk",
+   "sky": {
+    "zenith": "#0b1530",
+    "upper": "#22407a",
+    "horizon": "#a08eb4",
+    "glow": "#d27a4a",
+    "glowAzimuth": 200,
+    "ground": "#1c2436"
+   },
+   "exposure": 0.95,
+   "grade": {
+    "contrast": 1.06,
+    "saturation": 1.06,
+    "lift": "#05070f",
+    "vignette": 0.28
+   }
   }
  },
  {
-  "name": "fusion",
-  "w": 2400,
-  "h": 1600,
+  "name": "houses_dusk",
+  "w": 1600,
+  "h": 1300,
+  "fov": 48,
+  "pos": [
+   -58,
+   1.7,
+   63
+  ],
+  "target": [
+   -100,
+   3,
+   61
+  ],
+  "look": {
+   "mode": "dusk",
+   "sky": {
+    "zenith": "#0b1530",
+    "upper": "#22407a",
+    "horizon": "#a08eb4",
+    "glow": "#d27a4a",
+    "glowAzimuth": 200,
+    "ground": "#1c2436"
+   },
+   "exposure": 0.95,
+   "grade": {
+    "contrast": 1.06,
+    "saturation": 1.06,
+    "lift": "#05070f",
+    "vignette": 0.28
+   }
+  }
+ },
+ {
+  "name": "approach_dusk",
+  "w": 1600,
+  "h": 1300,
+  "fov": 40,
+  "pos": [
+   -3.5,
+   2.0,
+   44
+  ],
+  "target": [
+   0,
+   7,
+   180
+  ],
+  "look": {
+   "mode": "dusk",
+   "sky": {
+    "zenith": "#0b1530",
+    "upper": "#22407a",
+    "horizon": "#a08eb4",
+    "glow": "#d27a4a",
+    "glowAzimuth": 200,
+    "ground": "#1c2436"
+   },
+   "exposure": 0.95,
+   "grade": {
+    "contrast": 1.06,
+    "saturation": 1.06,
+    "lift": "#05070f",
+    "vignette": 0.28
+   }
+  }
+ },
+ {
+  "name": "fusion_spread",
+  "w": 3400,
+  "h": 2403,
   "fov": 42,
   "pos": [
-   150,
-   90,
-   330
+   120,
+   55,
+   290
   ],
   "target": [
-   245,
-   0,
-   200
+   238,
+   15,
+   183
   ],
-  "shadowRadius": 200,
   "look": {
-   "mode": "sun",
-   "sunElevation": 18,
-   "sunAzimuth": 215,
-   "sunColor": 16773596,
-   "sunIntensity": 4,
-   "exposure": 0.62,
-   "hemi": 0.45,
-   "env": 0.3,
-   "fog": 13622511
-  }
+   "mode": "night",
+   "night": {
+    "seed": 11,
+    "sky": [
+     "#02030c",
+     "#040822",
+     "#0a1146",
+     "#151c6c",
+     "#2c2582",
+     "#5e46a0"
+    ],
+    "fog": [
+     300,
+     2200
+    ],
+    "fogColor": "#5e46a0",
+    "glows": [
+     [
+      0.2,
+      -0.01,
+      0.6,
+      0.14,
+      "60,220,170",
+      0.4
+     ],
+     [
+      0.85,
+      -0.01,
+      0.45,
+      0.08,
+      "240,120,200",
+      0.5
+     ]
+    ],
+    "stars": 1600,
+    "glow": 1.5,
+    "rays": 0.4,
+    "raysBlur": 4,
+    "curtains": [
+     {
+      "base": [
+       [
+        -0.05,
+        0.523
+       ],
+       [
+        0.5,
+        0.431
+       ],
+       [
+        1.05,
+        0.338
+       ]
+      ],
+      "height": [
+       [
+        0,
+        0.431
+       ],
+       [
+        1,
+        0.462
+       ]
+      ],
+      "fade": [
+       [
+        0,
+        0.4
+       ],
+       [
+        0.5,
+        1
+       ],
+       [
+        1,
+        0.6
+       ]
+      ],
+      "intensity": 0.28,
+      "sharp": 1.0,
+      "edge": "200,160,255",
+      "low": "150,110,255",
+      "mid": "190,100,240",
+      "high": "220,110,220"
+     },
+     {
+      "span": [
+       0.3,
+       1
+      ],
+      "base": [
+       [
+        0.3,
+        0.954
+       ],
+       [
+        0.5,
+        0.877
+       ],
+       [
+        0.7,
+        0.846
+       ],
+       [
+        0.85,
+        0.877
+       ],
+       [
+        1.05,
+        0.815
+       ]
+      ],
+      "height": [
+       [
+        0.3,
+        0.462
+       ],
+       [
+        0.7,
+        0.646
+       ],
+       [
+        1,
+        0.585
+       ]
+      ],
+      "fade": [
+       [
+        0.3,
+        0
+       ],
+       [
+        0.45,
+        0.7
+       ],
+       [
+        0.7,
+        1
+       ],
+       [
+        1,
+        0.7
+       ]
+      ],
+      "intensity": 0.8,
+      "sharp": 1.3,
+      "edge": "190,240,255",
+      "low": "70,200,255",
+      "mid": "100,130,255",
+      "high": "170,90,255"
+     },
+     {
+      "span": [
+       0,
+       0.62
+      ],
+      "base": [
+       [
+        -0.05,
+        0.992
+       ],
+       [
+        0.15,
+        0.954
+       ],
+       [
+        0.3,
+        0.9
+       ],
+       [
+        0.45,
+        0.923
+       ],
+       [
+        0.62,
+        0.869
+       ]
+      ],
+      "height": [
+       [
+        0,
+        0.492
+       ],
+       [
+        0.25,
+        0.677
+       ],
+       [
+        0.6,
+        0.554
+       ]
+      ],
+      "fade": [
+       [
+        0,
+        0.7
+       ],
+       [
+        0.18,
+        1
+       ],
+       [
+        0.42,
+        0.95
+       ],
+       [
+        0.62,
+        0
+       ]
+      ],
+      "intensity": 1.4,
+      "sharp": 1.3,
+      "edge": "210,255,215",
+      "low": "30,255,110",
+      "mid": "50,230,190",
+      "high": "110,120,255"
+     },
+     {
+      "base": [
+       [
+        -0.05,
+        0.992
+       ],
+       [
+        0.5,
+        0.985
+       ],
+       [
+        1.05,
+        0.992
+       ]
+      ],
+      "height": [
+       [
+        0,
+        0.108
+       ],
+       [
+        0.5,
+        0.154
+       ],
+       [
+        1,
+        0.108
+       ]
+      ],
+      "intensity": 0.45,
+      "edge": "190,255,215",
+      "low": "70,255,170",
+      "mid": "60,200,220",
+      "high": "130,100,255"
+     }
+    ],
+    "mist": [
+     "190,160,230",
+     0.55,
+     0.025
+    ],
+    "relative": true
+   }
+  },
+  "ss": 1.5,
+  "shadowRadius": 220
  },
  {
   "name": "food",
-  "w": 2400,
-  "h": 1600,
-  "fov": 42,
+  "w": 1700,
+  "h": 2403,
+  "fov": 46,
   "pos": [
-   250,
-   80,
-   -15
+   330,
+   55,
+   165
   ],
   "target": [
-   235,
-   0,
-   80
+   225,
+   6,
+   70
   ],
-  "shadowRadius": 200,
   "look": {
    "mode": "sun",
-   "sunElevation": 18,
-   "sunAzimuth": 215,
-   "sunColor": 16773596,
-   "sunIntensity": 4,
+   "sunElevation": 7,
+   "sunAzimuth": 160,
+   "sunColor": "#ffbe85",
+   "sunIntensity": 4.5,
    "exposure": 0.62,
-   "hemi": 0.45,
+   "hemi": 0.38,
    "env": 0.3,
-   "fog": 13622511
-  }
+   "fog": "#d9cdc6",
+   "fogNear": 700,
+   "fogFar": 4500,
+   "grade": {
+    "lift": "#080c18",
+    "gain": "#fff6ec",
+    "contrast": 1.08,
+    "saturation": 1.08,
+    "vignette": 0.22
+   }
+  },
+  "shadowRadius": 200
  },
  {
-  "name": "mount",
-  "w": 2400,
-  "h": 1600,
-  "fov": 44,
+  "name": "spa",
+  "w": 1700,
+  "h": 2403,
+  "fov": 40,
   "pos": [
-   60,
-   26,
+   14,
+   7,
    150
   ],
   "target": [
    0,
-   14,
-   240
+   9,
+   225
   ],
-  "shadowRadius": 140,
   "look": {
-   "mode": "sun",
-   "sunElevation": 9,
-   "sunAzimuth": 230,
-   "sunColor": 16764822,
-   "sunIntensity": 5,
-   "exposure": 0.6,
-   "hemi": 0.4,
-   "env": 0.25,
-   "fog": 13293292
+   "mode": "dusk",
+   "sky": {
+    "zenith": "#0b1530",
+    "upper": "#22407a",
+    "horizon": "#a08eb4",
+    "glow": "#d27a4a",
+    "glowAzimuth": 200,
+    "ground": "#1c2436"
+   },
+   "exposure": 0.95,
+   "grade": {
+    "contrast": 1.06,
+    "saturation": 1.06,
+    "lift": "#05070f",
+    "vignette": 0.28
+   }
   }
  },
  {
-  "name": "renewable",
-  "w": 2400,
-  "h": 1600,
-  "fov": 44,
+  "name": "grotto",
+  "w": 3400,
+  "h": 2403,
+  "fov": 56,
   "pos": [
-   0,
-   40,
-   -180
+   -4.2,
+   -398.75,
+   2592.5
   ],
   "target": [
-   -60,
-   10,
-   -300
+   3.3,
+   -397.7,
+   2606.9
   ],
-  "shadowRadius": 260,
   "look": {
-   "mode": "sun",
-   "sunElevation": 18,
-   "sunAzimuth": 215,
-   "sunColor": 16773596,
-   "sunIntensity": 4,
-   "exposure": 0.62,
-   "hemi": 0.45,
-   "env": 0.3,
-   "fog": 13622511
-  }
- },
- {
-  "name": "water",
-  "w": 2400,
-  "h": 1600,
-  "fov": 44,
-  "pos": [
-   -200,
-   32,
-   -195
-  ],
-  "target": [
-   -228,
-   0,
-   -240
-  ],
-  "shadowRadius": 120,
-  "look": {
-   "mode": "sun",
-   "sunElevation": 18,
-   "sunAzimuth": 215,
-   "sunColor": 16773596,
-   "sunIntensity": 4,
-   "exposure": 0.62,
-   "hemi": 0.45,
-   "env": 0.3,
-   "fog": 13622511
-  }
- },
- {
-  "name": "airport",
-  "w": 2400,
-  "h": 1600,
-  "fov": 44,
-  "pos": [
-   200,
-   60,
-   -120
-  ],
-  "target": [
-   300,
-   10,
-   -250
-  ],
-  "shadowRadius": 250,
-  "look": {
-   "mode": "sun",
-   "sunElevation": 18,
-   "sunAzimuth": 215,
-   "sunColor": 16773596,
-   "sunIntensity": 4,
-   "exposure": 0.62,
-   "hemi": 0.45,
-   "env": 0.3,
-   "fog": 13622511
-  }
- },
- {
-  "name": "stadium",
-  "w": 2400,
-  "h": 1600,
-  "fov": 42,
-  "pos": [
-   220,
-   70,
-   40
-  ],
-  "target": [
-   280,
-   0,
-   -60
-  ],
-  "shadowRadius": 180,
-  "look": {
-   "mode": "sun",
-   "sunElevation": 18,
-   "sunAzimuth": 215,
-   "sunColor": 16773596,
-   "sunIntensity": 4,
-   "exposure": 0.62,
-   "hemi": 0.45,
-   "env": 0.3,
-   "fog": 13622511
-  }
- },
- {
-  "name": "rescue",
-  "w": 2400,
-  "h": 1600,
-  "fov": 44,
-  "pos": [
-   15,
-   40,
-   -108
-  ],
-  "target": [
-   50,
-   0,
-   -170
-  ],
-  "shadowRadius": 140,
-  "look": {
-   "mode": "sun",
-   "sunElevation": 18,
-   "sunAzimuth": 215,
-   "sunColor": 16773596,
-   "sunIntensity": 4,
-   "exposure": 0.62,
-   "hemi": 0.45,
-   "env": 0.3,
-   "fog": 13622511
-  }
+   "mode": "dusk",
+   "sky": {
+    "zenith": "#0b1530",
+    "upper": "#22407a",
+    "horizon": "#a08eb4",
+    "glow": "#d27a4a",
+    "glowAzimuth": 200,
+    "ground": "#1c2436"
+   },
+   "bloom": 0.35,
+   "exposure": 1.0,
+   "grade": {
+    "contrast": 1.06,
+    "vignette": 0.3
+   }
+  },
+  "set": "grotto",
+  "ss": 1.5
  },
  {
   "name": "lagoon",
@@ -923,7 +1244,6 @@
    12,
    240
   ],
-  "shadowRadius": 140,
   "look": {
    "mode": "night",
    "night": {
@@ -1188,9 +1508,473 @@
   }
  },
  {
+  "name": "renewable",
+  "w": 2400,
+  "h": 1300,
+  "fov": 45,
+  "pos": [
+   0,
+   40,
+   -180
+  ],
+  "target": [
+   -60,
+   10,
+   -300
+  ],
+  "look": {
+   "mode": "sun",
+   "sunElevation": 6,
+   "sunAzimuth": 235,
+   "sunColor": "#ffbe85",
+   "sunIntensity": 4.5,
+   "exposure": 0.62,
+   "hemi": 0.38,
+   "env": 0.3,
+   "fog": "#d9cdc6",
+   "fogNear": 700,
+   "fogFar": 4500,
+   "grade": {
+    "lift": "#080c18",
+    "gain": "#fff6ec",
+    "contrast": 1.08,
+    "saturation": 1.08,
+    "vignette": 0.22
+   }
+  },
+  "shadowRadius": 300
+ },
+ {
+  "name": "water",
+  "w": 2400,
+  "h": 1300,
+  "fov": 45,
+  "pos": [
+   -200,
+   32,
+   -195
+  ],
+  "target": [
+   -228,
+   0,
+   -240
+  ],
+  "look": {
+   "mode": "sun",
+   "sunElevation": 6,
+   "sunAzimuth": 235,
+   "sunColor": "#ffbe85",
+   "sunIntensity": 4.5,
+   "exposure": 0.62,
+   "hemi": 0.38,
+   "env": 0.3,
+   "fog": "#d9cdc6",
+   "fogNear": 700,
+   "fogFar": 4500,
+   "grade": {
+    "lift": "#080c18",
+    "gain": "#fff6ec",
+    "contrast": 1.08,
+    "saturation": 1.08,
+    "vignette": 0.22
+   }
+  },
+  "shadowRadius": 150
+ },
+ {
+  "name": "airport",
+  "w": 2400,
+  "h": 1300,
+  "fov": 45,
+  "pos": [
+   200,
+   60,
+   -120
+  ],
+  "target": [
+   300,
+   10,
+   -250
+  ],
+  "look": {
+   "mode": "dusk",
+   "sky": {
+    "zenith": "#0b1530",
+    "upper": "#22407a",
+    "horizon": "#a08eb4",
+    "glow": "#d27a4a",
+    "glowAzimuth": 200,
+    "ground": "#1c2436"
+   },
+   "exposure": 1.05,
+   "grade": {
+    "contrast": 1.06,
+    "saturation": 1.06,
+    "lift": "#05070f",
+    "vignette": 0.28
+   },
+   "hemi": 0.55
+  },
+  "shadowRadius": 250
+ },
+ {
+  "name": "greenhouse",
+  "w": 1700,
+  "h": 2403,
+  "fov": 72,
+  "pos": [
+   1600.3,
+   -398.3,
+   2588
+  ],
+  "target": [
+   1600,
+   -396.5,
+   2605
+  ],
+  "look": {
+   "mode": "night",
+   "night": {
+    "seed": 11,
+    "sky": [
+     "#02030c",
+     "#040822",
+     "#0a1146",
+     "#151c6c",
+     "#2c2582",
+     "#5e46a0"
+    ],
+    "fog": [
+     300,
+     2200
+    ],
+    "fogColor": "#5e46a0",
+    "glows": [
+     [
+      0.2,
+      -0.01,
+      0.6,
+      0.14,
+      "60,220,170",
+      0.4
+     ],
+     [
+      0.85,
+      -0.01,
+      0.45,
+      0.08,
+      "240,120,200",
+      0.5
+     ]
+    ],
+    "stars": 1600,
+    "glow": 1.5,
+    "rays": 0.4,
+    "raysBlur": 4,
+    "curtains": [
+     {
+      "base": [
+       [
+        -0.05,
+        0.523
+       ],
+       [
+        0.5,
+        0.431
+       ],
+       [
+        1.05,
+        0.338
+       ]
+      ],
+      "height": [
+       [
+        0,
+        0.431
+       ],
+       [
+        1,
+        0.462
+       ]
+      ],
+      "fade": [
+       [
+        0,
+        0.4
+       ],
+       [
+        0.5,
+        1
+       ],
+       [
+        1,
+        0.6
+       ]
+      ],
+      "intensity": 0.28,
+      "sharp": 1.0,
+      "edge": "200,160,255",
+      "low": "150,110,255",
+      "mid": "190,100,240",
+      "high": "220,110,220"
+     },
+     {
+      "span": [
+       0.3,
+       1
+      ],
+      "base": [
+       [
+        0.3,
+        0.954
+       ],
+       [
+        0.5,
+        0.877
+       ],
+       [
+        0.7,
+        0.846
+       ],
+       [
+        0.85,
+        0.877
+       ],
+       [
+        1.05,
+        0.815
+       ]
+      ],
+      "height": [
+       [
+        0.3,
+        0.462
+       ],
+       [
+        0.7,
+        0.646
+       ],
+       [
+        1,
+        0.585
+       ]
+      ],
+      "fade": [
+       [
+        0.3,
+        0
+       ],
+       [
+        0.45,
+        0.7
+       ],
+       [
+        0.7,
+        1
+       ],
+       [
+        1,
+        0.7
+       ]
+      ],
+      "intensity": 0.8,
+      "sharp": 1.3,
+      "edge": "190,240,255",
+      "low": "70,200,255",
+      "mid": "100,130,255",
+      "high": "170,90,255"
+     },
+     {
+      "span": [
+       0,
+       0.62
+      ],
+      "base": [
+       [
+        -0.05,
+        0.992
+       ],
+       [
+        0.15,
+        0.954
+       ],
+       [
+        0.3,
+        0.9
+       ],
+       [
+        0.45,
+        0.923
+       ],
+       [
+        0.62,
+        0.869
+       ]
+      ],
+      "height": [
+       [
+        0,
+        0.492
+       ],
+       [
+        0.25,
+        0.677
+       ],
+       [
+        0.6,
+        0.554
+       ]
+      ],
+      "fade": [
+       [
+        0,
+        0.7
+       ],
+       [
+        0.18,
+        1
+       ],
+       [
+        0.42,
+        0.95
+       ],
+       [
+        0.62,
+        0
+       ]
+      ],
+      "intensity": 1.4,
+      "sharp": 1.3,
+      "edge": "210,255,215",
+      "low": "30,255,110",
+      "mid": "50,230,190",
+      "high": "110,120,255"
+     },
+     {
+      "base": [
+       [
+        -0.05,
+        0.992
+       ],
+       [
+        0.5,
+        0.985
+       ],
+       [
+        1.05,
+        0.992
+       ]
+      ],
+      "height": [
+       [
+        0,
+        0.108
+       ],
+       [
+        0.5,
+        0.154
+       ],
+       [
+        1,
+        0.108
+       ]
+      ],
+      "intensity": 0.45,
+      "edge": "190,255,215",
+      "low": "70,255,170",
+      "mid": "60,200,220",
+      "high": "130,100,255"
+     }
+    ],
+    "mist": [
+     "190,160,230",
+     0.55,
+     0.025
+    ],
+    "relative": true
+   },
+   "hemi": 0.3,
+   "exposure": 1.0
+  },
+  "set": "greenhouse"
+ },
+ {
+  "name": "rescue",
+  "w": 2400,
+  "h": 1300,
+  "fov": 45,
+  "pos": [
+   15,
+   40,
+   -108
+  ],
+  "target": [
+   50,
+   0,
+   -170
+  ],
+  "look": {
+   "mode": "sun",
+   "sunElevation": 6,
+   "sunAzimuth": 235,
+   "sunColor": "#ffbe85",
+   "sunIntensity": 4.5,
+   "exposure": 0.62,
+   "hemi": 0.38,
+   "env": 0.3,
+   "fog": "#d9cdc6",
+   "fogNear": 700,
+   "fogFar": 4500,
+   "grade": {
+    "lift": "#080c18",
+    "gain": "#fff6ec",
+    "contrast": 1.08,
+    "saturation": 1.08,
+    "vignette": 0.22
+   }
+  },
+  "shadowRadius": 150
+ },
+ {
+  "name": "stadium",
+  "w": 2400,
+  "h": 1300,
+  "fov": 45,
+  "pos": [
+   220,
+   70,
+   40
+  ],
+  "target": [
+   280,
+   0,
+   -60
+  ],
+  "look": {
+   "mode": "dusk",
+   "sky": {
+    "zenith": "#0b1530",
+    "upper": "#22407a",
+    "horizon": "#a08eb4",
+    "glow": "#d27a4a",
+    "glowAzimuth": 200,
+    "ground": "#1c2436"
+   },
+   "exposure": 1.05,
+   "grade": {
+    "contrast": 1.06,
+    "saturation": 1.06,
+    "lift": "#05070f",
+    "vignette": 0.28
+   },
+   "hemi": 0.55
+  },
+  "shadowRadius": 200
+ },
+ {
   "name": "back",
-  "w": 1600,
-  "h": 2263,
+  "w": 1700,
+  "h": 2403,
   "fov": 50,
   "pos": [
    70,
@@ -1202,286 +1986,6 @@
    22,
    240
   ],
-  "shadowRadius": 160,
-  "look": {
-   "mode": "night",
-   "night": {
-    "seed": 11,
-    "sky": [
-     "#02030c",
-     "#040822",
-     "#0a1146",
-     "#151c6c",
-     "#2c2582",
-     "#5e46a0"
-    ],
-    "fog": [
-     300,
-     2200
-    ],
-    "fogColor": "#5e46a0",
-    "glows": [
-     [
-      0.2,
-      -0.01,
-      0.6,
-      0.14,
-      "60,220,170",
-      0.4
-     ],
-     [
-      0.85,
-      -0.01,
-      0.45,
-      0.08,
-      "240,120,200",
-      0.5
-     ]
-    ],
-    "stars": 1600,
-    "glow": 1.5,
-    "rays": 0.4,
-    "raysBlur": 4,
-    "curtains": [
-     {
-      "base": [
-       [
-        -0.05,
-        0.523
-       ],
-       [
-        0.5,
-        0.431
-       ],
-       [
-        1.05,
-        0.338
-       ]
-      ],
-      "height": [
-       [
-        0,
-        0.431
-       ],
-       [
-        1,
-        0.462
-       ]
-      ],
-      "fade": [
-       [
-        0,
-        0.4
-       ],
-       [
-        0.5,
-        1
-       ],
-       [
-        1,
-        0.6
-       ]
-      ],
-      "intensity": 0.28,
-      "sharp": 1.0,
-      "edge": "200,160,255",
-      "low": "150,110,255",
-      "mid": "190,100,240",
-      "high": "220,110,220"
-     },
-     {
-      "span": [
-       0.3,
-       1
-      ],
-      "base": [
-       [
-        0.3,
-        0.954
-       ],
-       [
-        0.5,
-        0.877
-       ],
-       [
-        0.7,
-        0.846
-       ],
-       [
-        0.85,
-        0.877
-       ],
-       [
-        1.05,
-        0.815
-       ]
-      ],
-      "height": [
-       [
-        0.3,
-        0.462
-       ],
-       [
-        0.7,
-        0.646
-       ],
-       [
-        1,
-        0.585
-       ]
-      ],
-      "fade": [
-       [
-        0.3,
-        0
-       ],
-       [
-        0.45,
-        0.7
-       ],
-       [
-        0.7,
-        1
-       ],
-       [
-        1,
-        0.7
-       ]
-      ],
-      "intensity": 0.8,
-      "sharp": 1.3,
-      "edge": "190,240,255",
-      "low": "70,200,255",
-      "mid": "100,130,255",
-      "high": "170,90,255"
-     },
-     {
-      "span": [
-       0,
-       0.62
-      ],
-      "base": [
-       [
-        -0.05,
-        0.992
-       ],
-       [
-        0.15,
-        0.954
-       ],
-       [
-        0.3,
-        0.9
-       ],
-       [
-        0.45,
-        0.923
-       ],
-       [
-        0.62,
-        0.869
-       ]
-      ],
-      "height": [
-       [
-        0,
-        0.492
-       ],
-       [
-        0.25,
-        0.677
-       ],
-       [
-        0.6,
-        0.554
-       ]
-      ],
-      "fade": [
-       [
-        0,
-        0.7
-       ],
-       [
-        0.18,
-        1
-       ],
-       [
-        0.42,
-        0.95
-       ],
-       [
-        0.62,
-        0
-       ]
-      ],
-      "intensity": 1.4,
-      "sharp": 1.3,
-      "edge": "210,255,215",
-      "low": "30,255,110",
-      "mid": "50,230,190",
-      "high": "110,120,255"
-     },
-     {
-      "base": [
-       [
-        -0.05,
-        0.992
-       ],
-       [
-        0.5,
-        0.985
-       ],
-       [
-        1.05,
-        0.992
-       ]
-      ],
-      "height": [
-       [
-        0,
-        0.108
-       ],
-       [
-        0.5,
-        0.154
-       ],
-       [
-        1,
-        0.108
-       ]
-      ],
-      "intensity": 0.45,
-      "edge": "190,255,215",
-      "low": "70,255,170",
-      "mid": "60,200,220",
-      "high": "130,100,255"
-     }
-    ],
-    "mist": [
-     "190,160,230",
-     0.55,
-     0.025
-    ],
-    "relative": true
-   }
-  }
- },
- {
-  "name": "greenhouses",
-  "w": 2400,
-  "h": 1600,
-  "fov": 44,
-  "pos": [
-   120,
-   40,
-   -130
-  ],
-  "target": [
-   165,
-   0,
-   -60
-  ],
-  "shadowRadius": 150,
   "look": {
    "mode": "night",
    "night": {

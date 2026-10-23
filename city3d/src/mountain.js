@@ -5,7 +5,8 @@ import * as THREE from 'three';
 import { matrix, noise2D, fbm, rng } from './util.js';
 import { materials } from './materials.js';
 import { MOUNT } from './layout.js';
-import { pine, lamp, bench } from './kit.js';
+import { pine, lamp, bench, person, bather } from './kit.js';
+import { addPool } from './lights.js';
 
 const R = rng(35);
 
@@ -31,8 +32,9 @@ function heightAt(lx, lz, n) {
   const west = ridge(-1, 34, 0.06, 11);
   const skirt = 6 * Math.pow(Math.max(0, 1 - Math.hypot(lx * 0.9, lz + 2) / 60), 1.8);
   let h = Math.max(peak, east * 0.86, west * 0.8, skirt);
-  // Rocky facets, stronger higher up.
+  // Rocky facets, stronger higher up, with finer ribs and flutings on the steep faces.
   h += (fbm(n, lx / 7, lz / 7, 3) - 0.5) * 4.0 * Math.min(1, h / 10);
+  h += (fbm(n, lx / 2.2 + 30, lz / 2.2, 2) - 0.5) * 1.2 * Math.min(1, h / 14);
   // A notch in the north face where the spa terraces step out (see the levels below).
   if (Math.abs(lx) < 16 && lz < -14) {
     const steps = [[-30, 0], [-26.6, 4.75], [-23.2, 9.25], [-19.8, 13.75], [-16.4, 18.25]];
@@ -48,7 +50,7 @@ function heightAt(lx, lz, n) {
 export function mountAurora(b) {
   const n = noise2D(81);
   const size = 150;
-  const seg = 110;
+  const seg = 190;
   const g = new THREE.PlaneGeometry(size, size, seg, seg).rotateX(-Math.PI / 2);
   const pos = g.attributes.position;
   for (let i = 0; i < pos.count; i++) pos.setY(i, heightAt(pos.getX(i), pos.getZ(i), n));
@@ -61,10 +63,11 @@ export function mountAurora(b) {
   const bb = new THREE.Vector3();
   const c = new THREE.Vector3();
   const nrm = new THREE.Vector3();
-  const rock = new THREE.Color(0x667386);
-  const rock2 = new THREE.Color(0x515d6e);
+  const rock = new THREE.Color(0x4d535c);
+  const rock2 = new THREE.Color(0x3a3e45);
   const snow = new THREE.Color(0xf4f7fb);
   const tmp = new THREE.Color();
+  const cn = noise2D(82);
   for (let i = 0; i < p.count; i += 3) {
     a.fromBufferAttribute(p, i);
     bb.fromBufferAttribute(p, i + 1);
@@ -73,9 +76,11 @@ export function mountAurora(b) {
     const hy = (a.y + bb.y + c.y) / 3;
     const steep = 1 - Math.abs(nrm.y);
     let col;
+    // Snow clings where the slope allows; the edge between snow and rock is broken up by noise.
+    const edge = 0.52 - Math.min(0.16, hy / 180) + (cn(a.x / 4, a.z / 4) - 0.5) * 0.22;
     if (hy < 0.2) col = snow;
-    else if (steep > 0.5 - Math.min(0.15, hy / 200)) col = tmp.copy(rock).lerp(rock2, R());
-    else col = tmp.copy(snow).offsetHSL(0, 0, -R() * 0.03);
+    else if (steep > edge) col = tmp.copy(rock).lerp(rock2, R()).lerp(snow, Math.max(0, 0.35 - (steep - edge) * 2) * R());
+    else col = tmp.copy(snow).offsetHSL(0, 0, -R() * 0.035 - (steep > edge - 0.08 ? 0.04 : 0));
     for (let k = 0; k < 3; k++) colors.set([col.r, col.g, col.b], (i + k) * 3);
   }
   geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
@@ -88,8 +93,13 @@ export function mountAurora(b) {
   const X = MOUNT.x;
   const Z = MOUNT.z;
   // Hanging glacier, the blue-ice "Aurora Pendant", just under the summit on the north face.
-  b.add('ice', new THREE.DodecahedronGeometry(3, 0), matrix(X + 3, 25.5, Z - 6, 0.4, 1.6, 0.55, 1.0));
-  b.add('ice', new THREE.DodecahedronGeometry(2, 0), matrix(X + 6, 23.2, Z - 7.5, 1.1, 1.4, 0.5, 0.9));
+  // Draped over the slope as broken seracs, half sunk into the snow.
+  for (let k = 0; k < 18; k++) {
+    const lx = 1 + R() * 7;
+    const lz = -5 - R() * 5;
+    const r = 0.6 + R() * 0.9;
+    b.add('ice', new THREE.IcosahedronGeometry(r, 0), matrix(X + lx, heightAt(lx, lz, n) - r * 0.25, Z + lz, R() * 6, 1.4, 0.7, 1.0, R() * 0.5));
+  }
 
   // The spa steps out of the north face: four levels at 0, 4.5, 9 and 13.5 m.
   const face = Z - 30; // front of the lowest level
@@ -102,17 +112,48 @@ export function mountAurora(b) {
   levels.forEach(([y, w, d], i) => {
     const fz = face + i * 3.4;
     b.add('stone', new THREE.BoxGeometry(w, 4.5, d), matrix(X, y + 2.25, fz + d / 2));
-    b.add('glassWarm', new THREE.BoxGeometry(w - 2, 3.2, 0.3), matrix(X, y + 2.1, fz - 0.05));
+    // Glazed front: tall panes in dark frames, a transom, larch fins at the ends.
+    const pane = new THREE.PlaneGeometry(w - 2, 3.3);
+    const uv = pane.attributes.uv;
+    for (let k = 0; k < uv.count; k++) uv.setX(k, uv.getX(k) * ((w - 2) / 16) + i * 0.37);
+    b.add('spaGlass', pane, matrix(X, y + 2.05, fz - 0.06, Math.PI));
+    b.add('stone', new THREE.BoxGeometry(w - 2, 3.3, 0.2), matrix(X, y + 2.05, fz + 0.06));
+    const panes = Math.round((w - 2) / 1.6);
+    for (let k = 0; k <= panes; k++) b.add('metalDark', new THREE.BoxGeometry(0.1, 3.3, 0.16), matrix(X - (w - 2) / 2 + (k * (w - 2)) / panes, y + 2.05, fz - 0.16));
+    b.add('metalDark', new THREE.BoxGeometry(w - 2, 0.1, 0.16), matrix(X, y + 2.9, fz - 0.16));
+    b.add('metalDark', new THREE.BoxGeometry(w - 1.6, 0.25, 0.3), matrix(X, y + 0.35, fz - 0.15));
+    for (const s of [-1, 1]) for (let k = 0; k < 4; k++) b.add('timber', new THREE.BoxGeometry(0.16, 3.6, 0.7), matrix(X + s * ((w - 2) / 2 + 0.3 + k * 0.32), y + 2.2, fz + 0.2));
+    // Roof terrace: snow, a glass balustrade and its handrail.
     b.add('snowRoof', new THREE.BoxGeometry(w + 0.6, 0.5, d + 0.6), matrix(X, y + 4.75, fz + d / 2));
-    for (let k = -2; k <= 2; k++) b.add('timberDark', new THREE.BoxGeometry(0.35, 3.4, 0.4), matrix(X + k * ((w - 2) / 5), y + 2.1, fz - 0.15));
+    if (i < 3) {
+      b.add('glass', new THREE.BoxGeometry(w - 1, 1.0, 0.06), matrix(X, y + 5.5, fz + 0.15));
+      b.add('metal', new THREE.BoxGeometry(w - 1, 0.06, 0.1), matrix(X, y + 6.02, fz + 0.15));
+    }
+    // Warm light from the glass on the snow in front.
+    addPool('spill', X, fz - 0.3, w - 2, 7, Math.PI, 0xffbf80, y + 0.06);
   });
-  // The Aurora Eye: a heated glass bubble in the city-facing snow face.
-  b.add('glassWarm', new THREE.SphereGeometry(2.6, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.62), matrix(X + 10, 15.6, face + 14));
+  // Guests on the terraces.
+  for (const [px, py, pz] of [[-6, 5, face + 1.4], [-4.8, 5, face + 1.6], [5, 9.5, face + 4.7], [-2, 14, face + 8.2], [2.6, 14, face + 8.0]]) {
+    person(b, X + px, pz, Math.PI + (R() - 0.5), { y: py, still: true });
+  }
+  // The Aurora Eye: a heated glass bubble in the city-facing snow face, on a ribbed frame.
+  const eye = [X + 10, 15.6, face + 14];
+  b.add('glass', new THREE.SphereGeometry(2.6, 28, 16, 0, Math.PI * 2, 0, Math.PI * 0.62), matrix(...eye));
+  b.add('glassWarm', new THREE.CylinderGeometry(2.2, 2.2, 0.6, 24), matrix(eye[0], eye[1] - 0.6, eye[2]));
+  for (let k = 0; k < 8; k++) b.add('metalDark', new THREE.TorusGeometry(2.62, 0.05, 4, 24, Math.PI * 0.62), matrix(...eye, (k / 8) * Math.PI, 1, 1, 1, 0, Math.PI / 2));
+  b.add('metalDark', new THREE.TorusGeometry(2.45, 0.08, 4, 32), matrix(eye[0], eye[1] - 0.95, eye[2], 0, 1, 1, 1, Math.PI / 2));
 
   // North Portal: a timber entrance grotto, a heated forecourt and a drop-off loop.
   b.add('timber', new THREE.BoxGeometry(10, 6, 5), matrix(X, 3, face - 2.5));
+  for (let k = 0; k < 24; k++) b.add('timberDark', new THREE.BoxGeometry(0.14, 6, 0.12), matrix(X - 4.9 + k * 0.426, 3, face - 5.05));
   b.add('snowRoof', new THREE.BoxGeometry(12, 0.7, 7), matrix(X, 6.35, face - 2.5));
-  b.add('glassWarm', new THREE.BoxGeometry(4, 3.4, 0.3), matrix(X, 1.7, face - 5.1));
+  b.add('metalDark', new THREE.BoxGeometry(5.2, 3.9, 0.2), matrix(X, 1.95, face - 5.1));
+  const door = new THREE.PlaneGeometry(4.6, 3.5);
+  b.add('spaGlass', door, matrix(X, 1.75, face - 5.22, Math.PI));
+  b.add('metalDark', new THREE.BoxGeometry(0.1, 3.5, 0.1), matrix(X, 1.75, face - 5.25));
+  b.add('metalDark', new THREE.BoxGeometry(6.5, 0.2, 2.2), matrix(X, 4.2, face - 6.1));
+  b.add('snowRoof', new THREE.BoxGeometry(6.4, 0.12, 2.1), matrix(X, 4.36, face - 6.1));
+  addPool('spill', X, face - 5.3, 6, 8, Math.PI, 0xffc080, 0.3);
   b.add('plaza', new THREE.CylinderGeometry(10, 10, 0.25, 40), matrix(X, 0.12, face - 14));
   b.add('snowBank', new THREE.CylinderGeometry(4, 4, 0.6, 30), matrix(X, 0.3, face - 14));
   for (let i = 0; i < 6; i++) {
@@ -130,6 +171,16 @@ export function mountAurora(b) {
   b.add('timber', new THREE.BoxGeometry(4, 0.35, 16), matrix(lx - 14, 0.2, lz + 3));
   b.add('timber', new THREE.BoxGeometry(14, 0.35, 3), matrix(lx - 6, 0.2, lz + 12));
   for (let i = 0; i < 4; i++) lamp(b, lx - 13 + i * 9, lz - 8.5, 3.5);
+  // Bathers in the warm water, and guests in robes on the boardwalks.
+  for (let i = 0; i < 14; i++) {
+    const inArm = R() < 0.6;
+    const bx = inArm ? lx + (R() - 0.5) * 20 : lx + 2 + (R() - 0.5) * 8;
+    const bz = inArm ? lz + (R() - 0.5) * 10 : lz + 2 + (R() - 0.5) * 20;
+    bather(b, bx, bz, R() * Math.PI * 2, 0.62);
+  }
+  for (let i = 0; i < 4; i++) person(b, lx - 14 + (R() - 0.5) * 2, lz - 3 + i * 3.5, R() * Math.PI * 2, { coat: 'coatWhite', y: 0.38, still: R() < 0.5 });
+  // People walking up to the North Portal.
+  for (let i = 0; i < 10; i++) person(b, X + (R() - 0.5) * 8, face - 18 - R() * 14, R() < 0.6 ? 0 : Math.PI);
 
   // Foothill pines and the Aurora Snow Garden Park on the west side.
   for (let i = 0; i < 70; i++) {

@@ -336,5 +336,5 @@ export function ecoHomes(b) {
     }
   }
   // Ice Crystal Apartments and student housing west of the ring road.
-  for (let j = 0; j < 4; j++) building(b, { x: -142, z: -90 + j * 46, w: 14, d: 30, h: 21.6 + (j % 2) * 7.2, facade: j % 2 ? 'residential' : 'brick' });
+  for (let j = 0; j < 4; j++) building(b, { x: -142, z: -90 + j * 46, w: 14, d: 30, h: 21.6 + (j % 2) * 7.2, facade: j % 2 ? 'residential' : 'brick', balconies: true });
 }

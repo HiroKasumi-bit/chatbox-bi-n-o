@@ -95,3 +95,6 @@ export const PLACES = [
   ['Circular Recycling Center', 165, -35],
   ['Aurora Snow Stadium', 280, -60],
 ].map(([name, x, z], i) => ({ n: i + 1, name, x, z }));
+
+// Where the street-level pictures are taken from (x, z): nobody stands right in front of the lens.
+export const CAMERA_SPOTS = [[0.8, 20.5], [-3.5, 44], [-29.5, -74], [-58, 63]];
