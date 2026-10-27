@@ -2,7 +2,7 @@
 // Liberty Mall and the Aurora 81 tower.
 import * as THREE from 'three';
 import { matrix, rng } from './util.js';
-import { building, house, pine, lamp, car, bench, roofPrism, roofBand, vault, person, crowd } from './kit.js';
+import { building, house, pine, lamp, car, bench, roofPrism, roofBand, vault, person, crowd, isolated } from './kit.js';
 import { BLOCKS, BLOCK, PITCH, RING } from './layout.js';
 import { plaza } from './ground.js';
 
@@ -134,25 +134,47 @@ function civicCore(b, cx, cz) {
     b.add('blueLight', new THREE.BoxGeometry(0.9, 0.9, 0.1), matrix(cx, 3.6, z0 + open * 1.0)); // metro sign
     b.add('metalDark', new THREE.BoxGeometry(0.08, 0.5, 0.08), matrix(cx, 3.1, z0 + open * 1.0));
   }
-  // Civic Center (north-west) with a clock tower.
+  // The four corners follow the group's Ecopolis model (magazine/source/Aurora_Haven_v13.json):
+  // the Civic Center north-west, the hospital and the school north-east, the food hall and the
+  // cinema south-west, and a pocket park with a skating rink south-east.
+  // Civic Center with a clock tower.
   building(b, { x: cx - 17, z: cz - 17, w: 18, d: 18, h: 14.4, facade: 'civic', shops: 'e' });
   building(b, { x: cx - 22, z: cz - 22, w: 5, d: 5, h: 24, facade: 'civic', units: false });
   b.add('lamp', new THREE.CylinderGeometry(1.4, 1.4, 0.3, 16), matrix(cx - 22, 20, cz - 19.4, 0, 1, 1, 1, Math.PI / 2));
   b.add('panelGrey', new THREE.ConeGeometry(3.6, 4, 4), matrix(cx - 22, 26, cz - 22, Math.PI / 4));
-  // Snowflake General Hospital (north-east), with a rooftop helipad and a lit H.
-  building(b, { x: cx + 17, z: cz - 17, w: 20, d: 18, h: 21.6, facade: 'residential', units: false });
-  b.add('concreteDark', new THREE.CylinderGeometry(6, 6, 0.4, 24), matrix(cx + 17, 21.8, cz - 17));
-  b.add('lamp', new THREE.BoxGeometry(0.6, 0.05, 4), matrix(cx + 15.8, 22.05, cz - 17));
-  b.add('lamp', new THREE.BoxGeometry(0.6, 0.05, 4), matrix(cx + 18.2, 22.05, cz - 17));
-  b.add('lamp', new THREE.BoxGeometry(2.4, 0.05, 0.6), matrix(cx + 17, 22.05, cz - 17));
-  // Northern Lights School & Botanical Conservatory (south-west), with a glass dome.
-  building(b, { x: cx - 17, z: cz + 17, w: 18, d: 18, h: 10.8, facade: 'warm' });
-  b.add('glassGreen', new THREE.SphereGeometry(5.5, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), matrix(cx - 17, 10.8, cz + 17));
-  b.add('plants', new THREE.ConeGeometry(3, 4, 6), matrix(cx - 17, 12.8, cz + 17));
-  // Igloo Fresh food hall and Aurora Cinema (south-east).
-  building(b, { x: cx + 17, z: cz + 19, w: 18, d: 14, h: 8.5, facade: 'officeGlass', shops: 'ws' });
-  building(b, { x: cx + 19, z: cz + 6, w: 14, d: 10, h: 10.8, facade: 'civic', units: false });
-  b.add('rose', new THREE.BoxGeometry(10, 1.4, 0.3), matrix(cx + 19, 8.5, cz + 0.85));
+  // Snowflake General Hospital, with a rooftop helipad and a lit H.
+  const hz = cz - 19.5;
+  building(b, { x: cx + 17, z: hz, w: 20, d: 13, h: 21.6, facade: 'residential', units: false });
+  b.add('concreteDark', new THREE.CylinderGeometry(5.5, 5.5, 0.4, 24), matrix(cx + 17, 21.8, hz));
+  b.add('lamp', new THREE.BoxGeometry(0.6, 0.05, 4), matrix(cx + 15.8, 22.05, hz));
+  b.add('lamp', new THREE.BoxGeometry(0.6, 0.05, 4), matrix(cx + 18.2, 22.05, hz));
+  b.add('lamp', new THREE.BoxGeometry(2.4, 0.05, 0.6), matrix(cx + 17, 22.05, hz));
+  // Northern Lights School & Botanical Conservatory, between the hospital and the plaza, with a glass dome.
+  const sz = cz - 8.2;
+  building(b, { x: cx + 17, z: sz, w: 18, d: 8.4, h: 10.8, facade: 'warm' });
+  b.add('glassGreen', new THREE.SphereGeometry(3.8, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), matrix(cx + 17, 10.8, sz));
+  b.add('plants', new THREE.ConeGeometry(2, 2.8, 6), matrix(cx + 17, 12.2, sz));
+  // Igloo Fresh food hall and Aurora Cinema, with shop fronts on Liberty Mall and the plaza.
+  building(b, { x: cx - 17, z: cz + 9.5, w: 18, d: 11, h: 8.5, facade: 'officeGlass', shops: 'en' });
+  building(b, { x: cx - 17, z: cz + 21.5, w: 16, d: 11, h: 10.8, facade: 'civic', units: false });
+  b.add('rose', new THREE.BoxGeometry(0.3, 1.4, 9), matrix(cx - 8.85, 8.5, cz + 21.5));
+  // Pocket park: a skating rink inside a timber rail, ringed by pines, benches and lamps.
+  const rx = cx + 17;
+  const rz = cz + 15.5;
+  b.add('ice', new THREE.BoxGeometry(13, 0.12, 9), matrix(rx, 0.06, rz));
+  for (const s of [-1, 1]) {
+    b.add('timber', new THREE.BoxGeometry(13.3, 0.5, 0.15), matrix(rx, 0.25, rz + s * 4.57));
+    b.add('timber', new THREE.BoxGeometry(0.15, 0.5, 9.3), matrix(rx + s * 6.57, 0.25, rz));
+  }
+  for (const [x, z, k] of [[9, 7.5, 0.8], [25.5, 7, 0.9], [25.5, 25, 0.85], [9, 25.5, 0.75], [17, 25.8, 0.7]]) pine(b, cx + x, cz + z, k);
+  for (const x of [13, 21]) {
+    bench(b, cx + x, rz - 6, 0);
+    bench(b, cx + x, rz + 6, Math.PI);
+  }
+  for (const [x, z] of [[9.5, 10.5], [24.5, 10.5], [9.5, 20.5], [24.5, 20.5]]) lamp(b, cx + x, cz + z, 4.5);
+  for (const [x, z, ry, s] of [[-3.5, -1.5, 0.6, 1], [1.5, 1.2, 2.3, 1], [3.8, -2.2, -1.1, 0.62], [-1, 2.4, 1.5, 1], [-4.6, 1.8, -2.4, 0.58]]) {
+    person(b, rx + x, rz + z, ry, { scale: s, y: 0.12 });
+  }
   for (let i = 0; i < 6; i++) bench(b, cx + (i % 2 ? 6 : -6), cz - 9 + Math.floor(i / 2) * 9, Math.PI / 2);
   // People on Liberty Mall and around the monument.
   crowd(b, cx, cz - HB + 2, cx, cz - 15, 14, 7);
@@ -259,7 +281,9 @@ function aurora81District(b, bx, bz, tower) {
 // `tower` is a separate batch for Aurora 81, so pictures can show the tower on its own.
 export function downtown(b, tower = b) {
   const by = Object.fromEntries(BLOCKS.map((k) => [k.id, k]));
-  civicCore(b, by.civic.x, by.civic.z);
+  // The civic core was rearranged after the other pictures were rendered; its earlier layout
+  // drew 752 numbers from the shared sequence, so the rest of the city keeps its details.
+  isolated(83, 752, () => civicCore(b, by.civic.x, by.civic.z));
   polaris(b, by.polaris.x, by.polaris.z);
   knowledge(b, by.knowledge.x, by.knowledge.z);
   financial(b, by.financial.x, by.financial.z);

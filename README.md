@@ -56,6 +56,7 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 **Nguồn chữ và số liệu:**
 
 - Thông tin về thành phố lấy từ `magazine/source/Aurora_Haven_Slide_Content.docx` và các thẻ Name/Purpose/Feature trong `magazine/source/Aurora_Haven_v13.json`. Đây là số liệu thiết kế của nhóm.
+- Bản đồ và mô hình 3D giữ đúng hướng các khu và địa điểm như trong mô hình Ecopolis của nhóm (file `.json` trên). Riêng khoảng cách thì được giãn rộng ra để các tòa nhà không chồng lên nhau, nên không phải số đo của nhóm. Trong ô phố trung tâm, các góc được xếp đúng như file `.json`: Civic Center ở tây bắc, bệnh viện và trường Northern Lights School ở đông bắc, siêu thị Igloo Fresh và rạp Aurora Cinema ở tây nam.
 - Số liệu thế giới thật (Bắc Cực ấm nhanh gần 4 lần, băng vĩnh cửu tan, ITER, Solar Foods, Blue Lagoon…) đều có số trong ngoặc vuông dẫn tới danh sách nguồn ở trang 35.
 - Các phép tính kiểm tra (nhiên liệu nhiệt hạch, năng lượng làm tan tuyết, lượng nước mỗi người) ở trang 23, và sức chở của metro ở trang 28, là ước tính của nhóm và được ghi rõ như vậy.
 - Biển hiệu cửa hàng trong ảnh (CAFÉ, BOOKS…) chỉ là chi tiết trang trí, không phải tên địa điểm có thật trong thành phố.
@@ -129,6 +130,7 @@ Muốn chụp lại vài ảnh thôi thì thêm tên ảnh vào cuối lệnh re
 
 ## Khôi phục
 
+- **Bản trước khi xếp lại ô phố trung tâm theo file `.json`:** ở commit `5db628b`. Lấy lại bằng `git checkout 5db628b -- output magazine city3d`.
 - **Bản 32 trang trước khi bổ sung theo hướng dẫn:** ở commit `6e33615`. Lấy lại bằng `git checkout 6e33615 -- output magazine city3d` (ghi đè ba thư mục này).
 - **Bản tạp chí trước nữa (hai bản Eco-Polis và 3D Edition):** vẫn còn trong lịch sử git ở commit `c1ebb81`. Lấy lại bằng `git checkout c1ebb81 -- output magazine` (lệnh này ghi đè thư mục `magazine` và `output` hiện tại).
 - **Chatbox cũ:** repo trước đây chứa file `index.html`, là chatbox hỏi đáp luật biển đảo. Khôi phục bằng `git checkout ed4bb0c -- index.html`. Lưu ý: file cũ có một Google API key ghi thẳng trong code. Nên vào Google AI Studio để xóa key đó và tạo key mới nếu còn dùng.

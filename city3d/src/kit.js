@@ -6,8 +6,19 @@ import { FACADE, COATS, CAR_PAINTS } from './materials.js';
 import { addPool, addLamp } from './lights.js';
 import { CAMERA_SPOTS } from './layout.js';
 
-const R = rng(4242);
+let R = rng(4242);
 const pick = (list) => list[Math.floor(R() * list.length)];
+
+// Builds `fn` on its own random sequence, then moves the shared sequence on by `skip` draws.
+// A part of the city can then be rebuilt without changing the random details (window lights,
+// tree sizes, coats) of everything built after it, so the other pictures stay reproducible.
+export function isolated(seed, skip, fn) {
+  const shared = R;
+  R = rng(seed);
+  fn();
+  R = shared;
+  for (let i = 0; i < skip; i++) R();
+}
 
 // A flat wall facing +z, `len` wide and `h` high, its UVs counted in window bays and floors.
 function wallQuad(len, h, bay, floor, ou = 0, ov = 0) {
