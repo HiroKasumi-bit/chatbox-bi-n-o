@@ -1,6 +1,6 @@
 // Homes around the edge of downtown: a village of timber houses to the south-west, apartment
 // blocks to the south-east, and the student residences and campus clinic to the north-west.
-import { building, house, pine, lamp } from './kit.js';
+import { building, house, pine, lamp, reindeer, sled, person } from './kit.js';
 import { road } from './ground.js';
 import { rng } from './util.js';
 
@@ -34,4 +34,14 @@ export function neighbourhoods(b) {
     pine(b, -198 + i * 9, -140, 0.8);
     lamp(b, -196 + i * 9, -158, 5);
   }
+  // The eco-tour reindeer herd grazing on the open tundra west of the Snow Garden Park, with
+  // its herder, a family and the tourist sled.
+  const herd = [[-96, 176, 0.6], [-92, 179, 2.4], [-99, 181, -1.2], [-90, 173, 1.0], [-94, 184, 3.0], [-101, 175, 0.2], [-88, 181, -2.0]];
+  herd.forEach(([x, z, ry], i) => reindeer(b, x, z, ry, { graze: i % 3 === 1 }));
+  reindeer(b, -104, 168, -2.2, { graze: false, coat: 'deerBrown' });
+  sled(b, -104 + 2.1, 168 + 1.0, -2.2);
+  person(b, -98, 171, 2.6, { coat: 'coatRed', still: true });
+  person(b, -101.5, 169.5, 1.8, { coat: 'coatTeal', still: true });
+  person(b, -100.7, 170.6, 1.6, { coat: 'coatOchre', still: true, scale: 0.62 });
+  person(b, -102.1, 170.4, 1.9, { coat: 'coatPlum', still: true, scale: 0.55 });
 }

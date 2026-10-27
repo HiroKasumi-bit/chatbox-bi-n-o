@@ -6,7 +6,8 @@
   "scripts": {
     "build": "node build_magazine.js",
     "prepare-renders": "python3 tools/prepare_renders.py renders_raw",
-    "shades": "python3 tools/make_shades.py"
+    "shades": "python3 tools/make_shades.py",
+    "graphics": "python3 tools/make_graphics.py"
   },
   "dependencies": {
     "pptxgenjs": "3.12.0"

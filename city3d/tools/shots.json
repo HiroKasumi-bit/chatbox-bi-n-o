@@ -2248,5 +2248,47 @@
     "relative": true
    }
   }
+ },
+ {
+  "name": "ecosystem",
+  "w": 2400,
+  "h": 1450,
+  "fov": 33,
+  "pos": [
+   -112,
+   1.5,
+   168
+  ],
+  "target": [
+   -66,
+   5.5,
+   211
+  ],
+  "look": {
+   "mode": "sun",
+   "sunElevation": 8,
+   "sunAzimuth": 235,
+   "sunColor": "#ffbe85",
+   "sunIntensity": 4.5,
+   "exposure": 0.62,
+   "hemi": 0.38,
+   "env": 0.3,
+   "fog": "#d9cdc6",
+   "fogNear": 700,
+   "fogFar": 4500,
+   "grade": {
+    "lift": "#080c18",
+    "gain": "#fff6ec",
+    "contrast": 1.08,
+    "saturation": 1.08,
+    "vignette": 0.22
+   }
+  },
+  "shadowRadius": 120,
+  "shadowCentre": [
+   -90,
+   0,
+   190
+  ]
  }
 ]

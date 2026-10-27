@@ -113,6 +113,12 @@ export function createMaterials() {
   std('trousers', { color: 0x23262d, roughness: 0.9 });
   std('skin', { color: 0xd9a888, roughness: 0.7 });
   std('hatWool', { color: 0xe9e2d6, roughness: 0.95 });
+  // Reindeer: brown or grey coats, pale necks, dark hooves and noses, velvet-brown antlers.
+  std('deerBrown', { color: 0x6e4f38, roughness: 0.95 });
+  std('deerGrey', { color: 0x7c7368, roughness: 0.95 });
+  std('deerPale', { color: 0xd9d0c2, roughness: 0.95 });
+  std('deerDark', { color: 0x2a221c, roughness: 0.8 });
+  std('antler', { color: 0xbfa585, roughness: 0.7 });
   return materials;
 }
 

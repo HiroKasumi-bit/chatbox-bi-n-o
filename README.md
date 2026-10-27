@@ -1,6 +1,6 @@
 # Tạp chí Aurora Haven
 
-Tạp chí khổ A4, 32 trang, viết bằng tiếng Anh, giới thiệu **Aurora Haven**, thành phố vùng cực.
+Tạp chí khổ A4, 36 trang, viết bằng tiếng Anh, giới thiệu **Aurora Haven**, thành phố vùng cực. Bố cục bám theo hai file hướng dẫn của môn (Magazine guidelines và Report guidelines): đủ các mục bắt buộc, có mã QR tới video phỏng vấn thực tế, có trích nguồn và ghi rõ đâu là số thiết kế, đâu là ước tính, đâu là ý tưởng tương lai.
 
 Mọi hình ảnh trong tạp chí đều do mình tự dựng và tự chụp từ mô hình 3D của thành phố (thư mục `city3d/`, viết bằng three.js), theo phong cách diễn họa kiến trúc:
 
@@ -21,27 +21,44 @@ File `.pptx` mở bằng PowerPoint, hoặc trên Canva chọn **Create a design
 
 Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa riêng) để thấy các trang đôi: ảnh trải liền qua trang 4–5, 8–9, 10–11, 14–15 và 20–21.
 
-**Việc bạn cần làm:** điền các chỗ trong ngoặc vuông `[Group name]`, `[Member names]`, `[Class]`, `[Date]` ở trang 3 (lời ban biên tập) và trang 32 (bìa sau).
+**Việc nhóm cần làm trước khi nộp:**
+
+1. Điền các chỗ trong ngoặc vuông: `[Group name]`, `[Member name]` và vai trò từng người, `[Class]`, `[School]`, `[Date]` (trang 3); `[Member names]`, `[Team email]`, logo trường (bìa sau, trang 36); phần **AI USE** (trang 35). Vai trò ở trang 3 chỉ là gợi ý, sửa cho đúng việc từng người đã làm.
+2. Đọc lại và viết lại chữ bằng lời của nhóm. Hướng dẫn yêu cầu nội dung là của nhóm, nên phần chữ ở đây chỉ là bản nháp để nhóm sửa.
+3. Mở link video (https://youtu.be/QwcP_2Q3Esc) xem video có để chế độ công khai (Public hoặc Unlisted) chưa, rồi quét thử mã QR bằng điện thoại.
+
+**Mã QR:** có ở trang 3, trang 32 và bìa sau, dẫn tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc (cùng video với link YouTube nhóm gửi). Script `magazine/tools/make_graphics.py` vẽ mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được video.
 
 ## Nội dung
 
 | Trang | Nội dung |
 |---|---|
-| 1 | Bìa: tháp Aurora 81, con phố dẫn tới spa và núi Mount Aurora dưới cực quang |
-| 2–3 | Mục lục, lời ban biên tập |
-| 4–5 | Trang đôi: toàn cảnh thành phố lúc hoàng hôn, giới thiệu chung |
-| 6–7 | Thách thức vùng cực (bão tuyết), 5 nguyên tắc thiết kế |
-| 8–9 | Trang đôi: bản đồ tổng thể và các khu |
-| 10–13 | Trang đôi Liberty Mall lúc hoàng hôn, 9 ô phố trung tâm, đời sống hằng ngày |
-| 14–16 | Khu đặc trưng 1: nhà máy nhiệt hạch (trang đôi ban đêm, bản vẽ và các công đoạn) |
-| 17–18 | Khu đặc trưng 2: nhà máy Snow-to-Food |
-| 19–22 | Khu đặc trưng 3: spa trong núi Mount Aurora, trang đôi bên trong hang Mineral Lake, các tầng spa |
-| 23 | Sơ đồ vòng tuần hoàn giữa ba khu |
-| 24–28 | Năng lượng, nước và rác, giao thông, nhà kính trồng rau, an toàn |
-| 29–31 | Hướng dẫn tham quan 8 điểm, 35 địa điểm chính, các con số quan trọng |
-| 32 | Bìa sau |
+| Trang | Nội dung | Mục trong hướng dẫn |
+|---|---|---|
+| 1 | Bìa: tên, ảnh, khẩu hiệu "A polar city that thrives" | Cover |
+| 2 | Mục lục | Table of contents |
+| 3 | Thư của nhóm sáng lập: thành viên, vai trò, mã QR | Letter from the Founders |
+| 4–5 | Trang đôi: toàn cảnh thành phố, giới thiệu chung | |
+| 6 | Thách thức vùng cực, có số liệu thật kèm nguồn | Vision & Crisis |
+| 7 | Tầm nhìn, sứ mệnh, ai bị ảnh hưởng, 5 nguyên tắc | Vision & Crisis |
+| 8–13 | Bản đồ tổng thể, trung tâm 9 ô phố, đời sống hằng ngày | Housing & special locations |
+| 14–22 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, spa trong núi | Breakthrough innovations |
+| 23 | Bảng kiểm chứng ba đột phá: vấn đề, cách hoạt động, điểm mới so với công nghệ hiện có, tính toán STEAM, tính khả thi và giới hạn, tác động | Breakthrough innovations |
+| 24–26 | Vòng tuần hoàn giữa ba khu, năng lượng, nước và rác | Infrastructure |
+| 27 | Hệ sinh thái đô thị: động vật, cây, cách chúng sống sót | Urban Eco-System |
+| 28 | Giao thông: tuyến, người dùng, sức chở (ước tính), an toàn, năng lượng | Getting Around |
+| 29–30 | Nhà kính trồng rau, an toàn | Infrastructure |
+| 31 | Ưu và nhược điểm: lợi ích, rủi ro, chi phí, đánh đổi, phương án dự phòng | Pros & Cons |
+| 32–34 | Tham quan 8 điểm (có QR), 35 địa điểm, các con số | Housing & special locations |
+| 35 | Nguồn tham khảo [1]–[19], cách đọc số liệu, nguồn ảnh, chỗ khai báo dùng AI | Sources |
+| 36 | Bìa sau: lời kêu gọi, liên hệ nhóm, logo, mã QR | Back cover |
 
-Toàn bộ chữ lấy từ file `magazine/source/Aurora_Haven_Slide_Content.docx` và các thẻ Name/Purpose/Feature trong file `magazine/source/Aurora_Haven_v13.json`. Không có số liệu nào được bịa thêm. Riêng biển hiệu cửa hàng trong ảnh (CAFÉ, BOOKS…) chỉ là chi tiết trang trí, không phải tên địa điểm có thật trong thành phố.
+**Nguồn chữ và số liệu:**
+
+- Thông tin về thành phố lấy từ `magazine/source/Aurora_Haven_Slide_Content.docx` và các thẻ Name/Purpose/Feature trong `magazine/source/Aurora_Haven_v13.json`. Đây là số liệu thiết kế của nhóm.
+- Số liệu thế giới thật (Bắc Cực ấm nhanh gần 4 lần, băng vĩnh cửu tan, ITER, Solar Foods, Blue Lagoon…) đều có số trong ngoặc vuông dẫn tới danh sách nguồn ở trang 35.
+- Các phép tính kiểm tra (nhiên liệu nhiệt hạch, năng lượng làm tan tuyết, lượng nước mỗi người) ở trang 23, và sức chở của metro ở trang 28, là ước tính của nhóm và được ghi rõ như vậy.
+- Biển hiệu cửa hàng trong ảnh (CAFÉ, BOOKS…) chỉ là chi tiết trang trí, không phải tên địa điểm có thật trong thành phố.
 
 ## Xem thành phố 3D
 
@@ -60,10 +77,11 @@ magazine/
   build_magazine.js           script dựng tạp chí (pptxgenjs)
   assets/renders/             ảnh chụp từ thành phố 3D (ảnh trang đôi được cắt thành nửa _L và _R)
   assets/plans/               4 bản đồ 2D vẽ từ mô hình
-  assets/ui/                  lớp tối mờ đặt dưới chữ trên ảnh
+  assets/ui/                  lớp tối mờ đặt dưới chữ trên ảnh, mã QR, logo thành phố
   source/                     file nội dung (.docx), file 3D gốc (.json) và 4 bản vẽ gốc của nhóm
   tools/prepare_renders.py    chuyển ảnh chụp thô vào assets (cắt trang đôi, cắt tháp trên bìa)
   tools/make_shades.py        vẽ các lớp tối mờ trong assets/ui
+  tools/make_graphics.py      vẽ mã QR tới video phỏng vấn (có quét thử) và logo thành phố
   tools/apply_theme.js        ghi bảng màu của tạp chí vào file PowerPoint
 city3d/
   index.html                  mở thành phố 3D trên trình duyệt
@@ -91,6 +109,8 @@ node build_magazine.js       # → output/Aurora_Haven_Magazine.pptx
 
 Tạo lại PDF: mở file .pptx bằng PowerPoint, chọn **File → Export → PDF** (hoặc dùng LibreOffice).
 
+Vẽ lại mã QR và logo (khi đổi link video) cần Python với `pip install segno opencv-python-headless pillow numpy`, rồi sửa `INTERVIEW_URL` trong `tools/make_graphics.py` và chạy `python3 tools/make_graphics.py`. Nhớ sửa cả `INTERVIEW_URL` ở đầu `build_magazine.js`, rồi dựng lại tạp chí.
+
 ## Chụp lại ảnh (khi sửa thành phố trong `city3d/src`)
 
 Cần Node.js, Playwright (Chromium) và Python có Pillow. Mỗi ảnh mất khoảng 15–50 giây.
@@ -109,5 +129,6 @@ Muốn chụp lại vài ảnh thôi thì thêm tên ảnh vào cuối lệnh re
 
 ## Khôi phục
 
-- **Bản tạp chí trước (hai bản Eco-Polis và 3D Edition):** vẫn còn trong lịch sử git ở commit `c1ebb81`. Lấy lại bằng `git checkout c1ebb81 -- output magazine` (lệnh này ghi đè thư mục `magazine` và `output` hiện tại).
+- **Bản 32 trang trước khi bổ sung theo hướng dẫn:** ở commit `6e33615`. Lấy lại bằng `git checkout 6e33615 -- output magazine city3d` (ghi đè ba thư mục này).
+- **Bản tạp chí trước nữa (hai bản Eco-Polis và 3D Edition):** vẫn còn trong lịch sử git ở commit `c1ebb81`. Lấy lại bằng `git checkout c1ebb81 -- output magazine` (lệnh này ghi đè thư mục `magazine` và `output` hiện tại).
 - **Chatbox cũ:** repo trước đây chứa file `index.html`, là chatbox hỏi đáp luật biển đảo. Khôi phục bằng `git checkout ed4bb0c -- index.html`. Lưu ý: file cũ có một Google API key ghi thẳng trong code. Nên vào Google AI Studio để xóa key đó và tạo key mới nếu còn dùng.

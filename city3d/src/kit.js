@@ -326,6 +326,65 @@ export function bather(b, x, z, ry, y = 0.5) {
   b.add(R() < 0.5 ? 'trousers' : 'coatOchre', PERSON.hat, m.clone().multiply(matrix(0, 0.26, 0.015, 0, 1, 1, 1, -0.35)));
 }
 
+// A reindeer, about 1.1 m at the shoulder: brown body, pale neck and rump, branched antlers.
+// It faces -z; `graze` lowers the head to the snow.
+export function reindeer(b, x, z, ry, o = {}) {
+  const s = o.scale ?? (0.9 + R() * 0.2);
+  const base = matrix(x, 0, z, ry, s, s, s);
+  const P = (px, py, pz) => new THREE.Vector3(px, py, pz).applyMatrix4(base);
+  const at = (px, py, pz) => base.clone().multiply(matrix(px, py, pz));
+  const limb = (key, a, c, r1, r2 = r1) => {
+    const A = P(...a);
+    const B = P(...c);
+    const g = new THREE.CylinderGeometry(r2 * s, r1 * s, A.distanceTo(B), 8);
+    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), B.clone().sub(A).normalize());
+    b.add(key, g, new THREE.Matrix4().compose(A.clone().add(B).multiplyScalar(0.5), q, new THREE.Vector3(1, 1, 1)));
+  };
+  const coat = o.coat || (R() < 0.5 ? 'deerBrown' : 'deerGrey');
+  b.add(coat, new THREE.CylinderGeometry(0.31, 0.34, 1.15, 14).rotateX(Math.PI / 2), at(0, 1.0, 0).multiply(matrix(0, 0, 0, 0, 0.85, 1, 1)));
+  b.add(coat, new THREE.SphereGeometry(0.33, 14, 10), at(0, 1.02, -0.58).multiply(matrix(0, 0, 0, 0, 0.85, 0.95, 0.9)));
+  b.add('deerPale', new THREE.SphereGeometry(0.31, 14, 10), at(0, 1.0, 0.56).multiply(matrix(0, 0, 0, 0, 0.82, 0.92, 0.8)));
+  b.add('deerPale', new THREE.SphereGeometry(0.07, 8, 6), at(0, 1.12, 0.86)); // tail
+  for (const [lx, lz] of [[-0.17, -0.55], [0.17, -0.55], [-0.17, 0.52], [0.17, 0.52]]) {
+    const swing = (R() - 0.5) * 0.12;
+    limb(coat, [lx, 0.86, lz], [lx, 0.42, lz + swing], 0.07, 0.05);
+    limb('deerPale', [lx, 0.42, lz + swing], [lx, 0.07, lz + swing * 1.5], 0.04, 0.035);
+    b.add('deerDark', new THREE.CylinderGeometry(0.045, 0.055, 0.08, 8), at(lx, 0.04, lz + swing * 1.5));
+  }
+  // Neck and head, raised or grazing.
+  const graze = o.graze ?? R() < 0.4;
+  const neckTop = graze ? [0, 0.62, -1.1] : [0, 1.55, -0.95];
+  limb('deerPale', [0, 1.1, -0.62], neckTop, 0.2, 0.12);
+  const nose = graze ? [0, 0.22, -1.3] : [0, 1.5, -1.38];
+  limb(coat, neckTop, nose, 0.12, 0.07);
+  b.add('deerDark', new THREE.SphereGeometry(0.055, 8, 6), matrix(...P(...nose).toArray()));
+  const [hx, hy, hz] = neckTop;
+  for (const side of [-1, 1]) {
+    limb(coat, [hx + side * 0.07, hy + 0.06, hz + 0.02], [hx + side * 0.2, hy + 0.12, hz + 0.05], 0.035, 0.015); // ear
+    // Antler: a main beam sweeping up and back, with three tines.
+    const a0 = [hx + side * 0.06, hy + 0.08, hz];
+    const a1 = [hx + side * 0.22, hy + 0.38, hz + 0.12];
+    const a2 = [hx + side * 0.3, hy + 0.68, hz + 0.02];
+    const a3 = [hx + side * 0.24, hy + 0.9, hz - 0.12];
+    limb('antler', a0, a1, 0.032, 0.026);
+    limb('antler', a1, a2, 0.026, 0.02);
+    limb('antler', a2, a3, 0.02, 0.012);
+    limb('antler', a1, [a1[0] + side * 0.02, a1[1] + 0.12, a1[2] - 0.22], 0.016, 0.008);
+    limb('antler', a2, [a2[0] + side * 0.16, a2[1] + 0.14, a2[2] + 0.04], 0.015, 0.008);
+    limb('antler', a2, [a2[0] - side * 0.04, a2[1] + 0.16, a2[2] - 0.12], 0.014, 0.007);
+  }
+}
+
+// A wooden reindeer sled on two runners, facing -z.
+export function sled(b, x, z, ry) {
+  const m = matrix(x, 0, z, ry);
+  const at = (px, py, pz) => m.clone().multiply(matrix(px, py, pz));
+  for (const sx of [-0.45, 0.45]) b.add('timberDark', new THREE.BoxGeometry(0.06, 0.06, 2.2), at(sx, 0.06, 0));
+  b.add('timber', new THREE.BoxGeometry(1.0, 0.35, 1.6), at(0, 0.35, 0.1));
+  b.add('fabric', new THREE.BoxGeometry(0.9, 0.12, 1.1), at(0, 0.58, 0.25)); // reindeer-fur blanket
+  b.add('timber', new THREE.BoxGeometry(1.0, 0.5, 0.08), at(0, 0.75, 0.88));
+}
+
 // People along a sidewalk from (x1, z1) to (x2, z2): walking both ways, some in pairs, some
 // stopped to look in a window.
 export function crowd(b, x1, z1, x2, z2, n, width = 2.4) {
