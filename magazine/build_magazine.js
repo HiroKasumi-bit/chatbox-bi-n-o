@@ -310,15 +310,13 @@ function qrCard(s, x, y, w, h, o = {}) {
   pullQuote(s, '“Our goal was not only to survive the cold but to build a city where people really want to live.”', M, 0.95, CW, 1.2, C.text1, { fontSize: 23 });
   picture(s, 'renders/lagoon.jpg', 0, 2.45, W, 2.75);
   caption(s, 'The Aurora Lagoon, a 38 °C open-air mineral pool at the foot of Mount Aurora, under the northern lights.', M, 5.26, CW, 0.25);
-  leadParas(s, 'Dear reader,', [
-    'welcome to the first issue of Aurora Haven, the city our team designed for the Polar / Ice environment: a compact, zero-carbon home for about 45,000 people on a frozen tundra plateau, below a 35-metre snow peak called Mount Aurora.',
-    'The Arctic is warming nearly four times faster than the rest of the planet [1], and the frozen ground under its towns is starting to thaw [2]. We wanted to prove that people can live well here without fossil fuels and without harming the tundra.',
-  ], M, 5.68, COL2, 2.3, { fontSize: 10 });
+  // The team's opening, set in two columns (one text box each).
+  leadParas(s, 'Welcome to this special feature', [
+    'on a polar city named Aurora Haven – a bold architectural marvel where human ingenuity meets the call of the wild. In an era shaped by global climate shifts, this project is more than just an urban concept; it represents a strategic vision for survival and sustainable development in the earth’s most extreme polar environments.',
+  ], M, 5.68, COL2, 2.3, { fontSize: 11 });
   paras(s, [
-    'Inside you will find the crisis and our mission, the systems that keep the city warm, fed and safe, three breakthrough districts, and an honest look at their pros and cons.',
-    'Every picture was rendered from our own 3D model of the city. Scan the code below to watch our real-world interview.',
-  ], M + COL2 + GUT, 5.68, COL2, 1.75, { fontSize: 10 });
-  text(s, 'With warm wishes from the founders,', { x: M + COL2 + GUT, y: 7.18, w: COL2, h: 0.25, fontSize: 10, italic: true, color: C.text2 });
+    'From its sleek structural design to intelligent renewable energy integration, Aurora Haven redefines how humanity can adapt and thrive under pressure. We invite you to turn the page and step into a world where extreme natural challenges are transformed into a vibrant, resilient, and forward-thinking community.',
+  ], M + COL2 + GUT, 5.68, COL2, 1.7, { fontSize: 11 });
   text(s, '[Group name]', { x: M + COL2 + GUT, y: 7.45, w: COL2, h: 0.25, fontFace: HEAD, italic: true, fontSize: 12, bold: true });
   text(s, '[Class] · [School] · [Date]', { x: M + COL2 + GUT, y: 7.72, w: COL2, h: 0.22, fontSize: 9, color: C.text2 });
 
@@ -1283,13 +1281,14 @@ const PLACES = [
   kicker(s, 'Join us', M, 0.6, C.accent1);
   text(s, 'Warm, Green and Ready', { x: M, y: 0.85, w: tw + 0.35, h: 1.3, fontFace: HEAD, fontSize: 36, bold: true, color: C.background1, lineSpacingMultiple: 0.92, shadow: shadow() });
   panel(s, M - 0.2, 2.15, tw + 0.4, 3.4, 28);
-  text(s, 'Aurora Haven does not just survive the polar environment; it thrives in it. Heat from fusion and geothermal energy keeps every building warm, and clean energy and closed loops mean no fossil fuel and almost no waste. It is a place where 45,000 people can live, learn, work and watch the northern lights together.', {
-    x: M, y: 2.35, w: tw, h: 1.65, fontSize: 10.5, color: C.background1, lineSpacingMultiple: 1.1,
+  // The team's conclusion.
+  text(s, 'As we conclude this feature on Aurora Haven, we are left with more than just an impression of futuristic design – we are reminded of our shared responsibility toward the planet. The project clearly demonstrates that advanced technology and nature can coexist in harmony when guided by vision and innovation. Aurora Haven not only sets a precedent for resilient urban planning in extreme climates, but also serves as a powerful inspiration for a sustainable future where human communities are built to endure. May the concepts presented here spark further dialog and inspire bold solutions for generations to come.', {
+    x: M, y: 2.3, w: tw, h: 2.4, fontSize: 9.5, color: C.background1, lineSpacingMultiple: 1.08,
   });
   text(s, [
     { text: 'Be one of the first polar citizens. ', options: { bold: true, color: C.accent1 } },
     { text: 'Buy a community share in our wind and solar farms through the Aurora Green Finance Hall, study polar science at Arctic University, or come for a night at the Mount Aurora spa.', options: { color: C.background1 } },
-  ], { x: M, y: 4.1, w: tw, h: 1.3, fontSize: 10.5, lineSpacingMultiple: 1.1 });
+  ], { x: M, y: 4.5, w: tw, h: 0.95, fontSize: 9.5, lineSpacingMultiple: 1.08 });
 
   // Contact panel: the city logo, the team's details, a space for the school logo and the QR code.
   const px = 4.15;
