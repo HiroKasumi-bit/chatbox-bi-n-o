@@ -52,7 +52,7 @@ pres.layout = 'A4_PORTRAIT';
 pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
 pres.title = 'Aurora Haven – Issue 01';
 pres.subject = 'A polar city that thrives';
-pres.author = '[Group name]';
+pres.author = 'Polar City team, class 11A4, Lê Quý Đôn High School';
 
 const C = pres.SchemeColor;
 const W = 8.27;
@@ -331,8 +331,8 @@ blankPage('Cover');
   paras(s, [
     'From its sleek structural design to intelligent renewable energy integration, Aurora Haven redefines how humanity can adapt and thrive under pressure. We invite you to turn the page and step into a world where extreme natural challenges are transformed into a vibrant, resilient, and forward-thinking community.',
   ], M + COL2 + GUT, 6.45, COL2, 1.7, { fontSize: 11 });
-  text(s, '[Group name]', { x: M + COL2 + GUT, y: 8.3, w: COL2, h: 0.25, fontFace: HEAD, italic: true, fontSize: 12, bold: true });
-  text(s, 'Class 11A4 · Lê Quý Đôn High School · [Date]', { x: M + COL2 + GUT, y: 8.57, w: COL2, h: 0.22, fontSize: 9, color: C.text2 });
+  text(s, 'The Polar City team', { x: M + COL2 + GUT, y: 8.3, w: COL2, h: 0.25, fontFace: HEAD, italic: true, fontSize: 12, bold: true });
+  text(s, 'Class 11A4 · Lê Quý Đôn High School', { x: M + COL2 + GUT, y: 8.57, w: COL2, h: 0.22, fontSize: 9, color: C.text2 });
   card(s, M, 9.4, CW, 1.45, C.background2);
   picture(s, 'renders/cover.jpg', M + 0.15, 9.55, 0.8, 1.15);
   kicker(s, 'On the cover', M + 1.15, 9.57, C.accent6, { w: CW - 1.35 });
@@ -1194,7 +1194,7 @@ blankPage('Cover');
   card(s, M, 10.33, CW, 0.57, C.text1);
   text(s, [
     { text: 'READY TO BUILD THE FUTURE?  ', options: { bold: true, charSpacing: 2, color: C.accent1 } },
-    { text: 'Contact us at [Team email] or visit the Aurora Green Finance Hall in the Financial District.', options: { color: C.background1 } },
+    { text: 'Visit the Aurora Green Finance Hall in the Financial District, or meet our team on page 5.', options: { color: C.background1 } },
   ], { x: M + 0.15, y: 10.36, w: CW - 0.3, h: 0.51, fontSize: 9.5, valign: 'middle' });
 }
 
@@ -1377,7 +1377,7 @@ const PLACES = [
     { text: 'PICTURES  ', options: { bold: true, charSpacing: 2, color: C.accent6 } },
     { text: 'Every picture, plan and diagram in this magazine was made from our own 3D model of Aurora Haven (built with three.js). Text facts about the city come from our city plan and its place cards.', options: { breakLine: true, paraSpaceAfter: 4 } },
     { text: 'AI USE  ', options: { bold: true, charSpacing: 2, color: C.accent6 } },
-    { text: '[Describe how your team used AI tools, for example for brainstorming, layout and language checks.]' },
+    { text: 'We used AI tools to help us build the 3D model of the city and make the pictures, plans and diagrams in this magazine.' },
   ], { x: M + 0.15, y: 9.93, w: CW - 0.3, h: 0.9, fontSize: 9, valign: 'middle', lineSpacingMultiple: 1.04 });
 }
 
@@ -1415,10 +1415,9 @@ blankPage('Guide');
   text(s, 'A polar city that thrives', { x: px + 1.4, y: 1.25, w: pw - 1.55, h: 0.3, fontFace: HEAD, italic: true, fontSize: 11, color: C.background2 });
   text(s, [
     { text: 'CONTACT THE TEAM', options: { bold: true, charSpacing: 2, color: C.accent1, breakLine: true, paraSpaceAfter: 4 } },
-    { text: '[Group name]', options: { bold: true, breakLine: true } },
+    { text: 'Polar City', options: { bold: true, breakLine: true } },
     { text: 'Nguyễn Đông Bảo · Nguyễn Bá Hiếu Thiện · Phan Minh Khôi · Dương Hàng Nguyên · Phạm Phước Khoa · Nguyễn Minh Triết', options: { fontSize: 8.5, breakLine: true } },
-    { text: 'Class 11A4 · Lê Quý Đôn High School', options: { breakLine: true } },
-    { text: '[Team email]', options: {} },
+    { text: 'Class 11A4 · Lê Quý Đôn High School', options: {} },
   ], { x: px + 0.2, y: 1.95, w: pw - 1.55, h: 1.4, fontSize: 9.5, color: C.background1, lineSpacingMultiple: 1.04 });
   s.addImage({ path: img('ui/school_logo.png'), x: px + pw - 1.22, y: 2.05, w: 1.05, h: 1.05, objectName: 'school-logo' });
   qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12 });
