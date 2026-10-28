@@ -19,18 +19,13 @@ Bốn bản đồ 2D (bản đồ tổng thể, hai khu đặc trưng, các tầ
 
 File `.pptx` mở bằng PowerPoint, hoặc trên Canva chọn **Create a design → Import file** rồi chọn file.
 
-Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa riêng) để thấy các trang đôi: ảnh trải liền qua trang 6–7, 10–11, 12–13, 16–17 và 22–23.
+Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa riêng) để thấy các trang đôi: ảnh trải liền qua trang 6–7, 10–11, 14–15 và 20–21.
 
 **Khi in:** in hai mặt, khổ A4, màu. Trang 2 và trang 39 là mặt trong của bìa trước và bìa sau nên được để trắng. Nhờ vậy mục lục bắt đầu ở trang bên phải, và bìa sau rơi đúng vào mặt cuối. Tổng 40 trang là bội số của 4, nên cũng in được kiểu gấp đôi đóng ghim giữa.
 
 **Việc nhóm cần làm trước khi nộp:**
 
-1. Điền các chỗ trong ngoặc vuông:
-   - trang 4: `[Group name]`, `[Class]`, `[School]`, `[Date]`;
-   - trang 5: ảnh từng thành viên (dán đè lên ô `[Photo]`), `[Member name]` và vai trò. Vai trò chỉ là gợi ý, nên sửa cho đúng việc từng người đã làm;
-   - trang 34: `[Team email]`;
-   - trang 38: phần **AI USE**;
-   - bìa sau (trang 40): `[Member names]`, `[Team email]`, logo trường.
+1. Tạp chí không còn chỗ trống nào trong ngoặc vuông: tên nhóm (Polar City), 6 thành viên, vai trò, lớp 11A4, trường Lê Quý Đôn, logo trường và phần AI USE đã được điền. File `output/Aurora_Haven_Magazine_text.docx` chứa toàn bộ chữ để nhóm sửa.
 2. Đọc lại và viết lại chữ bằng lời của nhóm. Hướng dẫn yêu cầu nội dung là của nhóm, nên phần chữ ở đây chỉ là bản nháp để nhóm sửa.
 3. Mở link video (https://youtu.be/QwcP_2Q3Esc) xem video có để chế độ công khai (Public hoặc Unlisted) chưa, rồi quét thử mã QR bằng điện thoại.
 
@@ -44,21 +39,26 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 | 2 | Để trắng (mặt trong bìa trước) | |
 | 3 | Mục lục | Table of contents |
 | 4 | Thư của nhóm sáng lập (phần mở đầu do nhóm viết) | Letter from the Founders |
-| 5 | Thành viên, vai trò, mã QR tới video phỏng vấn | Letter from the Founders |
+| 5 | 6 thành viên: ảnh, vai trò; mã QR tới video phỏng vấn | Letter from the Founders |
 | 6–7 | Trang đôi: toàn cảnh thành phố, giới thiệu chung | |
 | 8 | Thách thức vùng cực, có số liệu thật kèm nguồn | Vision & Crisis |
 | 9 | Tầm nhìn, sứ mệnh, ai bị ảnh hưởng, 5 nguyên tắc | Vision & Crisis |
-| 10–15 | Bản đồ tổng thể, trung tâm 9 ô phố, đời sống hằng ngày | Housing & special locations |
-| 16–24 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, spa trong núi | Breakthrough innovations |
-| 25 | Bảng kiểm chứng ba đột phá: vấn đề, cách hoạt động, điểm mới so với công nghệ hiện có, tính toán STEAM, tính khả thi và giới hạn, tác động | Breakthrough innovations |
-| 26–28 | Vòng tuần hoàn giữa ba khu, năng lượng, nước và rác | Infrastructure |
-| 29 | Hệ sinh thái đô thị: động vật, cây, cách chúng sống sót | Urban Eco-System |
-| 30 | Giao thông: tuyến, người dùng, sức chở (ước tính), an toàn, năng lượng | Getting Around |
+| 10–11 | Trang đôi: Liberty Mall và tượng đài Founding Mayor Monument | Housing & special locations |
+| 12 | Bản đồ tổng thể (một trang) | Housing & special locations |
+| 13 | 9 ô phố trung tâm | Housing & special locations |
+| 14–22 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, spa trong núi (trang đôi 14–15 và 20–21) | Breakthrough innovations |
+| 23 | Bảng kiểm chứng ba đột phá | Breakthrough innovations |
+| 24 | Vòng tuần hoàn giữa ba khu | Infrastructure |
+| 25 | Đời sống hằng ngày: trường, y tế, mua sắm, văn hóa | Housing & special locations |
+| 26 | Nhà ở: cách nhà chống lạnh, nhà cho mọi lứa tuổi | Transport & Housing |
+| 27–28 | Năng lượng, nước và rác | Infrastructure |
+| 29 | Hệ sinh thái đô thị | Urban Eco-System |
+| 30 | Giao thông | Getting Around |
 | 31–32 | Nhà kính trồng rau, an toàn | Infrastructure |
-| 33 | Ưu và nhược điểm: lợi ích, rủi ro, chi phí, đánh đổi, phương án dự phòng | Pros & Cons |
-| 34 | Gọi vốn: ba cách đầu tư, xây theo từng giai đoạn, nhà đầu tư nhận lại gì, lời kêu gọi | Investment CTA |
+| 33 | Ưu và nhược điểm | Pros & Cons |
+| 34 | Gọi vốn | Investment CTA |
 | 35–37 | Tham quan 8 điểm, 35 địa điểm, các con số | Housing & special locations |
-| 38 | Nguồn tham khảo [1]–[19], cách đọc số liệu, nguồn ảnh, chỗ khai báo dùng AI | Sources |
+| 38 | Nguồn tham khảo [1]–[19], cách đọc số liệu, khai báo dùng AI | Sources |
 | 39 | Để trắng (mặt trong bìa sau) | |
 | 40 | Bìa sau: phần kết do nhóm viết, lời kêu gọi, liên hệ nhóm, logo, mã QR | Back cover |
 
@@ -67,7 +67,7 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 - Thông tin về thành phố lấy từ `magazine/source/Aurora_Haven_Slide_Content.docx` và các thẻ Name/Purpose/Feature trong `magazine/source/Aurora_Haven_v13.json`. Đây là số liệu thiết kế của nhóm.
 - Bản đồ và mô hình 3D giữ đúng hướng các khu và địa điểm như trong mô hình Ecopolis của nhóm (file `.json` trên). Riêng khoảng cách thì được giãn rộng ra để các tòa nhà không chồng lên nhau, nên không phải số đo của nhóm. Trong ô phố trung tâm, các góc được xếp đúng như file `.json`: Civic Center ở tây bắc, bệnh viện và trường Northern Lights School ở đông bắc, siêu thị Igloo Fresh và rạp Aurora Cinema ở tây nam.
 - Số liệu thế giới thật (Bắc Cực ấm nhanh gần 4 lần, băng vĩnh cửu tan, ITER, Solar Foods, Blue Lagoon…) đều có số trong ngoặc vuông dẫn tới danh sách nguồn ở trang 38.
-- Các phép tính kiểm tra (nhiên liệu nhiệt hạch, năng lượng làm tan tuyết, lượng nước mỗi người) ở trang 25, và sức chở của metro ở trang 30, là ước tính của nhóm và được ghi rõ như vậy.
+- Các phép tính kiểm tra (nhiên liệu nhiệt hạch, năng lượng làm tan tuyết, lượng nước mỗi người) ở trang 23, và sức chở của metro ở trang 30, là ước tính của nhóm và được ghi rõ như vậy.
 - Biển hiệu cửa hàng trong ảnh (CAFÉ, BOOKS…) chỉ là chi tiết trang trí, không phải tên địa điểm có thật trong thành phố.
 
 ## Xem thành phố 3D

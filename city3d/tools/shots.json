@@ -810,6 +810,40 @@
   }
  },
  {
+  "name": "homes",
+  "w": 2400,
+  "h": 1400,
+  "fov": 44,
+  "pos": [
+   -158,
+   18,
+   112
+  ],
+  "target": [
+   -205,
+   2,
+   30
+  ],
+  "look": {
+   "mode": "dusk",
+   "sky": {
+    "zenith": "#0b1530",
+    "upper": "#22407a",
+    "horizon": "#a08eb4",
+    "glow": "#d27a4a",
+    "glowAzimuth": 200,
+    "ground": "#1c2436"
+   },
+   "exposure": 0.95,
+   "grade": {
+    "contrast": 1.06,
+    "saturation": 1.06,
+    "lift": "#05070f",
+    "vignette": 0.28
+   }
+  }
+ },
+ {
   "name": "approach_dusk",
   "w": 1600,
   "h": 1300,

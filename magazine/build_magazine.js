@@ -1,4 +1,4 @@
-// Builds the Aurora Haven magazine (39 A4 portrait pages) as an editable PowerPoint file.
+// Builds the Aurora Haven magazine (40 A4 portrait pages) as an editable PowerPoint file.
 // Text comes from source/Aurora_Haven_Slide_Content.docx and the place cards in
 // source/Aurora_Haven_v13.json; every picture is rendered from the 3D city in ../city3d.
 //
@@ -10,7 +10,7 @@
 // Pages are laid out as a printed magazine: even pages are left-hand pages, odd pages are
 // right-hand pages, and a double-page spread is an even page and the odd page after it.
 // A picture that runs across a spread is stored as two halves (<name>_L.jpg, <name>_R.jpg).
-// Pages 2 and 38, the insides of the covers, are left blank for printing.
+// Pages 2 and 39, the insides of the covers, are left blank for printing.
 
 const path = require('path');
 const pptxgen = require('pptxgenjs');
@@ -290,23 +290,24 @@ blankPage('Cover');
     ['19', 'A Warm Heart Inside the Ice', 'Breakthrough 3 · Mount Aurora spa resort'],
     ['23', 'Three Breakthroughs, Checked', 'Problem, mechanism, novelty, feasibility, impact'],
     ['24', 'Three Districts, One Loop', 'How heat, water, oxygen and waste go round'],
-    ['25', 'A Livable City Every Day', 'Homes, schools, health, shops and culture'],
-    ['26', 'Energy for the Polar Night', 'Fusion, wind, sun, geothermal and storage'],
-    ['27', 'Nothing Is Wasted', 'Water and waste in closed loops'],
-    ['28', 'Wild Neighbours', 'Our urban eco-system: plants and animals'],
-    ['29', 'Getting Around Fossil-Free', 'Routes, users, capacity, safety and energy'],
-    ['30', 'Salad Under the Northern Lights', 'Inside the Evergreen Greenhouse Dome'],
-    ['31', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
-    ['32', 'Pros & Cons', 'Advantages, risks, costs and trade-offs'],
-    ['33', 'Invest in Aurora Haven', 'Three ways to fund the city, stage by stage'],
-    ['34', 'Take the Tour', 'Eight stops around the city'],
-    ['35', 'Places to Visit', '35 key places and what they do'],
-    ['36', 'Aurora Haven by the Numbers', 'The key figures in one place'],
-    ['37', 'Sources & Assumptions', 'Where our facts come from'],
+    ['25', 'A Livable City Every Day', 'Schools, health, shops and culture'],
+    ['26', 'Homes for the Polar Night', 'Housing for every age, built for −45 °C'],
+    ['27', 'Energy for the Polar Night', 'Fusion, wind, sun, geothermal and storage'],
+    ['28', 'Nothing Is Wasted', 'Water and waste in closed loops'],
+    ['29', 'Wild Neighbours', 'Our urban eco-system: plants and animals'],
+    ['30', 'Getting Around Fossil-Free', 'Routes, users, capacity, safety and energy'],
+    ['31', 'Salad Under the Northern Lights', 'Inside the Evergreen Greenhouse Dome'],
+    ['32', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
+    ['33', 'Pros & Cons', 'Advantages, risks, costs and trade-offs'],
+    ['34', 'Invest in Aurora Haven', 'Three ways to fund the city, stage by stage'],
+    ['35', 'Take the Tour', 'Eight stops around the city'],
+    ['36', 'Places to Visit', '35 key places and what they do'],
+    ['37', 'Aurora Haven by the Numbers', 'The key figures in one place'],
+    ['38', 'Sources & Assumptions', 'Where our facts come from'],
   ];
   const ly = 4.8;
-  const rowH = 0.5;
-  const per = 12;
+  const rowH = 0.46;
+  const per = 13;
   items.forEach(([p, t, d], i) => {
     const x = M + Math.floor(i / per) * (COL2 + GUT);
     const y = ly + (i % per) * rowH;
@@ -514,7 +515,7 @@ blankPage('Cover');
   const file = 'plans/01_city_master_plan.png';
   const ph = W * ratio(file);
   s.addImage({ path: img(file), x: 0, y: 1.75, w: W, h: ph, objectName: 'master-plan' });
-  caption(s, 'Aurora Haven – City Master Plan. North is up; one unit is one metre. Drawn from the 3D model; the numbers are the 35 places listed on page 35.', M, 1.8 + ph, CW, 0.25);
+  caption(s, 'Aurora Haven – City Master Plan. North is up; one unit is one metre. Drawn from the 3D model; the numbers are the 35 places listed on page 36.', M, 1.8 + ph, CW, 0.25);
   zones.forEach(([t, d, col], i) => {
     const x = M + (i % 2) * (COL2 + GUT);
     const y = 2.35 + ph + Math.floor(i / 2) * 0.95;
@@ -890,7 +891,46 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 26 · Clean energy
+// 26 · Homes for the polar night (housing)
+// ---------------------------------------------------------------------------
+{
+  const s = page('LIGHT', 'Living in Aurora Haven');
+  picture(s, 'renders/homes.jpg', 0, 0, W, 4.1);
+  caption(s, 'The western eco-homes at dusk, with the Ice-Proof Wind Farm and the air base behind.', M, 4.15, CW, 0.25);
+  kicker(s, 'Housing', M, 4.55, C.accent6);
+  title(s, 'Homes for the Polar Night', M, 4.82, CW, 0.7, { fontSize: 36 });
+  standfirst(s, 'From passive eco-homes to towers with sky gardens, every home is built to stay warm, bright and safe at −45 °C, without thawing the ground beneath it.', M, 5.55, CW, 0.6, { fontSize: 12.5 });
+
+  text(s, 'HOW A HOME BEATS THE COLD', { x: M, y: 6.3, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
+  const ideas = [
+    ['Insulated piles', 'Homes stand on insulated piles above a ventilated air gap, so their warmth never thaws the permafrost.'],
+    ['Passive-house shell', 'Thick walls, triple glazing and an airtight shell: an eco-home needs about 80% less heat than an ordinary house.'],
+    ['Heat-recovery air', 'Fresh air is warmed by the stale air going out, saving about 80% of the heat that would escape.'],
+    ['Winter-garden balconies', 'Glass-enclosed balconies stay usable at −45 °C and act as a warm buffer for the wall behind.'],
+    ['Snow-shedding roofs', 'Steep, smooth roofs shed heavy snow by themselves, so they never overload or need shovelling.'],
+    ['Light in the dark', 'Light tubes bring daylight deep inside, and dawn-simulating lamps wake families in the polar night.'],
+  ];
+  const iw = (CW - 0.3) / 3;
+  ideas.forEach(([t, d], i) => {
+    const x = M + (i % 3) * (iw + 0.15);
+    const y = 6.6 + Math.floor(i / 3) * 1.27;
+    card(s, x, y, iw, 1.17, C.background2);
+    text(s, t, { x: x + 0.12, y: y + 0.1, w: iw - 0.24, h: 0.24, fontSize: 10, bold: true, color: C.accent6 });
+    text(s, d, { x: x + 0.12, y: y + 0.37, w: iw - 0.24, h: 0.76, fontSize: 8.5, lineSpacingMultiple: 1.03 });
+  });
+
+  text(s, 'A HOME FOR EVERYONE', { x: M, y: 9.2, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
+  const homes = [
+    ['600', 'apartments in the Aurora 81 Residences'], ['350', 'apartments in Ice Crystal Apartments'], ['150', 'older residents in Golden Aurora Senior Residences'],
+    ['120', 'rooms in the Student Residence Hall'], ['12', 'residents in the Snowpine Senior Care Home'],
+  ];
+  const hw = CW / 5;
+  homes.forEach(([n, l], i) => stat(s, n, l, M + i * hw, 9.45, hw - 0.12, C.accent6, { size: 20, lh: 0.55, lsize: 8.5 }));
+  text(s, 'Plus family houses in Snowpine Residences and the Frostline Co-Living Tower for newcomers, young workers and visiting researchers.', { x: M, y: 10.6, w: CW, h: 0.3, fontSize: 8.5, italic: true, color: C.text2 });
+}
+
+// ---------------------------------------------------------------------------
+// 27 · Clean energy
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -918,7 +958,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 27 · Water and waste
+// 28 · Water and waste
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -947,7 +987,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 28 · Urban eco-system
+// 29 · Urban eco-system
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -983,7 +1023,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 29 · Getting around
+// 30 · Getting around
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -1025,7 +1065,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 30 · Salad under the northern lights
+// 31 · Salad under the northern lights
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Living in Aurora Haven');
@@ -1045,7 +1085,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 31 · Safety
+// 32 · Safety
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -1066,7 +1106,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 32 · Pros and cons
+// 33 · Pros and cons
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -1124,7 +1164,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 33 · Invest in Aurora Haven
+// 34 · Invest in Aurora Haven
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Invest' });
@@ -1180,7 +1220,7 @@ blankPage('Cover');
     s.addShape(pres.shapes.RECTANGLE, { x, y: 9.24, w: 0.05, h: 0.6, fill: { color: C.accent1 }, line: { color: C.accent1, width: 0 }, objectName: name('gain-rule') });
     text(s, t, { x: x + 0.13, y: 9.22, w: gw2 - 0.15, h: 0.66, fontSize: 8.5, lineSpacingMultiple: 1.02 });
   });
-  text(s, 'Please note: these are future concepts, not tested projects. Costs and returns still have to be worked out in a full business plan, and no return is guaranteed. The risks are on page 32.', {
+  text(s, 'Please note: these are future concepts, not tested projects. Costs and returns still have to be worked out in a full business plan, and no return is guaranteed. The risks are on page 33.', {
     x: M, y: 9.92, w: CW, h: 0.36, fontSize: 8.5, italic: true, color: C.text2,
   });
   card(s, M, 10.33, CW, 0.57, C.text1);
@@ -1191,7 +1231,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 34 · Take the tour
+// 35 · Take the tour
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Guide' });
@@ -1233,7 +1273,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 35 · Places to visit (Appendix A of the slide content)
+// 36 · Places to visit (Appendix A of the slide content)
 // ---------------------------------------------------------------------------
 const PLACES = [
   ['Founding Mayor Monument', 'The city’s civic heart on Aurora Roundabout: ceremonies, national holidays and walking tours.'],
@@ -1288,7 +1328,7 @@ const PLACES = [
 }
 
 // ---------------------------------------------------------------------------
-// 36 · By the numbers (Appendix B of the slide content)
+// 37 · By the numbers (Appendix B of the slide content)
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Guide');
@@ -1313,11 +1353,11 @@ const PLACES = [
     text(s, t.toUpperCase(), { x: M + 0.2, y: y + 0.06, w: lw - 0.3, h: 0.5, fontSize: 9, bold: true, charSpacing: 2, color: C.background1, lineSpacingMultiple: 1.1 });
     list.forEach(([n, l], j) => stat(s, n, l, M + lw + j * sw, y - 0.05, sw - 0.15, col, { size: 22, labelColor: C.background2, lh: 0.4, lsize: 8.5 }));
   });
-  caption(s, 'All figures are design values for the Aurora Haven city project; page 37 explains how to read our numbers.', M, 10.75, CW, 0.22, { color: C.background2 });
+  caption(s, 'All figures are design values for the Aurora Haven city project; page 38 explains how to read our numbers.', M, 10.75, CW, 0.22, { color: C.background2 });
 }
 
 // ---------------------------------------------------------------------------
-// 37 · Sources and assumptions
+// 38 · Sources and assumptions
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Guide');
@@ -1374,12 +1414,12 @@ const PLACES = [
 }
 
 // ---------------------------------------------------------------------------
-// 38 · Inside back cover, left blank so the back cover is the last page
+// 39 · Inside back cover, left blank so the back cover is the last page
 // ---------------------------------------------------------------------------
 blankPage('Guide');
 
 // ---------------------------------------------------------------------------
-// 39 · Back cover
+// 40 · Back cover
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Back Cover' });
@@ -1415,7 +1455,7 @@ blankPage('Guide');
   qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12 });
 }
 
-if (pageNo !== 38) throw new Error(`Expected 38 inside pages before the back cover, got ${pageNo}`);
+if (pageNo !== 39) throw new Error(`Expected 39 inside pages before the back cover, got ${pageNo}`);
 
 (async () => {
   await pres.writeFile({ fileName: OUT });
