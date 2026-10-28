@@ -62,6 +62,7 @@ const CW = W - 2 * M; // content width
 const GUT = 0.3; // gutter between columns
 const COL2 = (CW - GUT) / 2;
 const HEAD = '+mj-lt'; // theme heading font
+const VN = 'Arial'; // for Vietnamese names: Arial has every Vietnamese accent in PowerPoint and LibreOffice
 const FOLIO = 'AURORA HAVEN  ·  ISSUE 01';
 
 // ---------------------------------------------------------------------------
@@ -332,7 +333,7 @@ blankPage('Cover');
     'From its sleek structural design to intelligent renewable energy integration, Aurora Haven redefines how humanity can adapt and thrive under pressure. We invite you to turn the page and step into a world where extreme natural challenges are transformed into a vibrant, resilient, and forward-thinking community.',
   ], M + COL2 + GUT, 6.45, COL2, 1.7, { fontSize: 11 });
   text(s, 'The Polar City team', { x: M + COL2 + GUT, y: 8.3, w: COL2, h: 0.25, fontFace: HEAD, italic: true, fontSize: 12, bold: true });
-  text(s, 'Class 11A4 · Lê Quý Đôn High School', { x: M + COL2 + GUT, y: 8.57, w: COL2, h: 0.22, fontSize: 9, color: C.text2 });
+  text(s, 'Class 11A4 · Lê Quý Đôn High School', { x: M + COL2 + GUT, y: 8.57, w: COL2, h: 0.22, fontFace: VN, fontSize: 9, color: C.text2 });
   card(s, M, 9.4, CW, 1.45, C.background2);
   picture(s, 'renders/cover.jpg', M + 0.15, 9.55, 0.8, 1.15);
   kicker(s, 'On the cover', M + 1.15, 9.57, C.accent6, { w: CW - 1.35 });
@@ -371,7 +372,7 @@ blankPage('Cover');
       s.addShape(pres.shapes.RECTANGLE, { x: x + 0.12, y: y + 0.12, w: pw, h: ph, fill: { color: C.background1 }, line: { color: C.text2, width: 1, dashType: 'dash' }, objectName: name('photo-space') });
       text(s, '[Photo]', { x: x + 0.12, y: y + 0.12, w: pw, h: ph, fontSize: 10, color: C.text2, align: 'center', valign: 'middle' });
     }
-    text(s, n, { x: x + 0.12, y: y + ph + 0.22, w: pw, h: 0.26, fontFace: HEAD, fontSize: 11.5, bold: true });
+    text(s, n, { x: x + 0.12, y: y + ph + 0.22, w: pw, h: 0.26, fontFace: VN, fontSize: 11, bold: true });
     text(s, role, { x: x + 0.12, y: y + ph + 0.5, w: pw, h: 0.38, fontSize: 9, bold: true, color: C.accent6, lineSpacingMultiple: 1.0 });
   });
   qrCard(s, M, 9.0, CW, 1.9);
@@ -1416,8 +1417,8 @@ blankPage('Guide');
   text(s, [
     { text: 'CONTACT THE TEAM', options: { bold: true, charSpacing: 2, color: C.accent1, breakLine: true, paraSpaceAfter: 4 } },
     { text: 'Polar City', options: { bold: true, breakLine: true } },
-    { text: 'Nguyễn Đông Bảo · Nguyễn Bá Hiếu Thiện · Phan Minh Khôi · Dương Hàng Nguyên · Phạm Phước Khoa · Nguyễn Minh Triết', options: { fontSize: 8.5, breakLine: true } },
-    { text: 'Class 11A4 · Lê Quý Đôn High School', options: {} },
+    { text: 'Nguyễn Đông Bảo · Nguyễn Bá Hiếu Thiện · Phan Minh Khôi · Dương Hàng Nguyên · Phạm Phước Khoa · Nguyễn Minh Triết', options: { fontFace: VN, fontSize: 8, breakLine: true } },
+    { text: 'Class 11A4 · Lê Quý Đôn High School', options: { fontFace: VN, fontSize: 8 } },
   ], { x: px + 0.2, y: 1.95, w: pw - 1.55, h: 1.4, fontSize: 9.5, color: C.background1, lineSpacingMultiple: 1.04 });
   s.addImage({ path: img('ui/school_logo.png'), x: px + pw - 1.22, y: 2.05, w: 1.05, h: 1.05, objectName: 'school-logo' });
   qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12 });
