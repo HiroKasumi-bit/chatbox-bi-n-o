@@ -1377,7 +1377,7 @@ const PLACES = [
     { text: 'PICTURES  ', options: { bold: true, charSpacing: 2, color: C.accent6 } },
     { text: 'Every picture, plan and diagram in this magazine was made from our own 3D model of Aurora Haven (built with three.js). Text facts about the city come from our city plan and its place cards.', options: { breakLine: true, paraSpaceAfter: 4 } },
     { text: 'AI USE  ', options: { bold: true, charSpacing: 2, color: C.accent6 } },
-    { text: 'We used AI tools to help us build the 3D model of the city and make the pictures, plans and diagrams in this magazine.' },
+    { text: 'We used AI tools to help us build the 3D model of the city and make the pictures, plans and diagrams in this magazine, and to check our spelling and fix logic errors in the text.' },
   ], { x: M + 0.15, y: 9.93, w: CW - 0.3, h: 0.9, fontSize: 9, valign: 'middle', lineSpacingMultiple: 1.04 });
 }
 
