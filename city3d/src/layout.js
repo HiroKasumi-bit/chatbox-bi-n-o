@@ -59,7 +59,7 @@ export const FUSION_STAGES = [
 
 // The 35 key places of the magazine, numbered as on the master plan.
 export const PLACES = [
-  ['President Ho Chi Minh Monument', 0, 0],
+  ['Founding Mayor Monument', 0, 0],
   ['Aurora Civic Center & Municipal Hall', -14, -18],
   ['Snowflake General Hospital', 17, -22],
   ['Northern Lights School & Botanical Conservatory', 16, -8],

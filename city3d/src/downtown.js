@@ -1,4 +1,4 @@
-// Downtown: nine blocks around the Aurora Roundabout, the President Ho Chi Minh Monument,
+// Downtown: nine blocks around the Aurora Roundabout, the Founding Mayor Monument,
 // Liberty Mall and the Aurora 81 tower.
 import * as THREE from 'three';
 import { matrix, rng } from './util.js';

@@ -16,7 +16,7 @@ from PIL import Image
 ASSETS = Path(__file__).resolve().parent.parent / "assets" / "renders"
 SPREADS = ["welcome_pano", "liberty_dusk", "fusion_spread", "grotto"]
 PLANS = Path(__file__).resolve().parent.parent / "assets" / "plans"
-SPREAD_PLANS = ["01_city_master_plan.png"]  # plans laid across a spread, centred on the fold
+SPREAD_PLANS = []  # no plan is laid across a spread any more
 COVER_TOP = 0.2  # share of the cover height kept for the tower overlay
 
 

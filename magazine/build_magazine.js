@@ -1,4 +1,4 @@
-// Builds the Aurora Haven magazine (40 A4 portrait pages) as an editable PowerPoint file.
+// Builds the Aurora Haven magazine (39 A4 portrait pages) as an editable PowerPoint file.
 // Text comes from source/Aurora_Haven_Slide_Content.docx and the place cards in
 // source/Aurora_Haven_v13.json; every picture is rendered from the 3D city in ../city3d.
 //
@@ -10,7 +10,7 @@
 // Pages are laid out as a printed magazine: even pages are left-hand pages, odd pages are
 // right-hand pages, and a double-page spread is an even page and the odd page after it.
 // A picture that runs across a spread is stored as two halves (<name>_L.jpg, <name>_R.jpg).
-// Pages 2 and 39, the insides of the covers, are left blank for printing.
+// Pages 2 and 38, the insides of the covers, are left blank for printing.
 
 const path = require('path');
 const pptxgen = require('pptxgenjs');
@@ -256,9 +256,9 @@ function qrCard(s, x, y, w, h, o = {}) {
       { text: pg, options: { fontSize: 8, bold: true, charSpacing: 2, color: C.accent1 } },
     ], { x, y, w, h: 1.45, align, lineSpacingMultiple: 1.05, shadow: shadow() });
   };
-  line(5.32, 2.2, 2.35, "The city's own sun", 'A compact fusion station keeps 45,000 people warm through the polar night', 'PAGE 16', 'right');
-  line(5.32, 3.45, 2.35, 'A warm heart\ninside the ice', 'Four geothermal spa levels hidden in a 35-metre snow peak', 'PAGE 21', 'right');
-  line(M, 9.75, 3.3, 'Bread and water from snow and air', 'Inside the plant that feeds a city with no farmland', 'PAGE 19', 'left');
+  line(5.32, 2.2, 2.35, "The city's own sun", 'A compact fusion station keeps 45,000 people warm through the polar night', 'PAGE 14', 'right');
+  line(5.32, 3.45, 2.35, 'A warm heart\ninside the ice', 'Four geothermal spa levels hidden in a 35-metre snow peak', 'PAGE 19', 'right');
+  line(M, 9.75, 3.3, 'Bread and water from snow and air', 'Inside the plant that feeds a city with no farmland', 'PAGE 17', 'left');
   line(4.37, 9.75, 3.3, '−45 °C. 120 km/h. No sun.', 'The polar challenge, and the five ideas that answer it', 'PAGE 8', 'right');
 }
 
@@ -283,26 +283,26 @@ blankPage('Cover');
     ['6', 'Welcome to Aurora Haven', 'A compact city of 45,000 under a snow peak'],
     ['8', 'The Polar Challenge', 'Cold, darkness, wind and thawing ground'],
     ['9', 'Our Vision & Mission', 'Who is affected, and the five ideas that answer it'],
-    ['10', 'The Whole City Plan', 'From the wind farm to Mount Aurora'],
-    ['12', 'Nine Blocks, One Short Walk', 'Downtown around the Aurora Roundabout'],
-    ['15', 'A Livable City Every Day', 'Homes, schools, health, shops and culture'],
-    ['16', "The City's Own Sun", 'Breakthrough 1 · Fusion Power Station'],
-    ['19', 'Bread and Water from Snow and Air', 'Breakthrough 2 · Snow-to-Food & Water Plant'],
-    ['21', 'A Warm Heart Inside the Ice', 'Breakthrough 3 · Mount Aurora spa resort'],
-    ['25', 'Three Breakthroughs, Checked', 'Problem, mechanism, novelty, feasibility, impact'],
-    ['26', 'Three Districts, One Loop', 'How heat, water, oxygen and waste go round'],
-    ['27', 'Energy for the Polar Night', 'Fusion, wind, sun, geothermal and storage'],
-    ['28', 'Nothing Is Wasted', 'Water and waste in closed loops'],
-    ['29', 'Wild Neighbours', 'Our urban eco-system: plants and animals'],
-    ['30', 'Getting Around Fossil-Free', 'Routes, users, capacity, safety and energy'],
-    ['31', 'Salad Under the Northern Lights', 'Inside the Evergreen Greenhouse Dome'],
-    ['32', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
-    ['33', 'Pros & Cons', 'Advantages, risks, costs and trade-offs'],
-    ['34', 'Invest in Aurora Haven', 'Three ways to fund the city, stage by stage'],
-    ['35', 'Take the Tour', 'Eight stops around the city'],
-    ['36', 'Places to Visit', '35 key places and what they do'],
-    ['37', 'Aurora Haven by the Numbers', 'The key figures in one place'],
-    ['38', 'Sources & Assumptions', 'Where our facts come from'],
+    ['10', 'Nine Blocks, One Short Walk', 'Downtown around the Aurora Roundabout'],
+    ['12', 'The Whole City Plan', 'From the wind farm to Mount Aurora'],
+    ['14', "The City's Own Sun", 'Breakthrough 1 · Fusion Power Station'],
+    ['17', 'Bread and Water from Snow and Air', 'Breakthrough 2 · Snow-to-Food & Water Plant'],
+    ['19', 'A Warm Heart Inside the Ice', 'Breakthrough 3 · Mount Aurora spa resort'],
+    ['23', 'Three Breakthroughs, Checked', 'Problem, mechanism, novelty, feasibility, impact'],
+    ['24', 'Three Districts, One Loop', 'How heat, water, oxygen and waste go round'],
+    ['25', 'A Livable City Every Day', 'Homes, schools, health, shops and culture'],
+    ['26', 'Energy for the Polar Night', 'Fusion, wind, sun, geothermal and storage'],
+    ['27', 'Nothing Is Wasted', 'Water and waste in closed loops'],
+    ['28', 'Wild Neighbours', 'Our urban eco-system: plants and animals'],
+    ['29', 'Getting Around Fossil-Free', 'Routes, users, capacity, safety and energy'],
+    ['30', 'Salad Under the Northern Lights', 'Inside the Evergreen Greenhouse Dome'],
+    ['31', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
+    ['32', 'Pros & Cons', 'Advantages, risks, costs and trade-offs'],
+    ['33', 'Invest in Aurora Haven', 'Three ways to fund the city, stage by stage'],
+    ['34', 'Take the Tour', 'Eight stops around the city'],
+    ['35', 'Places to Visit', '35 key places and what they do'],
+    ['36', 'Aurora Haven by the Numbers', 'The key figures in one place'],
+    ['37', 'Sources & Assumptions', 'Where our facts come from'],
   ];
   const ly = 4.8;
   const rowH = 0.5;
@@ -478,42 +478,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 10–11 · The whole city plan (spread): the plan sits centred on the fold, in two halves.
-// ---------------------------------------------------------------------------
-{
-  const half = (side) => `plans/01_city_master_plan_${side}.png`;
-  const ph = 8.0;
-  const hw = ph / ratio(half('L')); // width of each half
-  const py = 2.75;
-  const zones = [
-    ['Downtown', 'Nine blocks around the Aurora Roundabout and the President Ho Chi Minh Monument, with the hospital, schools, shops and the metro interchange.', C.text1],
-    ['North', 'The windy north holds the Northern Renewable Park, the energy hub, the Polar Rescue and Resilience Station and the airport.', C.accent6],
-    ['West', 'The air base and garrison, behind a belt of trees that screens the eco-homes.', C.text2],
-    ['East', 'Greenhouses, the snow stadium, the fusion station and the Snow-to-Food plant, linked by pipe bridges and heat mains.', C.accent4],
-    ['South', 'Framed by Liberty Mall, Mount Aurora rises with its geothermal spa resort inside.', C.accent5],
-  ];
-  const zone = (s, [t, d, col], x, w) => {
-    kicker(s, t, x, 1.72, col, { w: w - 0.2 });
-    text(s, d, { x, y: 2.0, w, h: 0.7, fontSize: 9, lineSpacingMultiple: 1.04 });
-  };
-
-  const L = page('ICE', 'The City');
-  kicker(L, 'The map', M, 0.55, C.accent6);
-  title(L, 'The Whole City Plan', M, 0.83, CW, 0.75, { fontSize: 36 });
-  const lw = (CW - GUT) / 2;
-  zone(L, zones[0], M, lw);
-  zone(L, zones[1], M + lw + GUT, lw);
-  L.addImage({ path: img(half('L')), x: W - hw, y: py, w: hw, h: ph, objectName: 'master-plan-left' });
-  caption(L, 'Aurora Haven – City Master Plan. North is up; one unit is one metre. Drawn from the 3D model; the numbers are the 35 places listed on page 36.', M, py + ph - 1.9, W - hw - M - 0.15, 1.9, { valign: 'bottom' });
-
-  const R = page('ICE', 'The City');
-  R.addImage({ path: img(half('R')), x: 0, y: py, w: hw, h: ph, objectName: 'master-plan-right' });
-  const rw = (CW - 2 * 0.2) / 3;
-  zones.slice(2).forEach((z, i) => zone(R, z, M + i * (rw + 0.2), rw));
-}
-
-// ---------------------------------------------------------------------------
-// 12–13 · Downtown (spread)
+// 10–11 · Downtown (spread)
 // ---------------------------------------------------------------------------
 {
   const L = page('DARK', 'The City');
@@ -522,18 +487,44 @@ blankPage('Cover');
   kicker(L, 'Downtown', M, 7.55, C.accent1, { textColor: C.background1 });
   title(L, 'Nine Blocks, One Short Walk', M, 7.83, CW, 1.5, { fontSize: 44, color: C.background1 });
   standfirst(L, 'Shops, schools, healthcare and homes within a short walk of each other, around the Aurora Roundabout.', M, 9.3, CW, 0.65, { color: C.background2, fontSize: 14 });
-  text(L, 'Downtown is laid out in nine blocks around the Aurora Roundabout and the President Ho Chi Minh Monument. The metro interchange lies under Liberty Mall, the tree-lined promenade through the four central blocks, which hosts festivals, markets and parades.', {
+  text(L, 'Downtown is laid out in nine blocks around the Aurora Roundabout and the Founding Mayor Monument. The metro interchange lies under Liberty Mall, the tree-lined promenade through the four central blocks, which hosts festivals, markets and parades.', {
     x: M, y: 10.05, w: CW, h: 0.95, fontSize: 10, color: C.background1, lineSpacingMultiple: 1.1,
   });
 
   const R = page('DARK', 'The City');
   bleed(R, 'renders/liberty_dusk_R.jpg');
   shade(R, 'bottom', 0, 9.0, W, H - 9.0);
-  caption(R, 'Liberty Mall at dusk, looking north to the President Ho Chi Minh Monument. Its granite plaza is warmed from below by the heating loop and never ices, and twin lanterns line the way.', W - M - 4.4, 10.25, 4.4, 0.6, { color: C.background1, align: 'right' });
+  caption(R, 'Liberty Mall at dusk, looking north to the Founding Mayor Monument. Its granite plaza is warmed from below by the heating loop and never ices, and twin lanterns line the way.', W - M - 4.4, 10.25, 4.4, 0.6, { color: C.background1, align: 'right' });
 }
 
 // ---------------------------------------------------------------------------
-// 14 · The nine blocks
+// 12 · The whole city plan, on one page
+// ---------------------------------------------------------------------------
+{
+  const zones = [
+    ['Downtown', 'Nine blocks around the Aurora Roundabout and the Founding Mayor Monument, with the hospital, schools, shops and the metro interchange.', C.text1],
+    ['North', 'The windy north holds the Northern Renewable Park, the energy hub, the Polar Rescue and Resilience Station and the airport.', C.accent6],
+    ['West', 'The air base and garrison, behind a belt of trees that screens the eco-homes.', C.text2],
+    ['East', 'Greenhouses, the snow stadium, the fusion station and the Snow-to-Food plant, linked by pipe bridges and heat mains.', C.accent4],
+    ['South', 'Framed by Liberty Mall, Mount Aurora rises with its geothermal spa resort inside.', C.accent5],
+  ];
+  const s = page('ICE', 'The City');
+  kicker(s, 'The map', M, 0.55, C.accent6);
+  title(s, 'The Whole City Plan', M, 0.83, CW, 0.75, { fontSize: 36 });
+  const file = 'plans/01_city_master_plan.png';
+  const ph = W * ratio(file);
+  s.addImage({ path: img(file), x: 0, y: 1.75, w: W, h: ph, objectName: 'master-plan' });
+  caption(s, 'Aurora Haven – City Master Plan. North is up; one unit is one metre. Drawn from the 3D model; the numbers are the 35 places listed on page 35.', M, 1.8 + ph, CW, 0.25);
+  zones.forEach(([t, d, col], i) => {
+    const x = M + (i % 2) * (COL2 + GUT);
+    const y = 2.35 + ph + Math.floor(i / 2) * 0.95;
+    kicker(s, t, x, y, col, { w: COL2 - 0.2 });
+    text(s, d, { x, y: y + 0.28, w: COL2, h: 0.62, fontSize: 9.5, lineSpacingMultiple: 1.05 });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 13 · The nine blocks
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'The City');
@@ -545,7 +536,7 @@ blankPage('Cover');
     ['Knowledge Quarter', 'Arctic University – Main Hall · Aurora Public Library'],
     ['Financial District', 'Arctic Stock Exchange · Aurora Green Finance Hall · Snowline Courthouse · Aurora Business Hotel'],
     ['West Market Street', 'West Market Fire & Ambulance Station · Aurora Night Market Hall · Polar Pharmacy'],
-    ['Civic Core & Liberty Mall', 'President Ho Chi Minh Monument · Civic Center · Snowflake General Hospital · Northern Lights School · Igloo Fresh · Aurora Cinema · Metro'],
+    ['Civic Core & Liberty Mall', 'Founding Mayor Monument · Civic Center · Snowflake General Hospital · Northern Lights School · Igloo Fresh · Aurora Cinema · Metro'],
     ['East Gallery Avenue', 'Aurora Glacier Mall & Crystal Atrium · Snow Lantern Primary School · Northern Lights Music Hall'],
     ['Snowpine Residences', 'Family homes · Pinecone Kindergarten · Snowpine Senior Care Home'],
     ['Mount Aurora Approach', 'Mount Aurora Guesthouse · Southside Police & Mountain Rescue Post · spa shuttle street'],
@@ -566,35 +557,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 15 · A livable city
-// ---------------------------------------------------------------------------
-{
-  const s = page('LIGHT', 'The City');
-  pageHead(s, 'Everyday life', 'A Livable City Every Day', C.accent6);
-  picture(s, 'renders/houses_dusk.jpg', 0, 1.65, W, 4.0);
-  caption(s, 'Snowpine Residences at dusk. Sidewalks warmed by district-heating return water stay snow-free, and spruces shelter the courtyards from the wind.', M, 5.72, CW, 0.4);
-  const cats = [
-    ['Homes', 'Family houses in Snowpine Residences, the western eco-homes, towers such as the Aurora 81 Residences and Ice Crystal Apartments, co-living, student and senior housing.'],
-    ['Learning', 'Three kindergartens, Snow Lantern Primary School, the Northern Lights School for ages 6 to 18, and Arctic University.'],
-    ['Health', 'Snowflake General Hospital with about 250 beds and a 24-hour emergency department, a campus clinic and a 24-hour pharmacy.'],
-    ['Shopping', 'Igloo Fresh Supermarket, Tundra Grocery, the night and fish markets and the Aurora Glacier Mall with its indoor atrium park.'],
-    ['Culture and parks', 'Aurora Cinema, a music hall, a library open 24 hours in the polar night, the Snow Stadium and parks with heated benches.'],
-  ];
-  cats.forEach(([t, d], i) => {
-    const y = 6.3 + i * 0.93;
-    kicker(s, t, M, y, C.accent6, { w: COL2 - 0.2 });
-    text(s, d, { x: M, y: y + 0.27, w: COL2 + 0.15, h: 0.65, fontSize: 9.5, lineSpacingMultiple: 1.05 });
-  });
-  const rx = M + COL2 + GUT + 0.15;
-  const rw = W - M - rx;
-  picture(s, 'renders/approach_dusk.jpg', rx, 6.3, rw, 2.25);
-  caption(s, 'The Mount Aurora Approach: low buildings keep the summit in view, and warm, low-glare lanterns do not hide the aurora.', rx, 8.6, rw, 0.6);
-  [['250', 'hospital beds'], ['900', 'pupils at Northern Lights School'], ['5,000', 'students at Arctic University'], ['8,000', 'seats in the Snow Stadium']]
-    .forEach(([n, l], i) => stat(s, n, l, rx + (i % 2) * (rw / 2), 9.3 + Math.floor(i / 2) * 0.82, rw / 2 - 0.1, C.accent6, { size: 20, lh: 0.32, lsize: 8.5 }));
-}
-
-// ---------------------------------------------------------------------------
-// 16–18 · Fusion Power Station
+// 14–16 · Fusion Power Station
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Signature Districts' });
@@ -641,7 +604,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 19–20 · Snow-to-Food & Water Plant
+// 17–18 · Snow-to-Food & Water Plant
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Signature Districts');
@@ -683,7 +646,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 21–24 · Mount Aurora Geothermal Spa Resort
+// 19–22 · Mount Aurora Geothermal Spa Resort
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Signature Districts');
@@ -754,7 +717,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 25 · The three breakthroughs, checked against today's technology
+// 23 · The three breakthroughs, checked against today's technology
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Signature Districts');
@@ -764,9 +727,9 @@ blankPage('Cover');
   const gap = 0.12;
   const cw = (CW - lw - 3 * gap) / 3;
   const cols = [
-    { name: 'Fusion Power Station', image: 'renders/fusion_spread_R.jpg', color: C.accent3, page: 16 },
-    { name: 'Snow-to-Food & Water Plant', image: 'renders/food.jpg', color: C.accent4, page: 19 },
-    { name: 'Mount Aurora Spa', image: 'renders/spa.jpg', color: C.accent5, page: 21 },
+    { name: 'Fusion Power Station', image: 'renders/fusion_spread_R.jpg', color: C.accent3, page: 14 },
+    { name: 'Snow-to-Food & Water Plant', image: 'renders/food.jpg', color: C.accent4, page: 17 },
+    { name: 'Mount Aurora Spa', image: 'renders/spa.jpg', color: C.accent5, page: 19 },
   ];
   const cx = (i) => M + lw + gap + i * (cw + gap);
   cols.forEach((c, i) => {
@@ -781,9 +744,9 @@ blankPage('Cover');
       'Months of darkness and cold keep people indoors, and a city needs a warm public place to rest, meet and shelter in a disaster.',
     ]],
     ['How it works', [
-      'A compact D-T tokamak: superconducting magnets hold a 150-million-degree plasma. 800 MW of heat becomes 300 MW of electricity and 450 MW of district heat (page 18).',
-      'Spare fusion heat melts 3,000 t of snow a day into drinking water. Electrolysis and air capture make hydrogen, oxygen and CO₂, which become starch, fats and microbial protein (page 20).',
-      'A 40 °C geothermal spring fills a 7 × 13 m Mineral Lake inside an insulated rock shell that keeps four spa levels at 28 °C; the overflow feeds the 38 °C lagoon outside (page 24).',
+      'A compact D-T tokamak: superconducting magnets hold a 150-million-degree plasma. 800 MW of heat becomes 300 MW of electricity and 450 MW of district heat (page 16).',
+      'Spare fusion heat melts 3,000 t of snow a day into drinking water. Electrolysis and air capture make hydrogen, oxygen and CO₂, which become starch, fats and microbial protein (page 18).',
+      'A 40 °C geothermal spring fills a 7 × 13 m Mineral Lake inside an insulated rock shell that keeps four spa levels at 28 °C; the overflow feeds the 38 °C lagoon outside (page 22).',
     ]],
     ['What is new', [
       'Fusion machines are still experiments: ITER plans its first D-T plasma in 2039 [4], and the compact SPARC tokamak aims for first plasma around 2027 [5]. Our idea: put one inside a city, so its waste heat warms homes and melts snow for food.',
@@ -818,7 +781,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 26 · Three districts, one loop
+// 24 · Three districts, one loop
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Signature Districts');
@@ -898,10 +861,38 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 27 · Clean energy
+// 25 · A livable city
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Living in Aurora Haven' });
+  const s = page('LIGHT', 'Living in Aurora Haven');
+  pageHead(s, 'Everyday life', 'A Livable City Every Day', C.accent6);
+  picture(s, 'renders/houses_dusk.jpg', 0, 1.65, W, 4.0);
+  caption(s, 'Snowpine Residences at dusk. Sidewalks warmed by district-heating return water stay snow-free, and spruces shelter the courtyards from the wind.', M, 5.72, CW, 0.4);
+  const cats = [
+    ['Homes', 'Family houses in Snowpine Residences, the western eco-homes, towers such as the Aurora 81 Residences and Ice Crystal Apartments, co-living, student and senior housing.'],
+    ['Learning', 'Three kindergartens, Snow Lantern Primary School, the Northern Lights School for ages 6 to 18, and Arctic University.'],
+    ['Health', 'Snowflake General Hospital with about 250 beds and a 24-hour emergency department, a campus clinic and a 24-hour pharmacy.'],
+    ['Shopping', 'Igloo Fresh Supermarket, Tundra Grocery, the night and fish markets and the Aurora Glacier Mall with its indoor atrium park.'],
+    ['Culture and parks', 'Aurora Cinema, a music hall, a library open 24 hours in the polar night, the Snow Stadium and parks with heated benches.'],
+  ];
+  cats.forEach(([t, d], i) => {
+    const y = 6.3 + i * 0.93;
+    kicker(s, t, M, y, C.accent6, { w: COL2 - 0.2 });
+    text(s, d, { x: M, y: y + 0.27, w: COL2 + 0.15, h: 0.65, fontSize: 9.5, lineSpacingMultiple: 1.05 });
+  });
+  const rx = M + COL2 + GUT + 0.15;
+  const rw = W - M - rx;
+  picture(s, 'renders/approach_dusk.jpg', rx, 6.3, rw, 2.25);
+  caption(s, 'The Mount Aurora Approach: low buildings keep the summit in view, and warm, low-glare lanterns do not hide the aurora.', rx, 8.6, rw, 0.6);
+  [['250', 'hospital beds'], ['900', 'pupils at Northern Lights School'], ['5,000', 'students at Arctic University'], ['8,000', 'seats in the Snow Stadium']]
+    .forEach(([n, l], i) => stat(s, n, l, rx + (i % 2) * (rw / 2), 9.3 + Math.floor(i / 2) * 0.82, rw / 2 - 0.1, C.accent6, { size: 20, lh: 0.32, lsize: 8.5 }));
+}
+
+// ---------------------------------------------------------------------------
+// 26 · Clean energy
+// ---------------------------------------------------------------------------
+{
   const s = page('LIGHT', 'Living in Aurora Haven');
   pageHead(s, 'Clean energy, day and polar night', 'Energy for the Polar Night', C.accent6);
   picture(s, 'renders/renewable.jpg', 0, 1.65, W, 3.75);
@@ -927,7 +918,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 28 · Water and waste
+// 27 · Water and waste
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -956,7 +947,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 29 · Urban eco-system
+// 28 · Urban eco-system
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -992,7 +983,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 30 · Getting around
+// 29 · Getting around
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -1034,7 +1025,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 31 · Salad under the northern lights
+// 30 · Salad under the northern lights
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Living in Aurora Haven');
@@ -1054,7 +1045,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 32 · Safety
+// 31 · Safety
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -1075,7 +1066,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 33 · Pros and cons
+// 32 · Pros and cons
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -1133,7 +1124,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 34 · Invest in Aurora Haven
+// 33 · Invest in Aurora Haven
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Invest' });
@@ -1189,7 +1180,7 @@ blankPage('Cover');
     s.addShape(pres.shapes.RECTANGLE, { x, y: 9.24, w: 0.05, h: 0.6, fill: { color: C.accent1 }, line: { color: C.accent1, width: 0 }, objectName: name('gain-rule') });
     text(s, t, { x: x + 0.13, y: 9.22, w: gw2 - 0.15, h: 0.66, fontSize: 8.5, lineSpacingMultiple: 1.02 });
   });
-  text(s, 'Please note: these are future concepts, not tested projects. Costs and returns still have to be worked out in a full business plan, and no return is guaranteed. The risks are on page 33.', {
+  text(s, 'Please note: these are future concepts, not tested projects. Costs and returns still have to be worked out in a full business plan, and no return is guaranteed. The risks are on page 32.', {
     x: M, y: 9.92, w: CW, h: 0.36, fontSize: 8.5, italic: true, color: C.text2,
   });
   card(s, M, 10.33, CW, 0.57, C.text1);
@@ -1200,7 +1191,7 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 35 · Take the tour
+// 34 · Take the tour
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Guide' });
@@ -1208,7 +1199,7 @@ blankPage('Cover');
   pageHead(s, 'Explore', 'Take the Tour: Eight Stops', C.accent6);
   standfirst(s, 'A walk around Aurora Haven in eight stops, from the civic heart of downtown out to the plants, the snow peak and the windy northern edge.', M, 1.6, CW, 0.75);
   const stops = [
-    ['President Ho Chi Minh Monument', 'The civic heart of the city on the Aurora Roundabout.'],
+    ['Founding Mayor Monument', 'The civic heart of the city on the Aurora Roundabout.'],
     ['Metro Entrance – Central Interchange Station', 'Escalators down to the metro and the shelters.'],
     ['Snowflake General Hospital', 'About 250 beds and a 24-hour emergency department.'],
     ['Fusion Core – Compact D-T Tokamak', 'The city’s own sun.'],
@@ -1242,10 +1233,10 @@ blankPage('Cover');
 }
 
 // ---------------------------------------------------------------------------
-// 36 · Places to visit (Appendix A of the slide content)
+// 35 · Places to visit (Appendix A of the slide content)
 // ---------------------------------------------------------------------------
 const PLACES = [
-  ['President Ho Chi Minh Monument', 'The city’s civic heart on Aurora Roundabout: ceremonies, national holidays and walking tours.'],
+  ['Founding Mayor Monument', 'The city’s civic heart on Aurora Roundabout: ceremonies, national holidays and walking tours.'],
   ['Aurora Civic Center & Municipal Hall', 'Town hall for the city council, ID cards, permits, housing and family services.'],
   ['Snowflake General Hospital', 'Main hospital with about 250 beds and a 24-hour emergency department.'],
   ['Northern Lights School & Botanical Conservatory', 'Primary and secondary school for about 900 pupils aged 6–18.'],
@@ -1284,7 +1275,7 @@ const PLACES = [
 {
   const s = page('LIGHT', 'Guide');
   pageHead(s, 'Guide · 35 key places', 'Places to Visit', C.accent6);
-  text(s, 'The numbers match the markers on the city master plan on pages 10–11.', { x: M, y: 1.58, w: CW, h: 0.25, fontSize: 9.5, italic: true, color: C.text2 });
+  text(s, 'The numbers match the markers on the city master plan on page 12.', { x: M, y: 1.58, w: CW, h: 0.25, fontSize: 9.5, italic: true, color: C.text2 });
   const per = 18;
   const rowH = (10.95 - 1.95) / per;
   PLACES.forEach(([n, d], i) => {
@@ -1297,7 +1288,7 @@ const PLACES = [
 }
 
 // ---------------------------------------------------------------------------
-// 37 · By the numbers (Appendix B of the slide content)
+// 36 · By the numbers (Appendix B of the slide content)
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Guide');
@@ -1322,11 +1313,11 @@ const PLACES = [
     text(s, t.toUpperCase(), { x: M + 0.2, y: y + 0.06, w: lw - 0.3, h: 0.5, fontSize: 9, bold: true, charSpacing: 2, color: C.background1, lineSpacingMultiple: 1.1 });
     list.forEach(([n, l], j) => stat(s, n, l, M + lw + j * sw, y - 0.05, sw - 0.15, col, { size: 22, labelColor: C.background2, lh: 0.4, lsize: 8.5 }));
   });
-  caption(s, 'All figures are design values for the Aurora Haven city project; page 38 explains how to read our numbers.', M, 10.75, CW, 0.22, { color: C.background2 });
+  caption(s, 'All figures are design values for the Aurora Haven city project; page 37 explains how to read our numbers.', M, 10.75, CW, 0.22, { color: C.background2 });
 }
 
 // ---------------------------------------------------------------------------
-// 38 · Sources and assumptions
+// 37 · Sources and assumptions
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Guide');
@@ -1334,7 +1325,7 @@ const PLACES = [
   text(s, 'HOW TO READ OUR NUMBERS', { x: M, y: 1.55, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
   const kinds = [
     ['Design values', 'Figures for our own city plan, such as 300 MW of electricity or 3,000 t of snow a day. They come from our design, not from a real city.'],
-    ['Our estimates', 'Calculations we made ourselves and marked “our estimate”, such as the metro capacity, or worked out on page 25. They show an idea is reasonable, not exact.'],
+    ['Our estimates', 'Calculations we made ourselves and marked “our estimate”, such as the metro capacity, or worked out on page 23. They show an idea is reasonable, not exact.'],
     ['Future concepts', 'The fusion station and the snow-to-food plant do not exist at this size today. They are our team’s ideas for the future; no prototype has been tested.'],
   ];
   const kw = (CW - 0.3) / 3;
@@ -1383,12 +1374,12 @@ const PLACES = [
 }
 
 // ---------------------------------------------------------------------------
-// 39 · Inside back cover, left blank so the back cover is the last page
+// 38 · Inside back cover, left blank so the back cover is the last page
 // ---------------------------------------------------------------------------
 blankPage('Guide');
 
 // ---------------------------------------------------------------------------
-// 40 · Back cover
+// 39 · Back cover
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Back Cover' });
@@ -1424,7 +1415,7 @@ blankPage('Guide');
   qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12 });
 }
 
-if (pageNo !== 39) throw new Error(`Expected 39 inside pages before the back cover, got ${pageNo}`);
+if (pageNo !== 38) throw new Error(`Expected 38 inside pages before the back cover, got ${pageNo}`);
 
 (async () => {
   await pres.writeFile({ fileName: OUT });
