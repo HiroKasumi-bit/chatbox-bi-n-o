@@ -2,7 +2,7 @@
 
     python3 tools/make_graphics.py      # writes assets/ui/qr_interview.png and assets/ui/logo.png
 
-The QR code links to the team's real-world interview video. After drawing it, the script
+The QR codes link to the team's real-world interview video and to the interactive (FlipHTML5) edition. After drawing it, the script
 reads it back with OpenCV's QR decoder, so a code that does not scan is never saved.
 Needs: pip install segno opencv-python-headless pillow
 """
@@ -16,11 +16,12 @@ from PIL import Image, ImageDraw, ImageFilter
 
 OUT = Path(__file__).resolve().parent.parent / "assets" / "ui"
 INTERVIEW_URL = "https://youtu.be/QwcP_2Q3Esc"
+FLIPBOOK_URL = "https://online.fliphtml5.com/MagazinePolarCity71844894/Aurora_Haven_Magazine_web/"
 NAVY = (14, 26, 54)
 
 
-def qr(url, path):
-    code = segno.make(url, error="h")
+def qr(url, path, error="h"):
+    code = segno.make(url, error=error)
     code.save(str(path), scale=24, border=4, dark="#0E1A36", light="#FFFFFF")
     found, _, _ = cv2.QRCodeDetector().detectAndDecode(cv2.imread(str(path)))
     if found != url:
@@ -93,6 +94,7 @@ def logo(path, size=1024):
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     qr(INTERVIEW_URL, OUT / "qr_interview.png")
+    qr(FLIPBOOK_URL, OUT / "qr_flipbook.png", error="m")  # a long link: medium error correction keeps the modules large
     logo(OUT / "logo.png")
 
 

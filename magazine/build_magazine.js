@@ -211,18 +211,22 @@ const shadow = () => ({ type: 'outer', color: '06102A', blur: 6, offset: 1, angl
 // The team's real-world interview video, reached by a QR code (drawn and test-scanned by
 // tools/make_graphics.py). The code and the link under it are both clickable in the file.
 const INTERVIEW_URL = 'https://youtu.be/QwcP_2Q3Esc';
+// The interactive edition of this magazine on FlipHTML5.
+const FLIPBOOK_URL = 'https://online.fliphtml5.com/MagazinePolarCity71844894/Aurora_Haven_Magazine_web/';
 
 // A card with the QR code and its label: side by side, or stacked in a narrow card.
 function qrCard(s, x, y, w, h, o = {}) {
   card(s, x, y, w, h, o.fill || C.background2);
-  const link = { url: INTERVIEW_URL, tooltip: 'Watch our real-world interview' };
+  // o.flipbook: the code leads to the interactive edition instead of the interview video.
+  const url = o.flipbook ? FLIPBOOK_URL : INTERVIEW_URL;
+  const link = { url, tooltip: o.flipbook ? 'Read the interactive edition' : 'Watch our real-world interview' };
   const label = [
-    { text: 'SCAN TO WATCH', options: { fontSize: 8, bold: true, charSpacing: 1.5, color: C.accent4, breakLine: true, paraSpaceAfter: 3 } },
-    { text: 'Our real-world interview', options: { fontFace: HEAD, fontSize: o.size || 14, bold: true, color: C.text1, breakLine: true, paraSpaceAfter: 3 } },
-    { text: 'Video on YouTube', options: { fontSize: 8.5, color: C.text2, breakLine: true } },
-    { text: INTERVIEW_URL.replace('https://', ''), options: { fontSize: 8.5, bold: true, color: C.accent6, hyperlink: link } },
+    { text: o.flipbook ? 'SCAN TO READ' : 'SCAN TO WATCH', options: { fontSize: 8, bold: true, charSpacing: 1.5, color: C.accent4, breakLine: true, paraSpaceAfter: 3 } },
+    { text: o.flipbook ? 'The interactive edition' : 'Our real-world interview', options: { fontFace: HEAD, fontSize: o.size || 14, bold: true, color: C.text1, breakLine: true, paraSpaceAfter: 3 } },
+    { text: o.flipbook ? 'Flip through this magazine online on FlipHTML5' : 'Video on YouTube', options: { fontSize: 8.5, color: C.text2, breakLine: true } },
+    { text: o.flipbook ? 'Open the flipbook' : INTERVIEW_URL.replace('https://', ''), options: { fontSize: 8.5, bold: true, color: C.accent6, hyperlink: link } },
   ];
-  const code = (qx, qy, q) => s.addImage({ path: img('ui/qr_interview.png'), x: qx, y: qy, w: q, h: q, hyperlink: link, objectName: name('qr-interview') });
+  const code = (qx, qy, q) => s.addImage({ path: img(o.flipbook ? 'ui/qr_flipbook.png' : 'ui/qr_interview.png'), x: qx, y: qy, w: q, h: q, hyperlink: link, objectName: name('qr-interview') });
   if (w < 2.6) {
     const q = Math.min(w - 0.5, h - 1.25);
     code(x + (w - q) / 2, y + 0.2, q);
@@ -1452,7 +1456,7 @@ blankPage('Guide');
     { text: 'Class 11A4 · Lê Quý Đôn High School', options: { fontFace: VN, fontSize: 8 } },
   ], { x: px + 0.2, y: 1.95, w: pw - 1.55, h: 1.4, fontSize: 9.5, color: C.background1, lineSpacingMultiple: 1.04 });
   s.addImage({ path: img('ui/school_logo.png'), x: px + pw - 1.22, y: 2.05, w: 1.05, h: 1.05, objectName: 'school-logo' });
-  qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12 });
+  qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12, flipbook: true });
 }
 
 if (pageNo !== 39) throw new Error(`Expected 39 inside pages before the back cover, got ${pageNo}`);

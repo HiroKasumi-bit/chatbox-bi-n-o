@@ -16,6 +16,7 @@ Bốn bản đồ 2D (bản đồ tổng thể, hai khu đặc trưng, các tầ
 |---|---|
 | `output/Aurora_Haven_Magazine.pptx` | Chỉnh sửa được |
 | `output/Aurora_Haven_Magazine.pdf` | Xem, in hoặc nộp |
+| `output/Aurora_Haven_Magazine_web.pdf` | Bản nhẹ (ảnh 150 dpi) để đưa lên FlipHTML5 |
 
 File `.pptx` mở bằng PowerPoint, hoặc trên Canva chọn **Create a design → Import file** rồi chọn file.
 
@@ -29,7 +30,7 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 2. Đọc lại và viết lại chữ bằng lời của nhóm. Hướng dẫn yêu cầu nội dung là của nhóm, nên phần chữ ở đây chỉ là bản nháp để nhóm sửa.
 3. Mở link video (https://youtu.be/QwcP_2Q3Esc) xem video có để chế độ công khai (Public hoặc Unlisted) chưa, rồi quét thử mã QR bằng điện thoại.
 
-**Mã QR:** có ở trang 5 (cạnh phần giới thiệu nhóm) và bìa sau, dẫn tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc (cùng video với link YouTube nhóm gửi). Script `magazine/tools/make_graphics.py` vẽ mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được video.
+**Mã QR:** trang 5 có mã tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc; bìa sau có mã tới bản tạp chí tương tác trên FlipHTML5 (https://online.fliphtml5.com/MagazinePolarCity71844894/Aurora_Haven_Magazine_web/). Script `magazine/tools/make_graphics.py` vẽ các mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được.
 
 ## Nội dung
 
