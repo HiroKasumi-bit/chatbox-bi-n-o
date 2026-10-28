@@ -348,23 +348,33 @@ blankPage('Cover');
   const s = page('LIGHT', 'Welcome');
   pageHead(s, 'The team behind Aurora Haven', 'Meet the Founders', C.accent6);
   standfirst(s, 'The people who planned, built and wrote Aurora Haven, and what each of us did.', M, 1.6, CW, 0.5, { fontSize: 13 });
-  // Five member cards and the interview on a 2 × 3 grid. Paste each photo over its [Photo] box,
-  // fill in the names and change the roles to match who did what.
-  const roles = ['Project lead & editor', 'City planner & 3D builder', 'Energy & systems researcher', 'Writer & fact-checker', 'Interview & video producer'];
-  const gw = (CW - 0.2) / 2;
-  const gh = 2.75;
-  const cell = (i) => [M + (i % 2) * (gw + 0.2), 2.3 + Math.floor(i / 2) * (gh + 0.15)];
-  roles.forEach((r, i) => {
-    const [x, y] = cell(i);
+  // Six member cards on a 3 × 2 grid, then the interview. Roles are left for the team to fill in.
+  const team = [
+    ['Nguyễn Đông Bảo', 'nguyen_dong_bao'],
+    ['Nguyễn Bá Hiếu Thiện', 'nguyen_ba_hieu_thien'],
+    ['Phan Minh Khôi', 'phan_minh_khoi'],
+    ['Dương Hàng Nguyên', 'duong_hang_nguyen'],
+    ['Phạm Phước Khoa', 'pham_phuoc_khoa'],
+    ['Nguyễn Minh Triết', null],
+  ];
+  const gw = (CW - 0.3) / 3;
+  const gh = 3.2;
+  const pw = gw - 0.24;
+  const ph = pw * 1.19;
+  team.forEach(([n, photo], i) => {
+    const x = M + (i % 3) * (gw + 0.15);
+    const y = 2.25 + Math.floor(i / 3) * (gh + 0.15);
     card(s, x, y, gw, gh, C.background2);
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.15, y: y + 0.15, w: gw - 0.3, h: 1.75, rectRadius: 0.06, fill: { color: C.background1 }, line: { color: C.text2, width: 1, dashType: 'dash' }, objectName: name('photo-space') });
-    text(s, '[Photo]', { x: x + 0.15, y: y + 0.15, w: gw - 0.3, h: 1.75, fontSize: 10, color: C.text2, align: 'center', valign: 'middle' });
-    marker(s, String(i + 1), x + 0.15, y + 2.07, 0.42, C.accent6, { size: 13 });
-    text(s, '[Member name]', { x: x + 0.7, y: y + 2.04, w: gw - 0.85, h: 0.26, fontFace: HEAD, fontSize: 13, bold: true });
-    text(s, r, { x: x + 0.7, y: y + 2.32, w: gw - 0.85, h: 0.24, fontSize: 9.5, bold: true, color: C.accent6 });
+    if (photo) {
+      s.addImage({ path: img(`team/${photo}.jpg`), x: x + 0.12, y: y + 0.12, w: pw, h: ph, objectName: name('member-photo') });
+    } else {
+      s.addShape(pres.shapes.RECTANGLE, { x: x + 0.12, y: y + 0.12, w: pw, h: ph, fill: { color: C.background1 }, line: { color: C.text2, width: 1, dashType: 'dash' }, objectName: name('photo-space') });
+      text(s, '[Photo]', { x: x + 0.12, y: y + 0.12, w: pw, h: ph, fontSize: 10, color: C.text2, align: 'center', valign: 'middle' });
+    }
+    text(s, n, { x: x + 0.12, y: y + ph + 0.22, w: pw, h: 0.26, fontFace: HEAD, fontSize: 11.5, bold: true });
+    text(s, '[Role]', { x: x + 0.12, y: y + ph + 0.5, w: pw, h: 0.22, fontSize: 9, bold: true, color: C.accent6 });
   });
-  const [qx, qy] = cell(5);
-  qrCard(s, qx, qy, gw, gh);
+  qrCard(s, M, 9.0, CW, 1.9);
 }
 
 // ---------------------------------------------------------------------------
@@ -1407,10 +1417,10 @@ blankPage('Guide');
   text(s, [
     { text: 'CONTACT THE TEAM', options: { bold: true, charSpacing: 2, color: C.accent1, breakLine: true, paraSpaceAfter: 4 } },
     { text: '[Group name]', options: { bold: true, breakLine: true } },
-    { text: '[Member names]', options: { breakLine: true } },
+    { text: 'Nguyễn Đông Bảo · Nguyễn Bá Hiếu Thiện · Phan Minh Khôi · Dương Hàng Nguyên · Phạm Phước Khoa · Nguyễn Minh Triết', options: { fontSize: 8.5, breakLine: true } },
     { text: '[Class] · [School]', options: { breakLine: true } },
     { text: '[Team email]', options: {} },
-  ], { x: px + 0.2, y: 2.05, w: pw - 1.55, h: 1.2, fontSize: 9.5, color: C.background1, lineSpacingMultiple: 1.08 });
+  ], { x: px + 0.2, y: 1.95, w: pw - 1.55, h: 1.4, fontSize: 9.5, color: C.background1, lineSpacingMultiple: 1.04 });
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: px + pw - 1.25, y: 2.1, w: 1.05, h: 1.05, rectRadius: 0.08, fill: { color: C.text1, transparency: 100 }, line: { color: C.background2, width: 1, dashType: 'dash' }, objectName: 'school-logo-space' });
   text(s, '[School or team logo]', { x: px + pw - 1.2, y: 2.1, w: 0.95, h: 1.05, fontSize: 8, color: C.background2, align: 'center', valign: 'middle' });
   qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12 });
