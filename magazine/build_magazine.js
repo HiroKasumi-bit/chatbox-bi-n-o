@@ -1,4 +1,4 @@
-// Builds the Aurora Haven magazine (36 A4 portrait pages) as an editable PowerPoint file.
+// Builds the Aurora Haven magazine (40 A4 portrait pages) as an editable PowerPoint file.
 // Text comes from source/Aurora_Haven_Slide_Content.docx and the place cards in
 // source/Aurora_Haven_v13.json; every picture is rendered from the 3D city in ../city3d.
 //
@@ -10,6 +10,7 @@
 // Pages are laid out as a printed magazine: even pages are left-hand pages, odd pages are
 // right-hand pages, and a double-page spread is an even page and the odd page after it.
 // A picture that runs across a spread is stored as two halves (<name>_L.jpg, <name>_R.jpg).
+// Pages 2 and 39, the insides of the covers, are left blank for printing.
 
 const path = require('path');
 const pptxgen = require('pptxgenjs');
@@ -77,6 +78,7 @@ const pageNumber = (side, dark) => ({
 });
 
 pres.defineSlideMaster({ title: 'COVER', background: { color: C.text1 }, objects: [] });
+pres.defineSlideMaster({ title: 'BLANK', background: { color: C.background1 }, objects: [] });
 for (const side of ['L', 'R']) {
   pres.defineSlideMaster({ title: `${side}_LIGHT`, background: { color: C.background1 }, objects: folioObjects(side, false), slideNumber: pageNumber(side, false) });
   pres.defineSlideMaster({ title: `${side}_ICE`, background: { color: C.background2 }, objects: folioObjects(side, false), slideNumber: pageNumber(side, false) });
@@ -88,6 +90,12 @@ function page(kind, section) {
   pageNo += 1;
   const side = pageNo % 2 === 0 ? 'L' : 'R';
   return pres.addSlide({ masterName: `${side}_${kind}`, sectionTitle: section });
+}
+
+// An empty page with no folio or page number, for the insides of the covers.
+function blankPage(section) {
+  pageNo += 1;
+  return pres.addSlide({ masterName: 'BLANK', sectionTitle: section });
 }
 
 // ---------------------------------------------------------------------------
@@ -247,14 +255,19 @@ function qrCard(s, x, y, w, h, o = {}) {
       { text: pg, options: { fontSize: 8, bold: true, charSpacing: 2, color: C.accent1 } },
     ], { x, y, w, h: 1.45, align, lineSpacingMultiple: 1.05, shadow: shadow() });
   };
-  line(5.32, 2.2, 2.35, "The city's own sun", 'A compact fusion station keeps 45,000 people warm through the polar night', 'PAGE 14', 'right');
-  line(5.32, 3.45, 2.35, 'A warm heart\ninside the ice', 'Four geothermal spa levels hidden in a 35-metre snow peak', 'PAGE 19', 'right');
-  line(M, 9.75, 3.3, 'Bread and water from snow and air', 'Inside the plant that feeds a city with no farmland', 'PAGE 17', 'left');
-  line(4.37, 9.75, 3.3, '−45 °C. 120 km/h. No sun.', 'The polar challenge, and the five ideas that answer it', 'PAGE 6', 'right');
+  line(5.32, 2.2, 2.35, "The city's own sun", 'A compact fusion station keeps 45,000 people warm through the polar night', 'PAGE 16', 'right');
+  line(5.32, 3.45, 2.35, 'A warm heart\ninside the ice', 'Four geothermal spa levels hidden in a 35-metre snow peak', 'PAGE 21', 'right');
+  line(M, 9.75, 3.3, 'Bread and water from snow and air', 'Inside the plant that feeds a city with no farmland', 'PAGE 19', 'left');
+  line(4.37, 9.75, 3.3, '−45 °C. 120 km/h. No sun.', 'The polar challenge, and the five ideas that answer it', 'PAGE 8', 'right');
 }
 
 // ---------------------------------------------------------------------------
-// 2 · Contents
+// 2 · Inside front cover, left blank so the contents open on a right-hand page
+// ---------------------------------------------------------------------------
+blankPage('Cover');
+
+// ---------------------------------------------------------------------------
+// 3 · Contents
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Welcome' });
@@ -265,29 +278,30 @@ function qrCard(s, x, y, w, h, o = {}) {
   title(s, 'Contents', M, 3.26, CW, 0.8, { fontSize: 44, color: C.background1 });
   caption(s, 'Shops and cafés on a downtown street at dusk. The streets are warmed from below, so they stay clear of ice without salt.', M, 4.38, CW, 0.25);
   const items = [
-    ['3', 'Letter from the Founders', 'Who we are and why we built Aurora Haven'],
-    ['4', 'Welcome to Aurora Haven', 'A compact city of 45,000 under a snow peak'],
-    ['6', 'The Polar Challenge', 'Cold, darkness, wind and thawing ground'],
-    ['7', 'Our Vision & Mission', 'Who is affected, and the five ideas that answer it'],
-    ['8', 'The Whole City Plan', 'From the wind farm to Mount Aurora'],
-    ['10', 'Nine Blocks, One Short Walk', 'Downtown around the Aurora Roundabout'],
-    ['13', 'A Livable City Every Day', 'Homes, schools, health, shops and culture'],
-    ['14', "The City's Own Sun", 'Breakthrough 1 · Fusion Power Station'],
-    ['17', 'Bread and Water from Snow and Air', 'Breakthrough 2 · Snow-to-Food & Water Plant'],
-    ['19', 'A Warm Heart Inside the Ice', 'Breakthrough 3 · Mount Aurora spa resort'],
-    ['23', 'Three Breakthroughs, Checked', 'Problem, mechanism, novelty, feasibility, impact'],
-    ['24', 'Three Districts, One Loop', 'How heat, water, oxygen and waste go round'],
-    ['25', 'Energy for the Polar Night', 'Fusion, wind, sun, geothermal and storage'],
-    ['26', 'Nothing Is Wasted', 'Water and waste in closed loops'],
-    ['27', 'Wild Neighbours', 'Our urban eco-system: plants and animals'],
-    ['28', 'Getting Around Fossil-Free', 'Routes, users, capacity, safety and energy'],
-    ['29', 'Salad Under the Northern Lights', 'Inside the Evergreen Greenhouse Dome'],
-    ['30', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
-    ['31', 'Pros & Cons', 'Advantages, risks, costs and trade-offs'],
-    ['32', 'Take the Tour', 'Eight stops around the city'],
-    ['33', 'Places to Visit', '35 key places and what they do'],
-    ['34', 'Aurora Haven by the Numbers', 'The key figures in one place'],
-    ['35', 'Sources & Assumptions', 'Where our facts come from'],
+    ['4', 'Letter from the Founders', 'Who we are, our team and why we built Aurora Haven'],
+    ['6', 'Welcome to Aurora Haven', 'A compact city of 45,000 under a snow peak'],
+    ['8', 'The Polar Challenge', 'Cold, darkness, wind and thawing ground'],
+    ['9', 'Our Vision & Mission', 'Who is affected, and the five ideas that answer it'],
+    ['10', 'The Whole City Plan', 'From the wind farm to Mount Aurora'],
+    ['12', 'Nine Blocks, One Short Walk', 'Downtown around the Aurora Roundabout'],
+    ['15', 'A Livable City Every Day', 'Homes, schools, health, shops and culture'],
+    ['16', "The City's Own Sun", 'Breakthrough 1 · Fusion Power Station'],
+    ['19', 'Bread and Water from Snow and Air', 'Breakthrough 2 · Snow-to-Food & Water Plant'],
+    ['21', 'A Warm Heart Inside the Ice', 'Breakthrough 3 · Mount Aurora spa resort'],
+    ['25', 'Three Breakthroughs, Checked', 'Problem, mechanism, novelty, feasibility, impact'],
+    ['26', 'Three Districts, One Loop', 'How heat, water, oxygen and waste go round'],
+    ['27', 'Energy for the Polar Night', 'Fusion, wind, sun, geothermal and storage'],
+    ['28', 'Nothing Is Wasted', 'Water and waste in closed loops'],
+    ['29', 'Wild Neighbours', 'Our urban eco-system: plants and animals'],
+    ['30', 'Getting Around Fossil-Free', 'Routes, users, capacity, safety and energy'],
+    ['31', 'Salad Under the Northern Lights', 'Inside the Evergreen Greenhouse Dome'],
+    ['32', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
+    ['33', 'Pros & Cons', 'Advantages, risks, costs and trade-offs'],
+    ['34', 'Invest in Aurora Haven', 'Three ways to fund the city, stage by stage'],
+    ['35', 'Take the Tour', 'Eight stops around the city'],
+    ['36', 'Places to Visit', '35 key places and what they do'],
+    ['37', 'Aurora Haven by the Numbers', 'The key figures in one place'],
+    ['38', 'Sources & Assumptions', 'Where our facts come from'],
   ];
   const ly = 4.8;
   const rowH = 0.5;
@@ -302,38 +316,59 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 3 · Letter from the founders
+// 4 · Letter from the founders
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Welcome');
   kicker(s, 'Letter from the founders', M, 0.55, C.accent6);
   pullQuote(s, '“Our goal was not only to survive the cold but to build a city where people really want to live.”', M, 0.95, CW, 1.2, C.text1, { fontSize: 23 });
-  picture(s, 'renders/lagoon.jpg', 0, 2.45, W, 2.75);
-  caption(s, 'The Aurora Lagoon, a 38 °C open-air mineral pool at the foot of Mount Aurora, under the northern lights.', M, 5.26, CW, 0.25);
+  picture(s, 'renders/lagoon.jpg', 0, 2.45, W, 3.5);
+  caption(s, 'The Aurora Lagoon, a 38 °C open-air mineral pool at the foot of Mount Aurora, under the northern lights.', M, 6.02, CW, 0.25);
   // The team's opening, set in two columns (one text box each).
   leadParas(s, 'Welcome to this special feature', [
     'on a polar city named Aurora Haven – a bold architectural marvel where human ingenuity meets the call of the wild. In an era shaped by global climate shifts, this project is more than just an urban concept; it represents a strategic vision for survival and sustainable development in the earth’s most extreme polar environments.',
-  ], M, 5.68, COL2, 2.3, { fontSize: 11 });
+  ], M, 6.45, COL2, 2.4, { fontSize: 11 });
   paras(s, [
     'From its sleek structural design to intelligent renewable energy integration, Aurora Haven redefines how humanity can adapt and thrive under pressure. We invite you to turn the page and step into a world where extreme natural challenges are transformed into a vibrant, resilient, and forward-thinking community.',
-  ], M + COL2 + GUT, 5.68, COL2, 1.7, { fontSize: 11 });
-  text(s, '[Group name]', { x: M + COL2 + GUT, y: 7.45, w: COL2, h: 0.25, fontFace: HEAD, italic: true, fontSize: 12, bold: true });
-  text(s, '[Class] · [School] · [Date]', { x: M + COL2 + GUT, y: 7.72, w: COL2, h: 0.22, fontSize: 9, color: C.text2 });
-
-  // The team and their roles (fill in the names; change the roles to match who did what).
-  kicker(s, 'Meet the founders', M, 8.15, C.accent6);
-  const roles = ['Project lead & editor', 'City planner & 3D builder', 'Energy & systems researcher', 'Writer & fact-checker', 'Interview & video producer'];
-  roles.forEach((r, i) => {
-    const y = 8.5 + i * 0.47;
-    marker(s, String(i + 1), M, y, 0.32, C.accent6, { size: 11 });
-    text(s, '[Member name]', { x: M + 0.45, y: y - 0.02, w: 3.0, h: 0.22, fontSize: 10, bold: true });
-    text(s, r, { x: M + 0.45, y: y + 0.19, w: 3.0, h: 0.2, fontSize: 8.5, color: C.text2 });
+  ], M + COL2 + GUT, 6.45, COL2, 1.7, { fontSize: 11 });
+  text(s, '[Group name]', { x: M + COL2 + GUT, y: 8.3, w: COL2, h: 0.25, fontFace: HEAD, italic: true, fontSize: 12, bold: true });
+  text(s, '[Class] · [School] · [Date]', { x: M + COL2 + GUT, y: 8.57, w: COL2, h: 0.22, fontSize: 9, color: C.text2 });
+  card(s, M, 9.4, CW, 1.45, C.background2);
+  picture(s, 'renders/cover.jpg', M + 0.15, 9.55, 0.8, 1.15);
+  kicker(s, 'On the cover', M + 1.15, 9.57, C.accent6, { w: CW - 1.35 });
+  text(s, 'Aurora 81 – Polar Landmark Tower, named in honour of Landmark 81 in Ho Chi Minh City, beside the street that leads to the glowing terraces of the Mount Aurora spa, under the northern lights. Its nine bundled glass tubes step back like bamboo stalks and cut blizzard wind load by about 25%.', {
+    x: M + 1.15, y: 9.83, w: CW - 1.3, h: 0.9, fontSize: 9.5, lineSpacingMultiple: 1.05,
   });
-  qrCard(s, M + COL2 + GUT, 8.15, COL2, 2.75);
 }
 
 // ---------------------------------------------------------------------------
-// 4–5 · Welcome to Aurora Haven (spread)
+// 5 · Meet the founders: the team, their roles and the interview
+// ---------------------------------------------------------------------------
+{
+  const s = page('LIGHT', 'Welcome');
+  pageHead(s, 'The team behind Aurora Haven', 'Meet the Founders', C.accent6);
+  standfirst(s, 'The people who planned, built and wrote Aurora Haven, and what each of us did.', M, 1.6, CW, 0.5, { fontSize: 13 });
+  // Five member cards and the interview on a 2 × 3 grid. Paste each photo over its [Photo] box,
+  // fill in the names and change the roles to match who did what.
+  const roles = ['Project lead & editor', 'City planner & 3D builder', 'Energy & systems researcher', 'Writer & fact-checker', 'Interview & video producer'];
+  const gw = (CW - 0.2) / 2;
+  const gh = 2.75;
+  const cell = (i) => [M + (i % 2) * (gw + 0.2), 2.3 + Math.floor(i / 2) * (gh + 0.15)];
+  roles.forEach((r, i) => {
+    const [x, y] = cell(i);
+    card(s, x, y, gw, gh, C.background2);
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.15, y: y + 0.15, w: gw - 0.3, h: 1.75, rectRadius: 0.06, fill: { color: C.background1 }, line: { color: C.text2, width: 1, dashType: 'dash' }, objectName: name('photo-space') });
+    text(s, '[Photo]', { x: x + 0.15, y: y + 0.15, w: gw - 0.3, h: 1.75, fontSize: 10, color: C.text2, align: 'center', valign: 'middle' });
+    marker(s, String(i + 1), x + 0.15, y + 2.07, 0.42, C.accent6, { size: 13 });
+    text(s, '[Member name]', { x: x + 0.7, y: y + 2.04, w: gw - 0.85, h: 0.26, fontFace: HEAD, fontSize: 13, bold: true });
+    text(s, r, { x: x + 0.7, y: y + 2.32, w: gw - 0.85, h: 0.24, fontSize: 9.5, bold: true, color: C.accent6 });
+  });
+  const [qx, qy] = cell(5);
+  qrCard(s, qx, qy, gw, gh);
+}
+
+// ---------------------------------------------------------------------------
+// 6–7 · Welcome to Aurora Haven (spread)
 // ---------------------------------------------------------------------------
 {
   const band = 7.0;
@@ -365,7 +400,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 6 · The polar challenge
+// 8 · The polar challenge
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'The City' });
@@ -389,7 +424,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 7 · Vision and mission
+// 9 · Vision and mission
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'The City');
@@ -432,7 +467,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 8–9 · The whole city plan (spread): the plan sits centred on the fold, in two halves.
+// 10–11 · The whole city plan (spread): the plan sits centred on the fold, in two halves.
 // ---------------------------------------------------------------------------
 {
   const half = (side) => `plans/01_city_master_plan_${side}.png`;
@@ -458,7 +493,7 @@ function qrCard(s, x, y, w, h, o = {}) {
   zone(L, zones[0], M, lw);
   zone(L, zones[1], M + lw + GUT, lw);
   L.addImage({ path: img(half('L')), x: W - hw, y: py, w: hw, h: ph, objectName: 'master-plan-left' });
-  caption(L, 'Aurora Haven – City Master Plan. North is up; one unit is one metre. Drawn from the 3D model; the numbers are the 35 places listed on page 33.', M, py + ph - 1.9, W - hw - M - 0.15, 1.9, { valign: 'bottom' });
+  caption(L, 'Aurora Haven – City Master Plan. North is up; one unit is one metre. Drawn from the 3D model; the numbers are the 35 places listed on page 36.', M, py + ph - 1.9, W - hw - M - 0.15, 1.9, { valign: 'bottom' });
 
   const R = page('ICE', 'The City');
   R.addImage({ path: img(half('R')), x: 0, y: py, w: hw, h: ph, objectName: 'master-plan-right' });
@@ -467,7 +502,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 10–11 · Downtown (spread)
+// 12–13 · Downtown (spread)
 // ---------------------------------------------------------------------------
 {
   const L = page('DARK', 'The City');
@@ -487,7 +522,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 12 · The nine blocks
+// 14 · The nine blocks
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'The City');
@@ -520,7 +555,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 13 · A livable city
+// 15 · A livable city
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'The City');
@@ -548,7 +583,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 14–16 · Fusion Power Station
+// 16–18 · Fusion Power Station
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Signature Districts' });
@@ -595,7 +630,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 17–18 · Snow-to-Food & Water Plant
+// 19–20 · Snow-to-Food & Water Plant
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Signature Districts');
@@ -637,7 +672,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 19–22 · Mount Aurora Geothermal Spa Resort
+// 21–24 · Mount Aurora Geothermal Spa Resort
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Signature Districts');
@@ -708,7 +743,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 23 · The three breakthroughs, checked against today's technology
+// 25 · The three breakthroughs, checked against today's technology
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Signature Districts');
@@ -718,9 +753,9 @@ function qrCard(s, x, y, w, h, o = {}) {
   const gap = 0.12;
   const cw = (CW - lw - 3 * gap) / 3;
   const cols = [
-    { name: 'Fusion Power Station', image: 'renders/fusion_spread_R.jpg', color: C.accent3, page: 14 },
-    { name: 'Snow-to-Food & Water Plant', image: 'renders/food.jpg', color: C.accent4, page: 17 },
-    { name: 'Mount Aurora Spa', image: 'renders/spa.jpg', color: C.accent5, page: 19 },
+    { name: 'Fusion Power Station', image: 'renders/fusion_spread_R.jpg', color: C.accent3, page: 16 },
+    { name: 'Snow-to-Food & Water Plant', image: 'renders/food.jpg', color: C.accent4, page: 19 },
+    { name: 'Mount Aurora Spa', image: 'renders/spa.jpg', color: C.accent5, page: 21 },
   ];
   const cx = (i) => M + lw + gap + i * (cw + gap);
   cols.forEach((c, i) => {
@@ -735,9 +770,9 @@ function qrCard(s, x, y, w, h, o = {}) {
       'Months of darkness and cold keep people indoors, and a city needs a warm public place to rest, meet and shelter in a disaster.',
     ]],
     ['How it works', [
-      'A compact D-T tokamak: superconducting magnets hold a 150-million-degree plasma. 800 MW of heat becomes 300 MW of electricity and 450 MW of district heat (page 16).',
-      'Spare fusion heat melts 3,000 t of snow a day into drinking water. Electrolysis and air capture make hydrogen, oxygen and CO₂, which become starch, fats and microbial protein (page 18).',
-      'A 40 °C geothermal spring fills a 7 × 13 m Mineral Lake inside an insulated rock shell that keeps four spa levels at 28 °C; the overflow feeds the 38 °C lagoon outside (page 22).',
+      'A compact D-T tokamak: superconducting magnets hold a 150-million-degree plasma. 800 MW of heat becomes 300 MW of electricity and 450 MW of district heat (page 18).',
+      'Spare fusion heat melts 3,000 t of snow a day into drinking water. Electrolysis and air capture make hydrogen, oxygen and CO₂, which become starch, fats and microbial protein (page 20).',
+      'A 40 °C geothermal spring fills a 7 × 13 m Mineral Lake inside an insulated rock shell that keeps four spa levels at 28 °C; the overflow feeds the 38 °C lagoon outside (page 24).',
     ]],
     ['What is new', [
       'Fusion machines are still experiments: ITER plans its first D-T plasma in 2039 [4], and the compact SPARC tokamak aims for first plasma around 2027 [5]. Our idea: put one inside a city, so its waste heat warms homes and melts snow for food.',
@@ -772,7 +807,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 24 · Three districts, one loop
+// 26 · Three districts, one loop
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Signature Districts');
@@ -852,7 +887,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 25 · Clean energy
+// 27 · Clean energy
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Living in Aurora Haven' });
@@ -881,7 +916,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 26 · Water and waste
+// 28 · Water and waste
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -910,7 +945,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 27 · Urban eco-system
+// 29 · Urban eco-system
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -946,7 +981,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 28 · Getting around
+// 30 · Getting around
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -988,7 +1023,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 29 · Salad under the northern lights
+// 31 · Salad under the northern lights
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Living in Aurora Haven');
@@ -1008,7 +1043,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 30 · Safety
+// 32 · Safety
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -1029,7 +1064,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 31 · Pros and cons
+// 33 · Pros and cons
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
@@ -1087,7 +1122,74 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 32 · Take the tour
+// 34 · Invest in Aurora Haven
+// ---------------------------------------------------------------------------
+{
+  pres.addSection({ title: 'Invest' });
+  const s = page('LIGHT', 'Invest');
+  picture(s, 'renders/approach_dusk.jpg', 0, 0, W, 3.3);
+  shade(s, 'bottom', 0, 1.2, W, 2.1);
+  kicker(s, 'Investment opportunity', M, 2.12, C.accent1, { textColor: C.background1 });
+  title(s, 'Invest in Aurora Haven', M, 2.4, CW, 0.8, { fontSize: 38, color: C.background1 });
+  caption(s, 'The Mount Aurora Approach at dusk: the street from downtown to the spa.', M, 3.36, CW, 0.22);
+  standfirst(s, 'Aurora Haven needs partners to build it. We are looking for investors who want a share in a zero-carbon city, built step by step, starting with technology that already works today.', M, 3.68, CW, 0.7, { fontSize: 13 });
+
+  text(s, 'THREE WAYS TO INVEST', { x: M, y: 4.5, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
+  const ways = [
+    ['Green city bonds', 'Fund Stage 1: the geothermal plant, the wind and solar farms, the battery bank and the heat tank, paid back from selling heat and power to the city.'],
+    ['Community shares', 'Residents and visitors buy shares in the wind and solar farms through the Aurora Green Finance Hall and share in the income they make.'],
+    ['Research partnerships', 'Companies and universities test new food, energy and building ideas with Arctic University and the Polar Climate & Ice Research Institute.'],
+  ];
+  const ww = (CW - 0.3) / 3;
+  ways.forEach(([t, d], i) => {
+    const x = M + i * (ww + 0.15);
+    card(s, x, 4.78, ww, 1.72, C.background2);
+    marker(s, String(i + 1), x + 0.12, 4.9, 0.36, C.accent1, { size: 12 });
+    text(s, t, { x: x + 0.58, y: 4.95, w: ww - 0.68, h: 0.26, fontSize: 10.5, bold: true });
+    text(s, d, { x: x + 0.12, y: 5.36, w: ww - 0.24, h: 1.08, fontSize: 9, color: C.text2, lineSpacingMultiple: 1.04 });
+  });
+
+  text(s, 'WHAT YOUR MONEY BUILDS, STAGE BY STAGE', { x: M, y: 6.68, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
+  const stagesList = [
+    ['Stage 1 · A clean base', 'Technology that works today: the geothermal plant, the wind and solar farms, the battery bank, the heat tank, heated streets and the metro.'],
+    ['Stage 2 · Food and water', 'The Snow-to-Food & Water Plant, starting small. For scale, Solar Foods’ first protein factory in Finland cost about €42 million for up to 160 t a year [6].'],
+    ['Stage 3 · Fusion', 'Built only when fusion power is proven. It is the most expensive part: ITER alone is estimated at €18–22 billion to first plasma [12], which is why it comes last.'],
+  ];
+  s.addShape(pres.shapes.LINE, { x: M + 0.2, y: 7.12, w: 0, h: 1.3, line: { color: C.accent1, width: 2 }, objectName: 'stage-line' });
+  stagesList.forEach(([t, d], i) => {
+    const y = 6.98 + i * 0.62;
+    marker(s, String(i + 1), M, y, 0.4, C.accent1, { size: 13 });
+    text(s, [
+      { text: `${t}. `, options: { bold: true, color: C.text1 } },
+      { text: d, options: { color: C.text1 } },
+    ], { x: M + 0.55, y: y + 0.01, w: CW - 0.55, h: 0.56, fontSize: 9.5, lineSpacingMultiple: 1.04 });
+  });
+
+  text(s, 'WHAT INVESTORS GET BACK', { x: M, y: 8.95, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
+  const gains = [
+    'Steady income from heat, power, water and food sold to 45,000 residents',
+    'Visitors to the Mount Aurora spa and the Snow Stadium all year',
+    'Know-how other Arctic towns can use: about 4 million people live in the Arctic [3]',
+    'A city with no fuel to import and no carbon to pay for',
+  ];
+  const gw2 = (CW - 0.36) / 4;
+  gains.forEach((t, i) => {
+    const x = M + i * (gw2 + 0.12);
+    s.addShape(pres.shapes.RECTANGLE, { x, y: 9.24, w: 0.05, h: 0.6, fill: { color: C.accent1 }, line: { color: C.accent1, width: 0 }, objectName: name('gain-rule') });
+    text(s, t, { x: x + 0.13, y: 9.22, w: gw2 - 0.15, h: 0.66, fontSize: 8.5, lineSpacingMultiple: 1.02 });
+  });
+  text(s, 'Please note: these are future concepts, not tested projects. Costs and returns still have to be worked out in a full business plan, and no return is guaranteed. The risks are on page 33.', {
+    x: M, y: 9.92, w: CW, h: 0.36, fontSize: 8.5, italic: true, color: C.text2,
+  });
+  card(s, M, 10.33, CW, 0.57, C.text1);
+  text(s, [
+    { text: 'READY TO BUILD THE FUTURE?  ', options: { bold: true, charSpacing: 2, color: C.accent1 } },
+    { text: 'Contact us at [Team email] or visit the Aurora Green Finance Hall in the Financial District.', options: { color: C.background1 } },
+  ], { x: M + 0.15, y: 10.36, w: CW - 0.3, h: 0.51, fontSize: 9.5, valign: 'middle' });
+}
+
+// ---------------------------------------------------------------------------
+// 35 · Take the tour
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Guide' });
@@ -1130,7 +1232,7 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 33 · Places to visit (Appendix A of the slide content)
+// 36 · Places to visit (Appendix A of the slide content)
 // ---------------------------------------------------------------------------
 const PLACES = [
   ['President Ho Chi Minh Monument', 'The city’s civic heart on Aurora Roundabout: ceremonies, national holidays and walking tours.'],
@@ -1172,7 +1274,7 @@ const PLACES = [
 {
   const s = page('LIGHT', 'Guide');
   pageHead(s, 'Guide · 35 key places', 'Places to Visit', C.accent6);
-  text(s, 'The numbers match the markers on the city master plan on pages 8–9.', { x: M, y: 1.58, w: CW, h: 0.25, fontSize: 9.5, italic: true, color: C.text2 });
+  text(s, 'The numbers match the markers on the city master plan on pages 10–11.', { x: M, y: 1.58, w: CW, h: 0.25, fontSize: 9.5, italic: true, color: C.text2 });
   const per = 18;
   const rowH = (10.95 - 1.95) / per;
   PLACES.forEach(([n, d], i) => {
@@ -1185,7 +1287,7 @@ const PLACES = [
 }
 
 // ---------------------------------------------------------------------------
-// 34 · By the numbers (Appendix B of the slide content)
+// 37 · By the numbers (Appendix B of the slide content)
 // ---------------------------------------------------------------------------
 {
   const s = page('DARK', 'Guide');
@@ -1210,11 +1312,11 @@ const PLACES = [
     text(s, t.toUpperCase(), { x: M + 0.2, y: y + 0.06, w: lw - 0.3, h: 0.5, fontSize: 9, bold: true, charSpacing: 2, color: C.background1, lineSpacingMultiple: 1.1 });
     list.forEach(([n, l], j) => stat(s, n, l, M + lw + j * sw, y - 0.05, sw - 0.15, col, { size: 22, labelColor: C.background2, lh: 0.4, lsize: 8.5 }));
   });
-  caption(s, 'All figures are design values for the Aurora Haven city project; page 35 explains how to read our numbers.', M, 10.75, CW, 0.22, { color: C.background2 });
+  caption(s, 'All figures are design values for the Aurora Haven city project; page 38 explains how to read our numbers.', M, 10.75, CW, 0.22, { color: C.background2 });
 }
 
 // ---------------------------------------------------------------------------
-// 35 · Sources and assumptions
+// 38 · Sources and assumptions
 // ---------------------------------------------------------------------------
 {
   const s = page('LIGHT', 'Guide');
@@ -1222,7 +1324,7 @@ const PLACES = [
   text(s, 'HOW TO READ OUR NUMBERS', { x: M, y: 1.55, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
   const kinds = [
     ['Design values', 'Figures for our own city plan, such as 300 MW of electricity or 3,000 t of snow a day. They come from our design, not from a real city.'],
-    ['Our estimates', 'Calculations we made ourselves and marked “our estimate”, such as the metro capacity, or worked out on page 23. They show an idea is reasonable, not exact.'],
+    ['Our estimates', 'Calculations we made ourselves and marked “our estimate”, such as the metro capacity, or worked out on page 25. They show an idea is reasonable, not exact.'],
     ['Future concepts', 'The fusion station and the snow-to-food plant do not exist at this size today. They are our team’s ideas for the future; no prototype has been tested.'],
   ];
   const kw = (CW - 0.3) / 3;
@@ -1271,7 +1373,12 @@ const PLACES = [
 }
 
 // ---------------------------------------------------------------------------
-// 36 · Back cover
+// 39 · Inside back cover, left blank so the back cover is the last page
+// ---------------------------------------------------------------------------
+blankPage('Guide');
+
+// ---------------------------------------------------------------------------
+// 40 · Back cover
 // ---------------------------------------------------------------------------
 {
   pres.addSection({ title: 'Back Cover' });
@@ -1309,7 +1416,7 @@ const PLACES = [
   qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12 });
 }
 
-if (pageNo !== 35) throw new Error(`Expected 35 inside pages before the back cover, got ${pageNo}`);
+if (pageNo !== 39) throw new Error(`Expected 39 inside pages before the back cover, got ${pageNo}`);
 
 (async () => {
   await pres.writeFile({ fileName: OUT });
