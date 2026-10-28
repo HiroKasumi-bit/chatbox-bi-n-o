@@ -34,7 +34,7 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 2. Đọc lại và viết lại chữ bằng lời của nhóm. Hướng dẫn yêu cầu nội dung là của nhóm, nên phần chữ ở đây chỉ là bản nháp để nhóm sửa.
 3. Mở link video (https://youtu.be/QwcP_2Q3Esc) xem video có để chế độ công khai (Public hoặc Unlisted) chưa, rồi quét thử mã QR bằng điện thoại.
 
-**Mã QR:** có ở trang 5, trang 35 và bìa sau, dẫn tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc (cùng video với link YouTube nhóm gửi). Script `magazine/tools/make_graphics.py` vẽ mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được video.
+**Mã QR:** có ở trang 5 (cạnh phần giới thiệu nhóm) và bìa sau, dẫn tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc (cùng video với link YouTube nhóm gửi). Script `magazine/tools/make_graphics.py` vẽ mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được video.
 
 ## Nội dung
 
@@ -57,7 +57,7 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 | 31–32 | Nhà kính trồng rau, an toàn | Infrastructure |
 | 33 | Ưu và nhược điểm: lợi ích, rủi ro, chi phí, đánh đổi, phương án dự phòng | Pros & Cons |
 | 34 | Gọi vốn: ba cách đầu tư, xây theo từng giai đoạn, nhà đầu tư nhận lại gì, lời kêu gọi | Investment CTA |
-| 35–37 | Tham quan 8 điểm (có QR), 35 địa điểm, các con số | Housing & special locations |
+| 35–37 | Tham quan 8 điểm, 35 địa điểm, các con số | Housing & special locations |
 | 38 | Nguồn tham khảo [1]–[19], cách đọc số liệu, nguồn ảnh, chỗ khai báo dùng AI | Sources |
 | 39 | Để trắng (mặt trong bìa sau) | |
 | 40 | Bìa sau: phần kết do nhóm viết, lời kêu gọi, liên hệ nhóm, logo, mã QR | Back cover |

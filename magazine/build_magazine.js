@@ -332,7 +332,7 @@ blankPage('Cover');
     'From its sleek structural design to intelligent renewable energy integration, Aurora Haven redefines how humanity can adapt and thrive under pressure. We invite you to turn the page and step into a world where extreme natural challenges are transformed into a vibrant, resilient, and forward-thinking community.',
   ], M + COL2 + GUT, 6.45, COL2, 1.7, { fontSize: 11 });
   text(s, '[Group name]', { x: M + COL2 + GUT, y: 8.3, w: COL2, h: 0.25, fontFace: HEAD, italic: true, fontSize: 12, bold: true });
-  text(s, '[Class] · [School] · [Date]', { x: M + COL2 + GUT, y: 8.57, w: COL2, h: 0.22, fontSize: 9, color: C.text2 });
+  text(s, 'Class 11A4 · Lê Quý Đôn High School · [Date]', { x: M + COL2 + GUT, y: 8.57, w: COL2, h: 0.22, fontSize: 9, color: C.text2 });
   card(s, M, 9.4, CW, 1.45, C.background2);
   picture(s, 'renders/cover.jpg', M + 0.15, 9.55, 0.8, 1.15);
   kicker(s, 'On the cover', M + 1.15, 9.57, C.accent6, { w: CW - 1.35 });
@@ -348,20 +348,20 @@ blankPage('Cover');
   const s = page('LIGHT', 'Welcome');
   pageHead(s, 'The team behind Aurora Haven', 'Meet the Founders', C.accent6);
   standfirst(s, 'The people who planned, built and wrote Aurora Haven, and what each of us did.', M, 1.6, CW, 0.5, { fontSize: 13 });
-  // Six member cards on a 3 × 2 grid, then the interview. Roles are left for the team to fill in.
+  // Six member cards on a 3 × 2 grid, then the interview.
   const team = [
-    ['Nguyễn Đông Bảo', 'nguyen_dong_bao'],
-    ['Nguyễn Bá Hiếu Thiện', 'nguyen_ba_hieu_thien'],
-    ['Phan Minh Khôi', 'phan_minh_khoi'],
-    ['Dương Hàng Nguyên', 'duong_hang_nguyen'],
-    ['Phạm Phước Khoa', 'pham_phuoc_khoa'],
-    ['Nguyễn Minh Triết', null],
+    ['Nguyễn Đông Bảo', 'nguyen_dong_bao', 'Magazine design · 3D city design'],
+    ['Nguyễn Bá Hiếu Thiện', 'nguyen_ba_hieu_thien', 'Team leader · Research · 3D city design'],
+    ['Phan Minh Khôi', 'phan_minh_khoi', 'Research · Fact-checking'],
+    ['Dương Hàng Nguyên', 'duong_hang_nguyen', 'Video filming & editing · 3D city design'],
+    ['Phạm Phước Khoa', 'pham_phuoc_khoa', 'Video editing · Magazine design'],
+    ['Nguyễn Minh Triết', 'nguyen_minh_triet', 'Magazine design · Report'],
   ];
   const gw = (CW - 0.3) / 3;
   const gh = 3.2;
   const pw = gw - 0.24;
   const ph = pw * 1.19;
-  team.forEach(([n, photo], i) => {
+  team.forEach(([n, photo, role], i) => {
     const x = M + (i % 3) * (gw + 0.15);
     const y = 2.25 + Math.floor(i / 3) * (gh + 0.15);
     card(s, x, y, gw, gh, C.background2);
@@ -372,7 +372,7 @@ blankPage('Cover');
       text(s, '[Photo]', { x: x + 0.12, y: y + 0.12, w: pw, h: ph, fontSize: 10, color: C.text2, align: 'center', valign: 'middle' });
     }
     text(s, n, { x: x + 0.12, y: y + ph + 0.22, w: pw, h: 0.26, fontFace: HEAD, fontSize: 11.5, bold: true });
-    text(s, '[Role]', { x: x + 0.12, y: y + ph + 0.5, w: pw, h: 0.22, fontSize: 9, bold: true, color: C.accent6 });
+    text(s, role, { x: x + 0.12, y: y + ph + 0.5, w: pw, h: 0.38, fontSize: 9, bold: true, color: C.accent6, lineSpacingMultiple: 1.0 });
   });
   qrCard(s, M, 9.0, CW, 1.9);
 }
@@ -1233,12 +1233,11 @@ blankPage('Cover');
   const bx = 5.25;
   const bw = W - M - bx;
   card(s, bx, 2.65, bw, 8.2, C.background1);
-  picture(s, 'renders/stadium.jpg', bx, 2.65, bw, 1.75);
-  caption(s, 'Aurora Snow Stadium at dusk.', bx + 0.18, 4.47, bw - 0.36, 0.22);
-  kicker(s, 'Behind the build', bx + 0.18, 4.85, C.accent6, { w: bw - 0.4 });
+  picture(s, 'renders/stadium.jpg', bx, 2.65, bw, 4.0);
+  caption(s, 'Aurora Snow Stadium at dusk.', bx + 0.18, 6.72, bw - 0.36, 0.22);
+  kicker(s, 'Behind the build', bx + 0.18, 7.15, C.accent6, { w: bw - 0.4 });
   [['35', 'key places, numbered on the master plan'], ['9', 'downtown blocks around the Aurora Roundabout'], ['1 m', 'per unit on every plan, drawn from the 3D model']]
-    .forEach(([n, l], i) => stat(s, n, l, bx + 0.18, 5.15 + i * 0.85, bw - 0.36, C.accent6, { size: 20, lh: 0.4, lsize: 8.5 }));
-  qrCard(s, bx + 0.12, 7.75, bw - 0.24, 2.95);
+    .forEach(([n, l], i) => stat(s, n, l, bx + 0.18, 7.45 + i * 1.05, bw - 0.36, C.accent6, { size: 22, lh: 0.4, lsize: 9 }));
 }
 
 // ---------------------------------------------------------------------------
@@ -1418,11 +1417,10 @@ blankPage('Guide');
     { text: 'CONTACT THE TEAM', options: { bold: true, charSpacing: 2, color: C.accent1, breakLine: true, paraSpaceAfter: 4 } },
     { text: '[Group name]', options: { bold: true, breakLine: true } },
     { text: 'Nguyễn Đông Bảo · Nguyễn Bá Hiếu Thiện · Phan Minh Khôi · Dương Hàng Nguyên · Phạm Phước Khoa · Nguyễn Minh Triết', options: { fontSize: 8.5, breakLine: true } },
-    { text: '[Class] · [School]', options: { breakLine: true } },
+    { text: 'Class 11A4 · Lê Quý Đôn High School', options: { breakLine: true } },
     { text: '[Team email]', options: {} },
   ], { x: px + 0.2, y: 1.95, w: pw - 1.55, h: 1.4, fontSize: 9.5, color: C.background1, lineSpacingMultiple: 1.04 });
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: px + pw - 1.25, y: 2.1, w: 1.05, h: 1.05, rectRadius: 0.08, fill: { color: C.text1, transparency: 100 }, line: { color: C.background2, width: 1, dashType: 'dash' }, objectName: 'school-logo-space' });
-  text(s, '[School or team logo]', { x: px + pw - 1.2, y: 2.1, w: 0.95, h: 1.05, fontSize: 8, color: C.background2, align: 'center', valign: 'middle' });
+  s.addImage({ path: img('ui/school_logo.png'), x: px + pw - 1.22, y: 2.05, w: 1.05, h: 1.05, objectName: 'school-logo' });
   qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12 });
 }
 
