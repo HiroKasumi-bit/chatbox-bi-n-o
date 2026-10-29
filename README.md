@@ -65,7 +65,7 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 
 **Nguồn chữ và số liệu:**
 
-- Thông tin về thành phố lấy từ `magazine/source/Aurora_Haven_Slide_Content.docx` và các thẻ Name/Purpose/Feature trong `magazine/source/Aurora_Haven_v13.json`. Đây là số liệu thiết kế của nhóm.
+- Thông tin về thành phố lấy từ `magazine/source/Aurora_Haven_Slide_Content.docx` và các thẻ Name/Purpose/Feature trong `magazine/source/Aurora_Haven.json`. Đây là số liệu thiết kế của nhóm.
 - Bản đồ và mô hình 3D giữ đúng hướng các khu và địa điểm như trong mô hình Ecopolis của nhóm (file `.json` trên). Riêng khoảng cách thì được giãn rộng ra để các tòa nhà không chồng lên nhau, nên không phải số đo của nhóm. Trong ô phố trung tâm, các góc được xếp đúng như file `.json`: Civic Center ở tây bắc, bệnh viện và trường Northern Lights School ở đông bắc, siêu thị Igloo Fresh và rạp Aurora Cinema ở tây nam.
 - Số liệu thế giới thật (Bắc Cực ấm nhanh gần 4 lần, băng vĩnh cửu tan, ITER, Solar Foods, Blue Lagoon…) đều có số trong ngoặc vuông dẫn tới danh sách nguồn ở trang 38.
 - Các phép tính kiểm tra (nhiên liệu nhiệt hạch, năng lượng làm tan tuyết, lượng nước mỗi người) ở trang 23, và sức chở của metro ở trang 30, là ước tính của nhóm và được ghi rõ như vậy.

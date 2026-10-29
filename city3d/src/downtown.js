@@ -134,7 +134,7 @@ function civicCore(b, cx, cz) {
     b.add('blueLight', new THREE.BoxGeometry(0.9, 0.9, 0.1), matrix(cx, 3.6, z0 + open * 1.0)); // metro sign
     b.add('metalDark', new THREE.BoxGeometry(0.08, 0.5, 0.08), matrix(cx, 3.1, z0 + open * 1.0));
   }
-  // The four corners follow the group's Ecopolis model (magazine/source/Aurora_Haven_v13.json):
+  // The four corners follow the group's Ecopolis model (magazine/source/Aurora_Haven.json):
   // the Civic Center north-west, the hospital and the school north-east, the food hall and the
   // cinema south-west, and a pocket park with a skating rink south-east.
   // Civic Center with a clock tower.

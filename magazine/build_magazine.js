@@ -1,6 +1,6 @@
 // Builds the Aurora Haven magazine (40 A4 portrait pages) as an editable PowerPoint file.
 // Text comes from source/Aurora_Haven_Slide_Content.docx and the place cards in
-// source/Aurora_Haven_v13.json; every picture is rendered from the 3D city in ../city3d.
+// source/Aurora_Haven.json; every picture is rendered from the 3D city in ../city3d.
 //
 //   cd magazine && npm install
 //   node build_magazine.js
