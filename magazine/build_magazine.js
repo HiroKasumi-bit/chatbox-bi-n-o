@@ -219,7 +219,7 @@ const shadow = () => ({ type: 'outer', color: '06102A', blur: 6, offset: 1, angl
 // tools/make_graphics.py). The code and the link under it are both clickable in the file.
 const INTERVIEW_URL = 'https://youtu.be/QwcP_2Q3Esc';
 // The interactive edition of this magazine on FlipHTML5.
-const FLIPBOOK_URL = 'https://online.fliphtml5.com/MagazinePolarCity71844894/Aurora_Haven_Magazine_web/';
+const FLIPBOOK_URL = 'https://online.fliphtml5.com/aidsfjas4239PolarCut/Aurora_Haven_Magazine_web/';
 
 // A sidebar on a picture or a page: a kicker heading, an optional big figure and a short text.
 // o.light sets dark text on an ice card instead of white text on a navy panel.
