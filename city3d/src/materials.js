@@ -9,6 +9,15 @@ const FLOOR = 3.6; // floor height, m
 export const FACADE = { bay: BAY, floor: FLOOR, shopFloor: 4.5 };
 
 export const materials = {};
+
+// Real water ripples: the water normal map from the three.js examples (see textures/README.md).
+const waterNormals = new THREE.TextureLoader().load('textures/waternormals.jpg');
+waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+export function waterNormalMap(repeat) {
+  const t = waterNormals.clone();
+  t.repeat.set(repeat, repeat);
+  return t;
+}
 const emissive = []; // [material, day, night, dusk]
 
 function std(key, params, day = 0, night = 0, dusk = night * 0.9) {
@@ -56,6 +65,7 @@ export function createMaterials() {
   std('pipe', { color: 0xd6dce4, roughness: 0.22, metalness: 0.9 });
   std('glass', { color: 0x6a86a6, roughness: 0.04, metalness: 0.8 });
   std('glassGold', { color: 0xd8a84a, roughness: 0.1, metalness: 0.85, emissive: 0xffb050 }, 0, 0.35);
+  std('eyeGlass', { color: 0xcfe2f5, roughness: 0.04, metalness: 0.1, transparent: true, opacity: 0.35, depthWrite: false });
   std('glassWarm', { color: 0x8aa0b8, roughness: 0.06, metalness: 0.45, emissive: 0xffc27a }, 0.08, 0.85);
   std('glassGreen', { color: 0xa8d8c8, roughness: 0.06, metalness: 0.3, transparent: true, opacity: 0.55, emissive: 0xff8ad0 }, 0.0, 0.7);
   std('plants', { color: 0x3f8f4a, roughness: 0.8, emissive: 0xff5fc8 }, 0, 0.8);
@@ -68,6 +78,8 @@ export function createMaterials() {
   std('spaGlass', { map: lounge.map, emissiveMap: lounge.emissiveMap, emissive: 0xffffff, roughness: 0.05, metalness: 0.35 }, 0.35, 1.0, 0.95);
   std('water', { color: 0x2fb5c0, roughness: 0.04, metalness: 0.3, emissive: 0x22d0d8 }, 0.08, 0.9);
   std('waterDark', { color: 0x2c6f8a, roughness: 0.06, metalness: 0.35 });
+  // Warm pool water: deep and clear, rippled, reflecting the sky, lit softly from below.
+  std('poolWater', { color: 0x15707c, roughness: 0.05, metalness: 0.0, normalMap: waterNormalMap(2.5), normalScale: new THREE.Vector2(0.6, 0.6), emissive: 0x1fb0b8 }, 0.03, 0.42, 0.36);
   std('treeGreen', { color: 0x24503f, roughness: 0.9, flatShading: true });
   std('treeGreen2', { color: 0x30604a, roughness: 0.9, flatShading: true });
   std('snowTree', { color: 0xf4f7fb, roughness: 0.9, flatShading: true });
@@ -128,7 +140,7 @@ export function setMode(mode, env = 0.5) {
   // Sky light from the environment map, kept lower than the sun so shadows stay readable;
   // glass gets more of it, so it reads as a reflective surface.
   for (const [key, m] of Object.entries(materials)) {
-    const glassy = key.startsWith('glass') || key.startsWith('f_') || key.startsWith('car') || key === 'asphalt';
+    const glassy = key.startsWith('glass') || key.startsWith('f_') || key.startsWith('car') || key === 'asphalt' || key === 'poolWater';
     m.envMapIntensity = glassy ? env * 2.2 : env;
   }
 }

@@ -7,7 +7,7 @@
 // Each set has its own lights; while a set is active it borrows the eight lamp lights.
 import * as THREE from 'three';
 import { Batch, matrix, noise2D, fbm, rng } from './util.js';
-import { materials } from './materials.js';
+import { materials, waterNormalMap } from './materials.js';
 import { person, bather, pine } from './kit.js';
 import { normalFromHeight } from './textures.js';
 
@@ -89,7 +89,7 @@ function setMaterials() {
   m.caveWall = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.8, side: THREE.BackSide, flatShading: true, envMapIntensity: 0.5 });
   m.spaFloor = new THREE.MeshStandardMaterial({ color: 0x4a4744, roughness: 0.25, metalness: 0.05 });
   m.coping = new THREE.MeshStandardMaterial({ color: 0x8c8780, roughness: 0.4 });
-  m.mineralWater = new THREE.MeshStandardMaterial({ color: 0x4fbcc0, roughness: 0.05, metalness: 0.25, emissive: 0x1498a8, emissiveIntensity: 0.38, normalMap: rippleTexture(3), normalScale: new THREE.Vector2(0.3, 0.3) });
+  m.mineralWater = new THREE.MeshStandardMaterial({ color: 0x4fbcc0, roughness: 0.05, metalness: 0.25, emissive: 0x1498a8, emissiveIntensity: 0.38, normalMap: waterNormalMap(3), normalScale: new THREE.Vector2(0.5, 0.5) });
   m.waterfall = new THREE.MeshStandardMaterial({ map: waterfallTexture(), color: 0xe9fbff, transparent: true, depthWrite: false, roughness: 0.2, emissive: 0x8fe8f0, emissiveIntensity: 0.18, opacity: 0.85, side: THREE.DoubleSide });
   m.liftGlass = new THREE.MeshStandardMaterial({ color: 0xbfd6e0, roughness: 0.04, metalness: 0.6, transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide });
   m.warmStrip = new THREE.MeshStandardMaterial({ color: 0xffd9a0, emissive: 0xffb866, emissiveIntensity: 3.0 });

@@ -136,12 +136,17 @@ export function mountAurora(b) {
   for (const [px, py, pz] of [[-6, 5, face + 1.4], [-4.8, 5, face + 1.6], [5, 9.5, face + 4.7], [-2, 14, face + 8.2], [2.6, 14, face + 8.0]]) {
     person(b, X + px, pz, Math.PI + (R() - 0.5), { y: py, still: true });
   }
-  // The Aurora Eye: a heated glass bubble in the city-facing snow face, on a ribbed frame.
-  const eye = [X + 10, 15.6, face + 14];
-  b.add('glass', new THREE.SphereGeometry(2.6, 28, 16, 0, Math.PI * 2, 0, Math.PI * 0.62), matrix(...eye));
-  b.add('glassWarm', new THREE.CylinderGeometry(2.2, 2.2, 0.6, 24), matrix(eye[0], eye[1] - 0.6, eye[2]));
-  for (let k = 0; k < 8; k++) b.add('metalDark', new THREE.TorusGeometry(2.62, 0.05, 4, 24, Math.PI * 0.62), matrix(...eye, (k / 8) * Math.PI, 1, 1, 1, 0, Math.PI / 2));
-  b.add('metalDark', new THREE.TorusGeometry(2.45, 0.08, 4, 32), matrix(eye[0], eye[1] - 0.95, eye[2], 0, 1, 1, 1, Math.PI / 2));
+  // The Aurora Eye: a heated glass dome crowning the Summit Sanctuary (level 4), so the stepped
+  // spa ends in one lit lantern. A ribbed steel frame over warm-lit glass, on a stone ring.
+  const top = levels[3];
+  const eye = [X, top[0] + 5.0, face + 3 * 3.4 + top[2] / 2];
+  const er = 3.4;
+  b.add('stone', new THREE.CylinderGeometry(er + 0.35, er + 0.5, 0.5, 32), matrix(eye[0], eye[1] - 0.25, eye[2]));
+  b.add('glassWarm', new THREE.SphereGeometry(er - 0.25, 28, 12, 0, Math.PI * 2, 0, Math.PI / 2), matrix(...eye));
+  b.add('eyeGlass', new THREE.SphereGeometry(er, 32, 14, 0, Math.PI * 2, 0, Math.PI / 2), matrix(...eye));
+  for (let k = 0; k < 6; k++) b.add('metalDark', new THREE.TorusGeometry(er + 0.02, 0.06, 4, 32, Math.PI), matrix(...eye, (k / 6) * Math.PI));
+  b.add('metalDark', new THREE.TorusGeometry(er * 0.72, 0.05, 4, 32), matrix(eye[0], eye[1] + er * 0.69, eye[2], 0, 1, 1, 1, Math.PI / 2));
+  b.add('metalDark', new THREE.TorusGeometry(er + 0.05, 0.09, 4, 40), matrix(eye[0], eye[1] + 0.05, eye[2], 0, 1, 1, 1, Math.PI / 2));
 
   // North Portal: a timber entrance grotto, a heated forecourt and a drop-off loop.
   b.add('timber', new THREE.BoxGeometry(10, 6, 5), matrix(X, 3, face - 2.5));
@@ -166,8 +171,8 @@ export function mountAurora(b) {
   const lz = Z - 46;
   b.add('stone', new THREE.BoxGeometry(24, 0.6, 14), matrix(lx, 0.3, lz));
   b.add('stone', new THREE.BoxGeometry(12, 0.6, 24), matrix(lx + 2, 0.3, lz + 2));
-  b.add('water', new THREE.BoxGeometry(22, 0.5, 12), matrix(lx, 0.4, lz));
-  b.add('water', new THREE.BoxGeometry(10, 0.5, 22), matrix(lx + 2, 0.4, lz + 2));
+  b.add('poolWater', new THREE.BoxGeometry(22, 0.5, 12), matrix(lx, 0.4, lz));
+  b.add('poolWater', new THREE.BoxGeometry(10, 0.5, 22), matrix(lx + 2, 0.4, lz + 2));
   b.add('timber', new THREE.BoxGeometry(4, 0.35, 16), matrix(lx - 14, 0.2, lz + 3));
   b.add('timber', new THREE.BoxGeometry(14, 0.35, 3), matrix(lx - 6, 0.2, lz + 12));
   for (let i = 0; i < 4; i++) lamp(b, lx - 13 + i * 9, lz - 8.5, 3.5);
