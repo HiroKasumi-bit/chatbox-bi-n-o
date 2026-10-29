@@ -32,7 +32,7 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 
 **Mã QR:** trang 5 có mã tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc; bìa sau có mã tới bản tạp chí tương tác trên FlipHTML5 (https://online.fliphtml5.com/MagazinePolarCity71844894/Aurora_Haven_Magazine_web/). Script `magazine/tools/make_graphics.py` vẽ các mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được.
 
-**File bản đồ 3D:** `magazine/source/Aurora_Haven.json` mở bằng web Eco-Polis Builder (https://ecopolis3d.netlify.app/, nút 📂 Load). Mỗi khi file này thay đổi trên GitHub, workflow `.github/workflows/map-release.yml` tự đăng lại file lên Release `map-v1`, nên link tải https://github.com/HiroKasumi-bit/chatbox-bi-n-o/releases/latest/download/Aurora_Haven.json luôn là bản mới nhất.
+**File bản đồ 3D:** `magazine/source/Aurora_Haven.json` mở bằng web Eco-Polis Builder (https://ecopolis3d.netlify.app/, nút 📂 Load). Ảnh chụp mô hình Ecopolis của nhóm nằm trong `magazine/assets/ecopolis/`. Mỗi khi file này thay đổi trên GitHub, workflow `.github/workflows/map-release.yml` tự đăng lại file lên Release `map-v1`, nên link tải https://github.com/HiroKasumi-bit/chatbox-bi-n-o/releases/latest/download/Aurora_Haven.json luôn là bản mới nhất.
 
 ## Nội dung
 
@@ -49,19 +49,21 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 | 10–11 | Trang đôi: Liberty Mall và tượng đài Founding Mayor Monument | Housing & special locations |
 | 12 | Bản đồ tổng thể (một trang) | Housing & special locations |
 | 13 | 9 ô phố trung tâm | Housing & special locations |
-| 14–22 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, spa trong núi (trang đôi 14–15 và 20–21) | Breakthrough innovations |
-| 23 | Bảng kiểm chứng ba đột phá | Breakthrough innovations |
+| 14–22 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, ngọn núi tuyết có khu giải trí bên trong (trang đôi 14–15 và 20–21). Mỗi đột phá có ô "Where the world is today" và "Reality check" đặt ngay trên ảnh; trang 16 có ô "Why it's green" | Breakthrough innovations |
+| 23 | Built by Us: ảnh thật mô hình Ecopolis của nhóm, 2 mã QR (tải file bản đồ, mở web Eco-Polis) và 5 bước hướng dẫn | Breakthrough innovations |
 | 24 | Vòng tuần hoàn giữa ba khu | Infrastructure |
 | 25 | Đời sống hằng ngày: trường, y tế, mua sắm, văn hóa | Housing & special locations |
 | 26 | Nhà ở: cách nhà chống lạnh, nhà cho mọi lứa tuổi | Transport & Housing |
-| 27–28 | Năng lượng, nước và rác | Infrastructure |
+| 27 | Năng lượng 3 giai đoạn: gió + mặt trời khởi động nhiệt hạch, nhiệt hạch cấp điện, gió + mặt trời làm dự phòng | Infrastructure |
+| 28 | Nước và rác | Infrastructure |
 | 29 | Hệ sinh thái đô thị | Urban Eco-System |
 | 30 | Giao thông | Getting Around |
 | 31–32 | Nhà kính trồng rau, an toàn | Infrastructure |
 | 33 | Ưu và nhược điểm | Pros & Cons |
 | 34 | Gọi vốn | Investment CTA |
-| 35–37 | Tham quan 8 điểm, 35 địa điểm, các con số | Housing & special locations |
-| 38 | Nguồn tham khảo [1]–[19], cách đọc số liệu, khai báo dùng AI | Sources |
+| 35–36 | Tham quan 8 điểm, 35 địa điểm | Housing & special locations |
+| 37 | Through a Resident's Eyes: một ngày của cư dân (câu chuyện tưởng tượng) | Housing & special locations |
+| 38 | Nguồn tham khảo [1]–[20], cách đọc số liệu, khai báo dùng AI | Sources |
 | 39 | Để trắng (mặt trong bìa sau) | |
 | 40 | Bìa sau: phần kết do nhóm viết, lời kêu gọi, liên hệ nhóm, logo, mã QR | Back cover |
 
