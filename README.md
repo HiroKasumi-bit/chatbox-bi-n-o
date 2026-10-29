@@ -20,9 +20,9 @@ Bốn bản đồ 2D (bản đồ tổng thể, hai khu đặc trưng, các tầ
 
 File `.pptx` mở bằng PowerPoint, hoặc trên Canva chọn **Create a design → Import file** rồi chọn file.
 
-Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa riêng) để thấy các trang đôi: ảnh trải liền qua trang 6–7, 10–11, 14–15 và 20–21.
+Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa riêng) để thấy các trang đôi: ảnh trải liền qua các trang đôi 4–5, 8–9, 12–13 và 18–19 (theo số in trên trang).
 
-**Khi in:** in hai mặt, khổ A4, màu. Trang 2 và trang 39 là mặt trong của bìa trước và bìa sau nên được để trắng. Nhờ vậy mục lục bắt đầu ở trang bên phải, và bìa sau rơi đúng vào mặt cuối. Tổng 40 trang là bội số của 4, nên cũng in được kiểu gấp đôi đóng ghim giữa.
+**Khi in:** in hai mặt, khổ A4, màu. Tờ thứ 2 và tờ thứ 39 trong file là mặt trong của bìa trước và bìa sau nên được để trắng. Nhờ vậy mục lục bắt đầu ở trang bên phải, và bìa sau rơi đúng vào mặt cuối. Tổng 40 trang là bội số của 4, nên cũng in được kiểu gấp đôi đóng ghim giữa.
 
 **Việc nhóm cần làm trước khi nộp:**
 
@@ -30,49 +30,51 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 2. Đọc lại và viết lại chữ bằng lời của nhóm. Hướng dẫn yêu cầu nội dung là của nhóm, nên phần chữ ở đây chỉ là bản nháp để nhóm sửa.
 3. Mở link video (https://youtu.be/QwcP_2Q3Esc) xem video có để chế độ công khai (Public hoặc Unlisted) chưa, rồi quét thử mã QR bằng điện thoại.
 
-**Mã QR:** trang 5 có mã tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc; bìa sau có mã tới bản tạp chí tương tác trên FlipHTML5 (https://online.fliphtml5.com/MagazinePolarCity71844894/Aurora_Haven_Magazine_web/). Script `magazine/tools/make_graphics.py` vẽ các mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được.
+**Mã QR:** trang 3 có mã tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc; bìa sau có mã tới bản tạp chí tương tác trên FlipHTML5 (https://online.fliphtml5.com/MagazinePolarCity71844894/Aurora_Haven_Magazine_web/). Script `magazine/tools/make_graphics.py` vẽ các mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được.
 
 **File bản đồ 3D:** `magazine/source/Aurora_Haven.json` mở bằng web Eco-Polis Builder (https://ecopolis3d.netlify.app/, nút 📂 Load). Ảnh chụp mô hình Ecopolis của nhóm nằm trong `magazine/assets/ecopolis/`. Mỗi khi file này thay đổi trên GitHub, workflow `.github/workflows/map-release.yml` tự đăng lại file lên Release `map-v1`, nên link tải https://github.com/HiroKasumi-bit/chatbox-bi-n-o/releases/latest/download/Aurora_Haven.json luôn là bản mới nhất.
 
 ## Nội dung
 
+Số trang in trên tạp chí không tính bìa trước và mặt trong của nó: **mục lục là trang 1**. Bìa sau và mặt trong của nó không đánh số.
+
 | Trang | Nội dung | Mục trong hướng dẫn |
 |---|---|---|
-| 1 | Bìa: tên, ảnh, khẩu hiệu "A polar city that thrives" | Cover |
-| 2 | Để trắng (mặt trong bìa trước) | |
-| 3 | Mục lục | Table of contents |
-| 4 | Thư của nhóm sáng lập (phần mở đầu do nhóm viết) | Letter from the Founders |
-| 5 | 6 thành viên: ảnh, vai trò; mã QR tới video phỏng vấn | Letter from the Founders |
-| 6–7 | Trang đôi: toàn cảnh thành phố, giới thiệu chung | |
-| 8 | Thách thức vùng cực, có số liệu thật kèm nguồn | Vision & Crisis |
-| 9 | Tầm nhìn, sứ mệnh, ai bị ảnh hưởng, 5 nguyên tắc | Vision & Crisis |
-| 10–11 | Trang đôi: Liberty Mall và tượng đài Founding Mayor Monument | Housing & special locations |
-| 12 | Bản đồ tổng thể (một trang) | Housing & special locations |
-| 13 | 9 ô phố trung tâm | Housing & special locations |
-| 14–22 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, ngọn núi tuyết có khu giải trí bên trong (trang đôi 14–15 và 20–21). Mỗi đột phá có ô "Where the world is today" và "Reality check" đặt ngay trên ảnh; trang 16 có ô "Why it's green" | Breakthrough innovations |
-| 23 | Built by Us: ảnh thật mô hình Ecopolis của nhóm, 2 mã QR (tải file bản đồ, mở web Eco-Polis) và 5 bước hướng dẫn | Breakthrough innovations |
-| 24 | Vòng tuần hoàn giữa ba khu | Infrastructure |
-| 25 | Đời sống hằng ngày: trường, y tế, mua sắm, văn hóa | Housing & special locations |
-| 26 | Nhà ở: cách nhà chống lạnh, nhà cho mọi lứa tuổi | Transport & Housing |
-| 27 | Năng lượng 3 giai đoạn: gió + mặt trời khởi động nhiệt hạch, nhiệt hạch cấp điện, gió + mặt trời làm dự phòng | Infrastructure |
-| 28 | Nước và rác | Infrastructure |
-| 29 | Hệ sinh thái đô thị | Urban Eco-System |
-| 30 | Giao thông | Getting Around |
-| 31–32 | Nhà kính trồng rau, an toàn | Infrastructure |
-| 33 | Ưu và nhược điểm | Pros & Cons |
-| 34 | Gọi vốn | Investment CTA |
-| 35–36 | Tham quan 8 điểm, 35 địa điểm | Housing & special locations |
-| 37 | Through a Resident's Eyes: một ngày của cư dân (câu chuyện tưởng tượng) | Housing & special locations |
-| 38 | Nguồn tham khảo [1]–[20], cách đọc số liệu, khai báo dùng AI | Sources |
-| 39 | Để trắng (mặt trong bìa sau) | |
-| 40 | Bìa sau: phần kết do nhóm viết, lời kêu gọi, liên hệ nhóm, logo, mã QR | Back cover |
+| Bìa trước | Bìa: tên, ảnh, khẩu hiệu "A polar city that thrives" | Cover |
+| (không đánh số) | Để trắng (mặt trong bìa trước) | |
+| 1 | Mục lục | Table of contents |
+| 2 | Thư của nhóm sáng lập (phần mở đầu do nhóm viết) | Letter from the Founders |
+| 3 | 6 thành viên: ảnh, vai trò; mã QR tới video phỏng vấn | Letter from the Founders |
+| 4–5 | Trang đôi: toàn cảnh thành phố, giới thiệu chung | |
+| 6 | Thách thức vùng cực, có số liệu thật kèm nguồn | Vision & Crisis |
+| 7 | Tầm nhìn, sứ mệnh, ai bị ảnh hưởng, 5 nguyên tắc | Vision & Crisis |
+| 8–9 | Trang đôi: Liberty Mall và tượng đài Founding Mayor Monument | Housing & special locations |
+| 10 | Bản đồ tổng thể (một trang) | Housing & special locations |
+| 11 | 9 ô phố trung tâm | Housing & special locations |
+| 12–20 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, ngọn núi tuyết có khu giải trí bên trong (trang đôi 12–13 và 18–19). Mỗi đột phá có ô "Where the world is today" và "Reality check" đặt ngay trên ảnh; trang 14 có ô "Why it's green" | Breakthrough innovations |
+| 21 | Built by Us: ảnh thật mô hình Ecopolis của nhóm, 2 mã QR (tải file bản đồ, mở web Eco-Polis) và 5 bước hướng dẫn | Breakthrough innovations |
+| 22 | Vòng tuần hoàn giữa ba khu | Infrastructure |
+| 23 | Đời sống hằng ngày: trường, y tế, mua sắm, văn hóa | Housing & special locations |
+| 24 | Nhà ở: cách nhà chống lạnh, nhà cho mọi lứa tuổi | Transport & Housing |
+| 25 | Năng lượng 3 giai đoạn: gió + mặt trời khởi động nhiệt hạch, nhiệt hạch cấp điện, gió + mặt trời làm dự phòng | Infrastructure |
+| 26 | Nước và rác | Infrastructure |
+| 27 | Hệ sinh thái đô thị | Urban Eco-System |
+| 28 | Giao thông | Getting Around |
+| 29–30 | Nhà kính trồng rau, an toàn | Infrastructure |
+| 31 | Ưu và nhược điểm | Pros & Cons |
+| 32 | Gọi vốn | Investment CTA |
+| 33–34 | Tham quan 8 điểm, 35 địa điểm | Housing & special locations |
+| 35 | Through a Resident's Eyes: một ngày của cư dân (câu chuyện tưởng tượng) | Housing & special locations |
+| 36 | Nguồn tham khảo [1]–[20], cách đọc số liệu, khai báo dùng AI | Sources |
+| (không đánh số) | Để trắng (mặt trong bìa sau) | |
+| Bìa sau | Bìa sau: phần kết do nhóm viết, lời kêu gọi, liên hệ nhóm, logo, mã QR | Back cover |
 
 **Nguồn chữ và số liệu:**
 
 - Thông tin về thành phố lấy từ `magazine/source/Aurora_Haven_Slide_Content.docx` và các thẻ Name/Purpose/Feature trong `magazine/source/Aurora_Haven.json`. Đây là số liệu thiết kế của nhóm.
 - Bản đồ và mô hình 3D giữ đúng hướng các khu và địa điểm như trong mô hình Ecopolis của nhóm (file `.json` trên). Riêng khoảng cách thì được giãn rộng ra để các tòa nhà không chồng lên nhau, nên không phải số đo của nhóm. Trong ô phố trung tâm, các góc được xếp đúng như file `.json`: Civic Center ở tây bắc, bệnh viện và trường Northern Lights School ở đông bắc, siêu thị Igloo Fresh và rạp Aurora Cinema ở tây nam.
-- Số liệu thế giới thật (Bắc Cực ấm nhanh gần 4 lần, băng vĩnh cửu tan, ITER, Solar Foods, Blue Lagoon…) đều có số trong ngoặc vuông dẫn tới danh sách nguồn ở trang 38.
-- Các phép tính kiểm tra (nhiên liệu nhiệt hạch, năng lượng làm tan tuyết, lượng nước mỗi người) ở trang 23, và sức chở của metro ở trang 30, là ước tính của nhóm và được ghi rõ như vậy.
+- Số liệu thế giới thật (Bắc Cực ấm nhanh gần 4 lần, băng vĩnh cửu tan, ITER, Solar Foods, Blue Lagoon…) đều có số trong ngoặc vuông dẫn tới danh sách nguồn ở trang 36.
+- Các phép tính kiểm tra (nhiên liệu nhiệt hạch, năng lượng làm tan tuyết, lượng nước mỗi người) nằm trong các ô "Reality check" ở trang 13, 16 và 19, và sức chở của metro ở trang 28, là ước tính của nhóm và được ghi rõ như vậy.
 - Biển hiệu cửa hàng trong ảnh (CAFÉ, BOOKS…) chỉ là chi tiết trang trí, không phải tên địa điểm có thật trong thành phố.
 
 ## Xem thành phố 3D

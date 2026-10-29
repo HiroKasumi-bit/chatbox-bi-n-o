@@ -81,16 +81,22 @@ const pageNumber = (side, dark) => ({
 pres.defineSlideMaster({ title: 'COVER', background: { color: C.text1 }, objects: [] });
 pres.defineSlideMaster({ title: 'BLANK', background: { color: C.background1 }, objects: [] });
 for (const side of ['L', 'R']) {
-  pres.defineSlideMaster({ title: `${side}_LIGHT`, background: { color: C.background1 }, objects: folioObjects(side, false), slideNumber: pageNumber(side, false) });
-  pres.defineSlideMaster({ title: `${side}_ICE`, background: { color: C.background2 }, objects: folioObjects(side, false), slideNumber: pageNumber(side, false) });
-  pres.defineSlideMaster({ title: `${side}_DARK`, background: { color: C.text1 }, objects: folioObjects(side, true), slideNumber: pageNumber(side, true) });
+  pres.defineSlideMaster({ title: `${side}_LIGHT`, background: { color: C.background1 }, objects: folioObjects(side, false) });
+  pres.defineSlideMaster({ title: `${side}_ICE`, background: { color: C.background2 }, objects: folioObjects(side, false) });
+  pres.defineSlideMaster({ title: `${side}_DARK`, background: { color: C.text1 }, objects: folioObjects(side, true) });
 }
 
-let pageNo = 1; // the cover is page 1
+let pageNo = 1; // position in the file; the cover is the first sheet
+// The printed page number leaves out the cover and its blank inside, so the contents page is page -1.
+const FIRST_NUMBERED = 3;
+const folio = (n) => n - FIRST_NUMBERED + 1;
+const numbered = []; // page numbers are added last, so they sit above full-bleed pictures
 function page(kind, section) {
   pageNo += 1;
   const side = pageNo % 2 === 0 ? 'L' : 'R';
-  return pres.addSlide({ masterName: `${side}_${kind}`, sectionTitle: section });
+  const s = pres.addSlide({ masterName: `${side}_${kind}`, sectionTitle: section });
+  numbered.push([s, side, kind === 'DARK', folio(pageNo)]);
+  return s;
 }
 
 // An empty page with no folio or page number, for the insides of the covers.
@@ -290,10 +296,10 @@ function qrCard(s, x, y, w, h, o = {}) {
       { text: pg, options: { fontSize: 8, bold: true, charSpacing: 2, color: C.accent1 } },
     ], { x, y, w, h: 1.45, align, lineSpacingMultiple: 1.05, shadow: shadow() });
   };
-  line(5.32, 2.2, 2.35, "The city's own sun", 'A compact fusion station keeps 45,000 people warm through the polar night', 'PAGE 14', 'right');
-  line(5.32, 3.45, 2.35, 'A snow mountain\nyou can walk inside', 'A whole leisure world inside a 35-metre snow peak', 'PAGE 19', 'right');
-  line(M, 9.75, 3.3, 'Bread and water from snow and air', 'Inside the plant that feeds a city with no farmland', 'PAGE 17', 'left');
-  line(4.37, 9.75, 3.3, '−45 °C. 120 km/h. No sun.', 'The polar challenge, and the five ideas that answer it', 'PAGE 8', 'right');
+  line(5.32, 2.2, 2.35, "The city's own sun", 'A compact fusion station keeps 45,000 people warm through the polar night', 'PAGE 12', 'right');
+  line(5.32, 3.45, 2.35, 'A snow mountain\nyou can walk inside', 'A whole leisure world inside a 35-metre snow peak', 'PAGE 17', 'right');
+  line(M, 9.75, 3.3, 'Bread and water from snow and air', 'Inside the plant that feeds a city with no farmland', 'PAGE 15', 'left');
+  line(4.37, 9.75, 3.3, '−45 °C. 120 km/h. No sun.', 'The polar challenge, and the five ideas that answer it', 'PAGE 6', 'right');
 }
 
 // ---------------------------------------------------------------------------
@@ -313,31 +319,31 @@ blankPage('Cover');
   title(s, 'Contents', M, 3.26, CW, 0.8, { fontSize: 44, color: C.background1 });
   caption(s, 'Shops and cafés on a downtown street at dusk. The streets are warmed from below, so they stay clear of ice without salt.', M, 4.38, CW, 0.25);
   const items = [
-    ['4', 'Letter from the Founders', 'Who we are, our team and why we built Aurora Haven'],
-    ['6', 'Welcome to Aurora Haven', 'A compact city of 45,000 under a snow peak'],
-    ['8', 'The Polar Challenge', 'Cold, darkness, wind and thawing ground'],
-    ['9', 'Our Vision & Mission', 'Who is affected, and the five ideas that answer it'],
-    ['10', 'Nine Blocks, One Short Walk', 'Downtown around the Aurora Roundabout'],
-    ['12', 'The Whole City Plan', 'From the wind farm to Mount Aurora'],
-    ['14', "The City's Own Sun", 'Breakthrough 1 · Fusion Power Station'],
-    ['17', 'Bread and Water from Snow and Air', 'Breakthrough 2 · Snow-to-Food & Water Plant'],
-    ['19', 'A Snow Mountain You Can Walk Inside', 'Breakthrough 3 · Mount Aurora'],
-    ['23', 'Built by Us', 'Our Eco-Polis model, and how to explore it'],
-    ['24', 'Three Districts, One Loop', 'How heat, water, oxygen and waste go round'],
-    ['25', 'A Livable City Every Day', 'Schools, health, shops and culture'],
-    ['26', 'Homes for the Polar Night', 'Housing for every age, built for −45 °C'],
-    ['27', 'Energy for the Polar Night', 'Fusion, wind, sun, geothermal and storage'],
-    ['28', 'Nothing Is Wasted', 'Water and waste in closed loops'],
-    ['29', 'Wild Neighbours', 'Our urban eco-system: plants and animals'],
-    ['30', 'Getting Around Fossil-Free', 'Routes, users, capacity, safety and energy'],
-    ['31', 'Salad Under the Northern Lights', 'Inside the Evergreen Greenhouse Dome'],
-    ['32', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
-    ['33', 'Pros & Cons', 'Advantages, risks, costs and trade-offs'],
-    ['34', 'Invest in Aurora Haven', 'Three ways to fund the city, stage by stage'],
-    ['35', 'Take the Tour', 'Eight stops around the city'],
-    ['36', 'Places to Visit', '35 key places and what they do'],
-    ['37', 'Through a Resident’s Eyes', 'An imagined day in the polar night'],
-    ['38', 'Sources & Assumptions', 'Where our facts come from'],
+    ['2', 'Letter from the Founders', 'Who we are, our team and why we built Aurora Haven'],
+    ['4', 'Welcome to Aurora Haven', 'A compact city of 45,000 under a snow peak'],
+    ['6', 'The Polar Challenge', 'Cold, darkness, wind and thawing ground'],
+    ['7', 'Our Vision & Mission', 'Who is affected, and the five ideas that answer it'],
+    ['8', 'Nine Blocks, One Short Walk', 'Downtown around the Aurora Roundabout'],
+    ['10', 'The Whole City Plan', 'From the wind farm to Mount Aurora'],
+    ['12', "The City's Own Sun", 'Breakthrough 1 · Fusion Power Station'],
+    ['15', 'Bread and Water from Snow and Air', 'Breakthrough 2 · Snow-to-Food & Water Plant'],
+    ['17', 'A Snow Mountain You Can Walk Inside', 'Breakthrough 3 · Mount Aurora'],
+    ['21', 'Built by Us', 'Our Eco-Polis model, and how to explore it'],
+    ['22', 'Three Districts, One Loop', 'How heat, water, oxygen and waste go round'],
+    ['23', 'A Livable City Every Day', 'Schools, health, shops and culture'],
+    ['24', 'Homes for the Polar Night', 'Housing for every age, built for −45 °C'],
+    ['25', 'Energy for the Polar Night', 'Fusion, wind, sun, geothermal and storage'],
+    ['26', 'Nothing Is Wasted', 'Water and waste in closed loops'],
+    ['27', 'Wild Neighbours', 'Our urban eco-system: plants and animals'],
+    ['28', 'Getting Around Fossil-Free', 'Routes, users, capacity, safety and energy'],
+    ['29', 'Salad Under the Northern Lights', 'Inside the Evergreen Greenhouse Dome'],
+    ['30', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
+    ['31', 'Pros & Cons', 'Advantages, risks, costs and trade-offs'],
+    ['32', 'Invest in Aurora Haven', 'Three ways to fund the city, stage by stage'],
+    ['33', 'Take the Tour', 'Eight stops around the city'],
+    ['34', 'Places to Visit', '35 key places and what they do'],
+    ['35', 'Through a Resident’s Eyes', 'An imagined day in the polar night'],
+    ['36', 'Sources & Assumptions', 'Where our facts come from'],
   ];
   const ly = 4.8;
   const rowH = 0.46;
@@ -555,7 +561,7 @@ blankPage('Cover');
   const file = 'plans/01_city_master_plan.png';
   const ph = W * ratio(file);
   s.addImage({ path: img(file), x: 0, y: 1.75, w: W, h: ph, objectName: 'master-plan' });
-  caption(s, 'Aurora Haven – City Master Plan. North is up; one unit is one metre. Drawn from the 3D model; the numbers are the 35 places listed on page 36.', M, 1.8 + ph, CW, 0.25);
+  caption(s, 'Aurora Haven – City Master Plan. North is up; one unit is one metre. Drawn from the 3D model; the numbers are the 35 places listed on page 34.', M, 1.8 + ph, CW, 0.25);
   zones.forEach(([t, d, col], i) => {
     const x = M + (i % 2) * (COL2 + GUT);
     const y = 2.35 + ph + Math.floor(i / 2) * 0.95;
@@ -621,7 +627,7 @@ blankPage('Cover');
   bleed(R, 'renders/fusion_spread_R.jpg');
   const bw = (CW - 0.2) / 2;
   sideBox(R, M, 0.6, bw, 2.75, 'Where the world is today', 'Fusion is still being tested. The compact SPARC tokamak aims for its first plasma around 2027 [5], and ITER in France plans to burn deuterium–tritium fuel in 2039 [4]. No fusion plant sells power yet: Aurora Haven is designed for the day one does.', { color: C.accent3, fit: true, size: 9.5 });
-  sideBox(R, M + bw + 0.2, 0.6, bw, 2.75, 'Reality check', 'A day at 800 MW needs about 0.2 kg of fuel, close to our 170 g design. Breeding tritium at scale is unproven [11] and ITER costs €18–22 billion [12], so the city starts on wind, sun and geothermal power (page 27).', { color: C.accent3, fit: true, size: 9.5, figure: '≈ 0.2 kg a day' });
+  sideBox(R, M + bw + 0.2, 0.6, bw, 2.75, 'Reality check', 'A day at 800 MW needs about 0.2 kg of fuel, close to our 170 g design. Breeding tritium at scale is unproven [11] and ITER costs €18–22 billion [12], so the city starts on wind, sun and geothermal power (page 25).', { color: C.accent3, fit: true, size: 9.5, figure: '≈ 0.2 kg a day' });
   shade(R, 'bottom', 0, 9.4, W, H - 9.4);
   caption(R, 'The Fusion Core, a compact D-T tokamak, glowing violet under the northern lights.', W - M - 4.0, 10.45, 4.0, 0.4, { color: C.background1, align: 'right' });
 }
@@ -1245,13 +1251,13 @@ blankPage('Cover');
     card(s, x, 9.2, gw2, 0.68, C.background2);
     text(s, t, { x: x + 0.08, y: 9.22, w: gw2 - 0.16, h: 0.64, fontSize: 8.5, lineSpacingMultiple: 1.02, valign: 'middle' });
   });
-  text(s, 'Please note: these are future concepts, not tested projects. Costs and returns still have to be worked out in a full business plan, and no return is guaranteed. The risks are on page 33.', {
+  text(s, 'Please note: these are future concepts, not tested projects. Costs and returns still have to be worked out in a full business plan, and no return is guaranteed. The risks are on page 31.', {
     x: M, y: 9.92, w: CW, h: 0.36, fontSize: 8.5, italic: true, color: C.text2,
   });
   card(s, M, 10.33, CW, 0.57, C.text1);
   text(s, [
     { text: 'READY TO BUILD THE FUTURE?  ', options: { bold: true, charSpacing: 2, color: C.accent1 } },
-    { text: 'Visit the Aurora Green Finance Hall in the Financial District, or meet our team on page 5.', options: { color: C.background1 } },
+    { text: 'Visit the Aurora Green Finance Hall in the Financial District, or meet our team on page 3.', options: { color: C.background1 } },
   ], { x: M + 0.15, y: 10.36, w: CW - 0.3, h: 0.51, fontSize: 9.5, valign: 'middle' });
 }
 
@@ -1340,7 +1346,7 @@ const PLACES = [
 {
   const s = page('LIGHT', 'Guide');
   pageHead(s, 'Guide · 35 key places', 'Places to Visit', C.accent6);
-  text(s, 'The numbers match the markers on the city master plan on page 12.', { x: M, y: 1.58, w: CW, h: 0.25, fontSize: 9.5, italic: true, color: C.text2 });
+  text(s, 'The numbers match the markers on the city master plan on page 10.', { x: M, y: 1.58, w: CW, h: 0.25, fontSize: 9.5, italic: true, color: C.text2 });
   const per = 18;
   const rowH = (10.95 - 1.95) / per;
   PLACES.forEach(([n, d], i) => {
@@ -1479,6 +1485,9 @@ blankPage('Guide');
   qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12, flipbook: true });
 }
 
+for (const [s, side, dark, n] of numbered) {
+  s.addText(String(n), Object.assign(pageNumber(side, dark), { isTextBox: true, objectName: 'page-number' }));
+}
 if (pageNo !== 39) throw new Error(`Expected 39 inside pages before the back cover, got ${pageNo}`);
 
 (async () => {
