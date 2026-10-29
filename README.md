@@ -32,6 +32,8 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 
 **Mã QR:** trang 5 có mã tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc; bìa sau có mã tới bản tạp chí tương tác trên FlipHTML5 (https://online.fliphtml5.com/MagazinePolarCity71844894/Aurora_Haven_Magazine_web/). Script `magazine/tools/make_graphics.py` vẽ các mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được.
 
+**File bản đồ 3D:** `magazine/source/Aurora_Haven.json` mở bằng web Eco-Polis Builder (https://ecopolis3d.netlify.app/, nút 📂 Load). Mỗi khi file này thay đổi trên GitHub, workflow `.github/workflows/map-release.yml` tự đăng lại file lên Release `map-v1`, nên link tải https://github.com/HiroKasumi-bit/chatbox-bi-n-o/releases/latest/download/Aurora_Haven.json luôn là bản mới nhất.
+
 ## Nội dung
 
 | Trang | Nội dung | Mục trong hướng dẫn |

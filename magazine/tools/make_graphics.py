@@ -16,6 +16,8 @@ from PIL import Image, ImageDraw, ImageFilter
 
 OUT = Path(__file__).resolve().parent.parent / "assets" / "ui"
 INTERVIEW_URL = "https://youtu.be/QwcP_2Q3Esc"
+ECOPOLIS_URL = "https://ecopolis3d.netlify.app/"
+MAP_FILE_URL = "https://github.com/HiroKasumi-bit/chatbox-bi-n-o/releases/latest/download/Aurora_Haven.json"
 FLIPBOOK_URL = "https://online.fliphtml5.com/MagazinePolarCity71844894/Aurora_Haven_Magazine_web/"
 NAVY = (14, 26, 54)
 
@@ -94,6 +96,8 @@ def logo(path, size=1024):
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     qr(INTERVIEW_URL, OUT / "qr_interview.png")
+    qr(ECOPOLIS_URL, OUT / "qr_ecopolis.png")
+    qr(MAP_FILE_URL, OUT / "qr_map_file.png", error="m")
     qr(FLIPBOOK_URL, OUT / "qr_flipbook.png", error="m")  # a long link: medium error correction keeps the modules large
     logo(OUT / "logo.png")
 
