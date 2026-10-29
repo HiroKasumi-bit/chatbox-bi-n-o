@@ -443,18 +443,29 @@ blankPage('Cover');
     'The whole city is shaped around one idea: heat, energy, water and food should never be wasted. Every building shares a single heating network, the city runs on zero-carbon energy, and nearly all of its water and waste is recycled.',
     'Homes, schools, healthcare, shops and parks sit within a short walk of each other, connected by a downtown metro, electric trams and heated streets.',
   ], M + COL2 + GUT, band + 1.25, COL2, 2.75);
+  pullQuote(L, '“Three ideas work as one closed loop that keeps the city powered, fed and happy in one of the harshest places on Earth.”', M, 10.0, CW, 0.85, C.accent6, { fontSize: 14.5 });
 
   const R = page('LIGHT', 'Welcome');
   picture(R, 'renders/welcome_pano_R.jpg', 0, 0, W, band);
   shade(R, 'bottom', 0, band - 1.3, W, 1.3);
   caption(R, 'Aurora Haven at dusk, seen from the south-east: the fusion station in front, downtown and Aurora 81 in the middle, the wind farm on the windy northern edge.', W - M - 4.2, band - 0.62, 4.2, 0.45, { color: C.background1, align: 'right' });
-  paras(R, [
-    'What makes Aurora Haven special is its three signature districts. A fusion power station acts as the city’s own sun, giving steady power and heat even through the polar night. A Snow-to-Food & Water Plant turns snow and air into clean drinking water and food, so the city can feed itself without farmland.',
-    'And inside Mount Aurora, a geothermal spa resort offers warmth, rest and a view of the northern lights. Together they form one closed loop that keeps the city powered, fed and happy in one of the harshest places on Earth.',
-  ], M, band + 0.4, COL2 + 0.4, 3.6);
-  const sx = M + COL2 + GUT + 0.55;
-  [['45,000', 'residents'], ['−45 °C', 'winter lows'], ['35 m', 'Mount Aurora, the snow peak'], ['10 min', 'walk to daily needs']]
-    .forEach(([n, l], i) => stat(R, n, l, sx, band + 0.3 + i * 0.92, W - M - sx, C.accent6, { size: 26, lh: 0.25 }));
+  // The three standout features, each with its own colour and the page where its story starts.
+  kicker(R, 'Three things only Aurora Haven has', M, band + 0.35, C.accent6, { w: CW });
+  const features = [
+    ['1', 'The City’s Own Sun', 'A compact fusion reactor inside the city lights every home, heats every street and melts the snow we drink.', 'renders/fusion_spread_R.jpg', C.accent3, 12],
+    ['2', 'Bread and Water from Snow and Air', 'A factory turns snow and air into drinking water, bread and protein, so a city with no farmland can feed itself.', 'renders/food.jpg', C.accent4, 15],
+    ['3', 'A Snow Mountain You Can Walk Inside', 'Mineral lakes, mud pools and saunas stay at 28 °C inside a 35-metre snow peak, all winter long.', 'renders/spa.jpg', C.accent5, 17],
+  ];
+  const rh = 0.98;
+  features.forEach(([n, t, d, pic, col, pg], i) => {
+    const y = band + 0.72 + i * (rh + 0.1);
+    card(R, M, y, CW, rh, C.background2);
+    picture(R, pic, M, y, 1.55, rh);
+    marker(R, n, M + 1.72, y + 0.14, 0.4, col, { size: 13 });
+    text(R, t, { x: M + 2.25, y: y + 0.1, w: CW - 3.25, h: 0.3, fontFace: HEAD, fontSize: 13, bold: true, color: C.text1 });
+    text(R, d, { x: M + 2.25, y: y + 0.42, w: CW - 3.25, h: 0.5, fontSize: 9.5, color: C.text1, lineSpacingMultiple: 1.04 });
+    text(R, `PAGE ${pg}`, { x: W - M - 0.95, y: y + 0.12, w: 0.8, h: 0.24, fontSize: 8, bold: true, charSpacing: 2, color: col, align: 'right' });
+  });
 }
 
 // ---------------------------------------------------------------------------

@@ -45,7 +45,7 @@ Số trang in trên tạp chí không tính bìa trước và mặt trong của 
 | 1 | Mục lục | Table of contents |
 | 2 | Thư của nhóm sáng lập (phần mở đầu do nhóm viết) | Letter from the Founders |
 | 3 | 6 thành viên: ảnh, vai trò; mã QR tới video phỏng vấn | Letter from the Founders |
-| 4–5 | Trang đôi: toàn cảnh thành phố, giới thiệu chung | |
+| 4–5 | Trang đôi: toàn cảnh thành phố, giới thiệu chung; trang 5 tóm tắt 3 tính năng đặc sắc nhất (3 đột phá), kèm số trang | Breakthrough innovations |
 | 6 | Thách thức vùng cực, có số liệu thật kèm nguồn | Vision & Crisis |
 | 7 | Tầm nhìn, sứ mệnh, ai bị ảnh hưởng, 5 nguyên tắc | Vision & Crisis |
 | 8–9 | Trang đôi: Liberty Mall và tượng đài Founding Mayor Monument | Housing & special locations |
