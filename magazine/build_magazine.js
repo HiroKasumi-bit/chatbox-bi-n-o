@@ -148,7 +148,8 @@ function caption(s, t, x, y, w, h = 0.3, o = {}) {
 
 // A pull quote: a short coloured rule, then the quote in large italic serif.
 function pullQuote(s, t, x, y, w, h, color, o = {}) {
-  s.addShape(pres.shapes.RECTANGLE, { x, y, w: 0.6, h: 0.05, fill: { color }, line: { color, width: 0 }, objectName: name('quote-rule') });
+  if (!o.noRule) s.addShape(pres.shapes.RECTANGLE, { x, y, w: 0.6, h: 0.05, fill: { color }, line: { color, width: 0 }, objectName: name('quote-rule') });
+  delete o.noRule;
   text(s, t, Object.assign({ x, y: y + 0.18, w, h, fontFace: HEAD, italic: true, bold: true, fontSize: 20, color, lineSpacingMultiple: 1.02 }, o));
 }
 
@@ -217,17 +218,24 @@ const FLIPBOOK_URL = 'https://online.fliphtml5.com/MagazinePolarCity71844894/Aur
 // A sidebar on a picture or a page: a kicker heading, an optional big figure and a short text.
 // o.light sets dark text on an ice card instead of white text on a navy panel.
 function sideBox(s, x, y, w, h, head, body, o = {}) {
+  const size = o.size || 9;
+  // A long heading in a narrow box wraps onto a second line.
+  let ty = y + (head.length * 0.085 > w - 0.6 ? 0.66 : 0.46);
+  if (o.fit) {
+    // Size the box to its text (a rough estimate of the line count) instead of leaving a gap below.
+    const chars = typeof body === 'string' ? body.length : body.map((r) => r.text).join('').length;
+    const lines = Math.ceil((chars * size * 0.0072) / (w - 0.32)) + 1;
+    h = ty - y + (o.figure ? 0.55 : 0) + (lines * size * 1.3) / 72 + 0.15;
+  }
   if (o.light) card(s, x, y, w, h, C.background2);
   else panel(s, x, y, w, h, o.transparency ?? 15);
   const ink = o.light ? C.text1 : C.background1;
   kicker(s, head, x + 0.16, y + 0.16, o.color || C.accent1, { w: w - 0.36, h: 0.42, textColor: o.color || C.accent1 });
-  // A long heading in a narrow box wraps onto a second line.
-  let ty = y + (head.length * 0.085 > w - 0.6 ? 0.66 : 0.46);
   if (o.figure) {
     text(s, o.figure, { x: x + 0.16, y: ty, w: w - 0.32, h: 0.5, fontFace: HEAD, fontSize: o.figureSize || 24, bold: true, color: o.light ? (o.color || C.accent6) : C.background1 });
     ty += 0.55;
   }
-  text(s, body, { x: x + 0.16, y: ty, w: w - 0.32, h: y + h - ty - 0.1, fontSize: o.size || 9, color: ink, lineSpacingMultiple: 1.06 });
+  text(s, body, { x: x + 0.16, y: ty, w: w - 0.32, h: y + h - ty - 0.1, fontSize: size, color: ink, lineSpacingMultiple: 1.06 });
 }
 
 // A short list of bold lead-ins and text, one paragraph each.
@@ -349,7 +357,7 @@ blankPage('Cover');
 {
   const s = page('LIGHT', 'Welcome');
   kicker(s, 'Letter from the founders', M, 0.55, C.accent6);
-  pullQuote(s, '“Our goal was not only to survive the cold but to build a city where people really want to live.”', M, 0.95, CW, 1.2, C.text1, { fontSize: 23 });
+  pullQuote(s, '“Our goal was not only to survive the cold but to build a city where people really want to live.”', M, 0.85, CW, 1.2, C.text1, { fontSize: 23, noRule: true });
   picture(s, 'renders/lagoon.jpg', 0, 2.45, W, 3.5);
   caption(s, 'The Aurora Lagoon, a 38 °C open-air mineral pool at the foot of Mount Aurora, under the northern lights.', M, 6.02, CW, 0.25);
   // The team's opening, set in two columns (one text box each).
@@ -407,7 +415,7 @@ blankPage('Cover');
   const ix = M + 3.15;
   kicker(s, 'Interview conclusion', ix, 9.05, C.accent6, { w: W - M - ix - 0.2 });
   text(s, 'Looking back on the interview session, our team not only gathered valuable architectural insights but also learned a great deal about creative thinking and teamwork. Preparing the questions, listening closely, and engaging in direct discussions helped us deeply understand how green technologies can be practically applied to extreme environmental challenges. Overall, this was a truly rewarding experience that broadened our perspectives and allowed us to bring the most inspiring stories to our magazine readers.', {
-    x: ix, y: 9.33, w: W - M - ix, h: 1.6, fontSize: 8.5, italic: true, lineSpacingMultiple: 1.06,
+    x: ix, y: 9.33, w: W - M - ix, h: 1.6, fontSize: 9, italic: true, lineSpacingMultiple: 1.06,
   });
 }
 
@@ -420,7 +428,7 @@ blankPage('Cover');
   picture(L, 'renders/welcome_pano_L.jpg', 0, 0, W, band);
   shade(L, 'bottom', 0, band - 3.2, W, 3.2);
   kicker(L, 'City overview', M, band - 1.95, C.accent1, { textColor: C.background1 });
-  title(L, 'Welcome to Aurora Haven', M, band - 1.65, CW, 1.4, { fontSize: 46, color: C.background1 });
+  title(L, 'Welcome to\nAurora Haven', M, band - 1.65, CW, 1.4, { fontSize: 46, color: C.background1 });
   standfirst(L, 'Designed not just to survive the polar night, but to make life here warm, healthy and sustainable.', M, band + 0.35, CW, 0.7, { fontSize: 15, color: C.text1 });
   leadParas(L, 'Aurora Haven is', [
     'a compact polar city of around 45,000 people, built on a frozen tundra plateau beneath the snow peak of Mount Aurora. Winters fall to −45 °C, the sun disappears for two months of polar night, and almost nothing can grow.',
@@ -476,7 +484,7 @@ blankPage('Cover');
   caption(s, 'Downtown in the low sun, with Aurora 81, the food plant silos and Mount Aurora behind.', M, 2.95, CW, 0.22);
   kicker(s, 'The vision', M, 3.3, C.accent6);
   title(s, 'Our Vision & Mission', M, 3.57, CW, 0.7, { fontSize: 34 });
-  pullQuote(s, 'Our mission: a zero-carbon city where 45,000 people stay warm, fed, safe and happy through the polar night, without harming the tundra.', M, 4.32, CW, 0.85, C.accent6, { fontSize: 15.5 });
+  pullQuote(s, 'Our mission: a zero-carbon city where 45,000 people stay warm, fed, safe and happy through the polar night, without harming the tundra.', M, 4.2, CW, 0.85, C.accent6, { fontSize: 15.5, noRule: true });
   text(s, 'THE PEOPLE AND PLACES AT RISK', { x: M, y: 5.45, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
   const who = [
     ['45,000 residents', 'Families, children, older people and shift workers face −45 °C, two months without sun and 120 km/h blizzards every winter.'],
@@ -518,7 +526,7 @@ blankPage('Cover');
   bleed(L, 'renders/liberty_dusk_L.jpg');
   shade(L, 'bottom', 0, 5.6, W, H - 5.6);
   kicker(L, 'Downtown', M, 7.55, C.accent1, { textColor: C.background1 });
-  title(L, 'Nine Blocks, One Short Walk', M, 7.83, CW, 1.5, { fontSize: 44, color: C.background1 });
+  title(L, 'Nine Blocks,\nOne Short Walk', M, 7.83, CW, 1.5, { fontSize: 44, color: C.background1 });
   standfirst(L, 'Shops, schools, healthcare and homes within a short walk of each other, around the Aurora Roundabout.', M, 9.3, CW, 0.65, { color: C.background2, fontSize: 14 });
   text(L, 'Downtown is laid out in nine blocks around the Aurora Roundabout and the Founding Mayor Monument. The metro interchange lies under Liberty Mall, the tree-lined promenade through the four central blocks, which hosts festivals, markets and parades.', {
     x: M, y: 10.05, w: CW, h: 0.95, fontSize: 10, color: C.background1, lineSpacingMultiple: 1.1,
@@ -562,8 +570,8 @@ blankPage('Cover');
 {
   const s = page('LIGHT', 'The City');
   pageHead(s, 'Downtown', 'The Nine Blocks', C.accent6);
-  picture(s, 'renders/downtown_aerial.jpg', 0, 1.65, W, 4.15);
-  caption(s, 'Downtown from the south-east. The map below follows the city plan, with north at the top.', M, 5.87, CW, 0.25);
+  picture(s, 'renders/downtown_aerial.jpg', 0, 1.65, W, 4.6);
+  caption(s, 'Downtown from the south-east. The map below follows the city plan, with north at the top.', M, 6.32, CW, 0.25);
   const blocks = [
     ['Polaris Quarter', 'Aurora Core – AI Control Tower · Aurora Haven Police Headquarters · Polaris Green Office Tower'],
     ['Knowledge Quarter', 'Arctic University – Main Hall · Aurora Public Library'],
@@ -575,17 +583,17 @@ blankPage('Cover');
     ['Mount Aurora Approach', 'Mount Aurora Guesthouse · Southside Police & Mountain Rescue Post · spa shuttle street'],
     ['Aurora 81 District', 'Aurora 81 – Polar Landmark Tower · Aurora 81 Residences (Twin Towers)'],
   ];
-  const gy = 6.3;
+  const gy = 6.75;
   const gap = 0.1;
   const bw = (CW - 2 * gap) / 3;
-  const bh = 1.47;
+  const bh = 1.33;
   blocks.forEach(([t, d], i) => {
     const x = M + (i % 3) * (bw + gap);
     const y = gy + Math.floor(i / 3) * (bh + gap);
     const heart = i === 4;
     card(s, x, y, bw, bh, heart ? C.text1 : C.background2);
     text(s, t, { x: x + 0.13, y: y + 0.12, w: bw - 0.26, h: 0.24, fontSize: 10.5, bold: true, color: heart ? C.accent1 : C.accent6 });
-    text(s, d, { x: x + 0.13, y: y + 0.42, w: bw - 0.26, h: bh - 0.5, fontSize: 9.5, color: heart ? C.background1 : C.text1, lineSpacingMultiple: 1.05 });
+    text(s, d, { x: x + 0.13, y: y + 0.42, w: bw - 0.26, h: bh - 0.5, fontSize: 10, color: heart ? C.background1 : C.text1, lineSpacingMultiple: 1.05 });
   });
 }
 
@@ -612,8 +620,8 @@ blankPage('Cover');
   const R = page('DARK', 'Signature Districts');
   bleed(R, 'renders/fusion_spread_R.jpg');
   const bw = (CW - 0.2) / 2;
-  sideBox(R, M, 0.6, bw, 2.75, 'Where the world is today', 'Fusion is still being tested. The compact SPARC tokamak aims for its first plasma around 2027 [5], and ITER in France plans to burn deuterium–tritium fuel in 2039 [4]. No fusion plant sells power yet: Aurora Haven is designed for the day one does.', { color: C.accent3 });
-  sideBox(R, M + bw + 0.2, 0.6, bw, 2.75, 'Reality check', 'A day at 800 MW needs about 0.2 kg of fuel, close to our 170 g design. Breeding tritium at scale is unproven [11] and ITER costs €18–22 billion [12], so the city starts on wind, sun and geothermal power (page 27).', { color: C.accent3, figure: '≈ 0.2 kg a day' });
+  sideBox(R, M, 0.6, bw, 2.75, 'Where the world is today', 'Fusion is still being tested. The compact SPARC tokamak aims for its first plasma around 2027 [5], and ITER in France plans to burn deuterium–tritium fuel in 2039 [4]. No fusion plant sells power yet: Aurora Haven is designed for the day one does.', { color: C.accent3, fit: true, size: 9.5 });
+  sideBox(R, M + bw + 0.2, 0.6, bw, 2.75, 'Reality check', 'A day at 800 MW needs about 0.2 kg of fuel, close to our 170 g design. Breeding tritium at scale is unproven [11] and ITER costs €18–22 billion [12], so the city starts on wind, sun and geothermal power (page 27).', { color: C.accent3, fit: true, size: 9.5, figure: '≈ 0.2 kg a day' });
   shade(R, 'bottom', 0, 9.4, W, H - 9.4);
   caption(R, 'The Fusion Core, a compact D-T tokamak, glowing violet under the northern lights.', W - M - 4.0, 10.45, 4.0, 0.4, { color: C.background1, align: 'right' });
 }
@@ -630,7 +638,7 @@ blankPage('Cover');
     { n: '2', name: 'Lithium blanket & tritium fuel cycle', text: 'Breeds the tritium the reactor burns inside sealed, leak-monitored loops, so none is imported. Recovered helium cools MRI scanners.' },
     { n: '3', name: 'Fusion core: compact D-T tokamak', text: 'Superconducting magnets hold a 150-million-degree plasma. If anything fails, the plasma simply goes out: it cannot melt down.' },
     { n: '4', name: 'Power conversion & heat export', text: 'Turbines driven by CO₂ sealed in a closed loop make about 300 MW of electricity and send about 450 MW of heat to the city.' },
-    { n: '5', name: 'Plasma waste converter', text: 'Torches hotter than 5,000 °C turn about 20 t of rubbish a day into hydrogen and CO₂ for the food plant, metals and paving blocks.' },
+    { n: '5', name: 'Plasma waste converter', text: 'Torches hotter than 5,000 °C turn about 20 tonnes of rubbish a day into hydrogen and CO₂ for the food plant, metals and paving blocks.' },
     { n: 'C', name: 'Control & visitor centre', text: 'Operators and an AI digital twin can stop the plasma in milliseconds; a public gallery faces the reactor.', color: C.text1 },
   ], M, ly, 4.55, rowH, C.accent3);
   const sx = 5.55;
@@ -675,7 +683,7 @@ blankPage('Cover');
   stages(s, [
     { n: '1', name: 'Snow harvest & melt hall', text: 'Electric harvesters gather wind-packed snow upwind of the city; about 14 MW of spare fusion heat melts it.' },
     { n: '2', name: 'Drinking-water & mineral works', text: 'Membranes and UV light remove every germ, calcite adds calcium and magnesium, and sensors test the water every five minutes.' },
-    { n: '3', name: 'Electrolysis, air capture & green ammonia', text: 'About 5 t of hydrogen a day; the oxygen goes to the hospital and the waste converter.' },
+    { n: '3', name: 'Electrolysis, air capture & green ammonia', text: 'About 5 tonnes of hydrogen a day; the oxygen goes to the hospital and the waste converter.' },
     { n: '4', name: 'Carbon-fixation chemistry', text: 'A copper catalyst makes methanol, and enzymes build it into starch about eight times faster than a maize field.' },
     { n: '5', name: 'Bioreactor silos', text: 'Hydrogen-eating bacteria make protein flour; yeasts and algae make oils and vitamins, 24 hours a day.' },
     { n: '6', name: 'Food kitchen, bottling & distribution', text: 'Bread, noodles, protein mince and dairy-style drinks, delivered overnight in heated electric vans.' },
@@ -683,8 +691,8 @@ blankPage('Cover');
   const sx = 5.55;
   const sw = W - M - sx;
   const half = (10.9 - ly - 0.15) / 2;
-  sideBox(s, sx, ly - 0.05, sw, half, 'Where the world is today', 'Each step exists, but apart: Solein protein from Finland [6], starch made from CO₂ in a lab [7] and air capture in Iceland [8]. We link them in one plant.', { light: true, color: C.accent4, size: 8.5 });
-  sideBox(s, sx, ly + half + 0.1, sw, half, 'Reality check', 'Melting 3,000 t of snow a day takes about 13 MW, inside the 14 MW of spare fusion heat. Starch from CO₂ is still lab-scale [7].', { light: true, color: C.accent4, size: 8.5, figure: '≈ 13 MW', figureSize: 20 });
+  sideBox(s, sx, ly - 0.05, sw, half, 'Where the world is today', 'Each step exists, but apart: Solein protein from Finland [6], starch made from CO₂ in a lab [7] and air capture in Iceland [8]. We link them in one plant.', { light: true, color: C.accent4, size: 9.5 });
+  sideBox(s, sx, ly + half + 0.1, sw, half, 'Reality check', 'Melting 3,000 tonnes of snow a day takes about 13 MW, inside the 14 MW of spare fusion heat. Starch from CO₂ is still lab-scale [7].', { light: true, color: C.accent4, size: 9.5, figure: '≈ 13 MW', figureSize: 20 });
 }
 
 // ---------------------------------------------------------------------------
@@ -723,8 +731,8 @@ blankPage('Cover');
   const R = page('DARK', 'Signature Districts');
   bleed(R, 'renders/grotto_R.jpg');
   const gw = (CW - 0.2) / 2;
-  sideBox(R, M, 0.6, gw, 2.75, 'Where the world is today', 'Iceland’s Blue Lagoon bathes visitors in 37–39 °C water from a geothermal power plant [9], and Switzerland’s Therme Vals is cut into a hillside [10]. Mount Aurora goes further: the whole snow peak becomes the building.', { color: C.accent5 });
-  sideBox(R, M + gw + 0.2, 0.6, gw, 2.75, 'Reality check', 'An insulated rock shell holds 28 °C inside at −45 °C outside. It needs a hot spring below, to be confirmed by drilling, and thermosyphons like the Trans-Alaska Pipeline’s [14] keep the ground frozen.', { color: C.accent5, figure: '73 °C apart' });
+  sideBox(R, M, 0.6, gw, 2.75, 'Where the world is today', 'Iceland’s Blue Lagoon bathes visitors in 37–39 °C water from a geothermal power plant [9], and Switzerland’s Therme Vals is cut into a hillside [10]. Mount Aurora goes further: the whole snow peak becomes the building.', { color: C.accent5, fit: true, size: 9.5 });
+  sideBox(R, M + gw + 0.2, 0.6, gw, 2.75, 'Reality check', 'An insulated rock shell holds 28 °C inside at −45 °C outside. It needs a hot spring below, to be confirmed by drilling, and thermosyphons like the Trans-Alaska Pipeline’s [14] keep the ground frozen.', { color: C.accent5, fit: true, size: 9.5, figure: '73 °C apart' });
   shade(R, 'bottom', 0, 9.6, W, H - 9.6);
   caption(R, 'The Mineral Lake Grotto: a larch footbridge crosses the 7 × 13 m lake, and stone lanterns light the shore below the basalt wall.', W - M - 4.4, 10.3, 4.4, 0.6, { color: C.background1, align: 'right' });
 }
@@ -953,9 +961,9 @@ blankPage('Cover');
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
   pageHead(s, 'Clean energy, day and polar night', 'Energy for the Polar Night', C.accent6);
-  picture(s, 'renders/renewable.jpg', 0, 1.65, W, 3.6);
-  caption(s, 'Northern Renewable Park in the low sun: the Ice-Proof Wind Farm behind the Bifacial Solar Farm.', M, 5.3, CW, 0.25);
-  standfirst(s, 'Wind and sun start the city’s own sun. Once fusion is running, they step back and stand guard.', M, 5.65, CW, 0.45, { fontSize: 13.5 });
+  picture(s, 'renders/renewable.jpg', 0, 1.65, W, 4.6);
+  caption(s, 'Northern Renewable Park in the low sun: the Ice-Proof Wind Farm behind the Bifacial Solar Farm.', M, 6.3, CW, 0.25);
+  standfirst(s, 'Wind and sun start the city’s own sun. Once fusion is running, they step back and stand guard.', M, 6.62, CW, 0.45, { fontSize: 13.5 });
   const steps = [
     ['1 · Start-up', '200 MWh', 'The Ice-Proof Wind Farm (60 MW) and the Bifacial Solar Farm fill the battery bank, which gives the big burst of power that starts the reactor’s magnets and heaters. The panels also catch light off the snow: tests in snowy Canada found about +19% [17].', C.accent6],
     ['2 · Running', '300 + 450 MW', 'Once the plasma burns, the fusion station keeps itself going and gives the whole city electricity and heat, day and polar night.', C.accent3],
@@ -964,12 +972,13 @@ blankPage('Cover');
   const sw = (CW - 0.6) / 3;
   steps.forEach(([t, n, d, col], i) => {
     const x = M + i * (sw + 0.3);
-    card(s, x, 6.3, sw, 4.3, C.background2);
-    s.addShape(pres.shapes.RECTANGLE, { x, y: 6.3, w: sw, h: 0.38, fill: { color: col }, line: { color: col, width: 0 }, objectName: name('step-head') });
-    text(s, t.toUpperCase(), { x: x + 0.14, y: 6.3, w: sw - 0.28, h: 0.38, fontSize: 9.5, bold: true, charSpacing: 2, color: C.background1, valign: 'middle' });
-    text(s, n, { x: x + 0.14, y: 6.85, w: sw - 0.28, h: 0.5, fontFace: HEAD, fontSize: 19, bold: true, color: col });
-    text(s, d, { x: x + 0.14, y: 7.45, w: sw - 0.28, h: 3.05, fontSize: 10, lineSpacingMultiple: 1.08 });
-    if (i < 2) arrow(s, x + sw + 0.03, 8.4, x + sw + 0.27, 8.4, C.text2, 2.5);
+    const cy = 7.25;
+    card(s, x, cy, sw, 3.6, C.background2);
+    s.addShape(pres.shapes.RECTANGLE, { x, y: cy, w: sw, h: 0.38, fill: { color: col }, line: { color: col, width: 0 }, objectName: name('step-head') });
+    text(s, t.toUpperCase(), { x: x + 0.14, y: cy, w: sw - 0.28, h: 0.38, fontSize: 9.5, bold: true, charSpacing: 2, color: C.background1, valign: 'middle' });
+    text(s, n, { x: x + 0.14, y: cy + 0.5, w: sw - 0.28, h: 0.5, fontFace: HEAD, fontSize: 19, bold: true, color: col });
+    text(s, d, { x: x + 0.14, y: cy + 1.1, w: sw - 0.28, h: 2.4, fontSize: 10.5, lineSpacingMultiple: 1.08 });
+    if (i < 2) arrow(s, x + sw + 0.03, cy + 1.8, x + sw + 0.27, cy + 1.8, C.text2, 2.5);
   });
 }
 
@@ -998,8 +1007,8 @@ blankPage('Cover');
     'The Circular Recycling Center sorts about 30 tonnes of materials a day with AI optical sorters and robot arms. Food scraps become biogas, and the Plasma Waste Converter handles what is left, turning it into clean gas and building blocks.',
     'Nothing goes to landfill in the permafrost.',
   ], M + COL2 + GUT, 7.75, COL2, 2.0);
-  [['95%', 'of water recycled'], ['30 t', 'of materials sorted a day'], ['20 t', 'of rubbish a day turned into gas and blocks'], ['0', 'landfill in the permafrost']]
-    .forEach(([n, l], i) => stat(s, n, l, M + i * (CW / 4), 9.9, CW / 4 - 0.15, C.accent4, { size: 22, lh: 0.4 }));
+  [['95%', 'of water is used again'], ['30 tonnes', 'of materials sorted every day'], ['0', 'rubbish sent to landfill']]
+    .forEach(([n, l], i) => stat(s, n, l, M + i * (CW / 3), 9.75, CW / 3 - 0.15, C.accent4, { size: 26, lh: 0.4 }));
 }
 
 // ---------------------------------------------------------------------------
@@ -1106,19 +1115,19 @@ blankPage('Cover');
 {
   const s = page('LIGHT', 'Living in Aurora Haven');
   pageHead(s, 'Safety', 'Safe and Ready for Any Storm', C.accent2);
-  picture(s, 'renders/rescue.jpg', 0, 1.65, W, 4.2);
-  caption(s, 'The Polar Rescue and Resilience Station in the Energy Hub, north of downtown, with its helipad.', M, 5.9, CW, 0.25);
+  picture(s, 'renders/rescue.jpg', 0, 1.65, W, 4.9);
+  caption(s, 'The Polar Rescue and Resilience Station in the Energy Hub, north of downtown, with its helipad.', M, 6.6, CW, 0.25);
   paras(s, [
     'In the polar night, safety comes first. The Polar Rescue and Resilience Station is home to the fire brigade, ambulances, ice rescue and the 112 emergency centre, and its vehicles leave within 60 seconds.',
     'The West Market Fire & Ambulance Station reaches any downtown address in about four minutes, and a rescue helicopter is ready day and night.',
-  ], M, 6.35, COL2, 2.2);
+  ], M, 7.05, COL2, 2.2);
   paras(s, [
     'Under Liberty Mall, four underground shelters can keep every resident safe for 30 days. Aurora Core, the AI control tower, forecasts blizzards up to 48 hours ahead and alerts every phone.',
     'Cafés and lobbies act as warm points, and the air base runway is a backup for supply flights.',
-  ], M + COL2 + GUT, 6.35, COL2, 2.2);
+  ], M + COL2 + GUT, 7.05, COL2, 2.2);
   const st = [['60 s', 'for rescue vehicles to leave'], ['30 days', 'of supplies for every resident'], ['48 h', 'blizzard forecasts']];
   const sw = CW / 3;
-  st.forEach(([n, l], i) => stat(s, n, l, M + (i % 3) * sw, 9.1, sw - 0.15, C.accent2, { size: 28, lh: 0.45 }));
+  st.forEach(([n, l], i) => stat(s, n, l, M + (i % 3) * sw, 9.45, sw - 0.15, C.accent2, { size: 28, lh: 0.45 }));
 }
 
 // ---------------------------------------------------------------------------
@@ -1152,7 +1161,7 @@ blankPage('Cover');
   ]);
   text(s, 'COSTS', { x: M, y: 5.72, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
   paras(s, [
-    'Building: a fusion plant is one of the most expensive machines ever made: ITER alone is estimated at €18–22 billion to first plasma [12]. Solar Foods’ first protein factory cost about €42 million for up to 160 t a year [6]. Heated streets, insulated tunnels and triple glazing all cost more than ordinary ones.',
+    'Building: a fusion plant is one of the most expensive machines ever made: ITER alone is estimated at €18–22 billion to first plasma [12]. Solar Foods’ first protein factory cost about €42 million for up to 160 tonnes a year [6]. Heated streets, insulated tunnels and triple glazing all cost more than ordinary ones.',
   ], M, 6.02, COL2, 1.55, { fontSize: 10 });
   paras(s, [
     'Running: direct air capture uses a lot of energy and still costs hundreds of dollars per tonne of CO₂ [13]. Hydroponic lettuce needs about 82 times more energy than field lettuce, but about 92% less water and 11 times less land [16].',
@@ -1210,7 +1219,7 @@ blankPage('Cover');
   text(s, 'WHAT YOUR MONEY BUILDS, STAGE BY STAGE', { x: M, y: 6.68, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
   const stagesList = [
     ['Stage 1 · A clean base', 'Technology that works today: the geothermal plant, the wind and solar farms, the battery bank, the heat tank, heated streets and the metro.'],
-    ['Stage 2 · Food and water', 'The Snow-to-Food & Water Plant, starting small. For scale, Solar Foods’ first protein factory in Finland cost about €42 million for up to 160 t a year [6].'],
+    ['Stage 2 · Food and water', 'The Snow-to-Food & Water Plant, starting small. For scale, Solar Foods’ first protein factory in Finland cost about €42 million for up to 160 tonnes a year [6].'],
     ['Stage 3 · Fusion', 'Built only when fusion power is proven. It is the most expensive part: ITER alone is estimated at €18–22 billion to first plasma [12], which is why it comes last.'],
   ];
   s.addShape(pres.shapes.LINE, { x: M + 0.2, y: 7.12, w: 0, h: 1.3, line: { color: C.accent1, width: 2 }, objectName: 'stage-line' });
@@ -1233,8 +1242,8 @@ blankPage('Cover');
   const gw2 = (CW - 0.36) / 4;
   gains.forEach((t, i) => {
     const x = M + i * (gw2 + 0.12);
-    s.addShape(pres.shapes.RECTANGLE, { x, y: 9.24, w: 0.05, h: 0.6, fill: { color: C.accent1 }, line: { color: C.accent1, width: 0 }, objectName: name('gain-rule') });
-    text(s, t, { x: x + 0.13, y: 9.22, w: gw2 - 0.15, h: 0.66, fontSize: 8.5, lineSpacingMultiple: 1.02 });
+    card(s, x, 9.2, gw2, 0.68, C.background2);
+    text(s, t, { x: x + 0.08, y: 9.22, w: gw2 - 0.16, h: 0.64, fontSize: 8.5, lineSpacingMultiple: 1.02, valign: 'middle' });
   });
   text(s, 'Please note: these are future concepts, not tested projects. Costs and returns still have to be worked out in a full business plan, and no return is guaranteed. The risks are on page 33.', {
     x: M, y: 9.92, w: CW, h: 0.36, fontSize: 8.5, italic: true, color: C.text2,
@@ -1259,7 +1268,7 @@ blankPage('Cover');
     ['Metro Entrance – Central Interchange Station', 'Escalators down to the metro and the shelters.'],
     ['Snowflake General Hospital', 'About 250 beds and a 24-hour emergency department.'],
     ['Fusion Core – Compact D-T Tokamak', 'The city’s own sun.'],
-    ['Snow Harvest & Melt Hall', 'Melts about 3,000 t of snow a day with spare fusion heat.'],
+    ['Snow Harvest & Melt Hall', 'Melts about 3,000 tonnes of snow a day with spare fusion heat.'],
     ['Mount Aurora – Snow Peak & Hanging Glacier', 'The 35 m peak with the spa inside.'],
     ['Ice-Proof Wind Farm', 'Two rows of turbines making about 60 MW.'],
     ['Polar Rescue and Resilience Station', 'Home of the 112 emergency centre.'],
@@ -1284,8 +1293,8 @@ blankPage('Cover');
   picture(s, 'renders/stadium.jpg', bx, 2.65, bw, 4.0);
   caption(s, 'Aurora Snow Stadium at dusk.', bx + 0.18, 6.72, bw - 0.36, 0.22);
   kicker(s, 'Behind the build', bx + 0.18, 7.15, C.accent6, { w: bw - 0.4 });
-  [['35', 'key places, numbered on the master plan'], ['9', 'downtown blocks around the Aurora Roundabout'], ['1 m', 'per unit on every plan, drawn from the 3D model']]
-    .forEach(([n, l], i) => stat(s, n, l, bx + 0.18, 7.45 + i * 1.05, bw - 0.36, C.accent6, { size: 22, lh: 0.4, lsize: 9 }));
+  [['35', 'key places, numbered on the master plan'], ['9', 'downtown blocks around the Aurora Roundabout']]
+    .forEach(([n, l], i) => stat(s, n, l, bx + 0.18, 7.6 + i * 1.4, bw - 0.36, C.accent6, { size: 22, lh: 0.4, lsize: 9 }));
 }
 
 // ---------------------------------------------------------------------------
@@ -1314,10 +1323,10 @@ const PLACES = [
   ['Aurora Lagoon – Outdoor Geothermal Mineral Pool', '38 °C open-air silica pool for bathing under the northern lights.'],
   ['Fusion Core – Compact D-T Tokamak', '150-million-degree plasma giving about 800 MW of heat; it cannot melt down.'],
   ['Power Conversion & Heat Export Hall', 'Makes about 300 MW of electricity and sends about 450 MW of heat to the city.'],
-  ['Plasma Waste Converter', 'Turns about 20 t of rubbish a day into clean gas, recovered metals and building blocks.'],
-  ['Snow Harvest & Melt Hall', 'Melts about 3,000 t of clean snow a day with spare fusion heat.'],
+  ['Plasma Waste Converter', 'Turns about 20 tonnes of rubbish a day into clean gas, recovered metals and building blocks.'],
+  ['Snow Harvest & Melt Hall', 'Melts about 3,000 tonnes of clean snow a day with spare fusion heat.'],
   ['Drinking-Water & Mineral Works', 'Makes about 2,500 m³ of drinking water a day, all of the city’s tap water.'],
-  ['Bioreactor Silos', 'Six silos where microbes make about 2.5 t of protein flour a day.'],
+  ['Bioreactor Silos', 'Six silos where microbes make about 2.5 tonnes of protein flour a day.'],
   ['Ice-Proof Wind Farm', 'Two rows of ice-proof turbines making about 60 MW.'],
   ['Bifacial Solar Farm', 'Double-sided panels that make power 24 hours a day in the midnight-sun months.'],
   ['Water Recycling Line – Recycled Water Tower', 'Stores recycled water for toilets, laundries, street cleaning, irrigation and hydrants.'],
@@ -1325,7 +1334,7 @@ const PLACES = [
   ['Polar Rescue and Resilience Station', 'Fire, ambulance and ice-rescue headquarters, home of the 112 emergency centre.'],
   ['Glass Terminal, Control Tower & Gate 1 Dreamliner', 'Passenger and cargo airport; the city’s supply link in deep winter.'],
   ['Evergreen Greenhouse Dome', 'Grows fresh vegetables and berries all year under LED light.'],
-  ['Circular Recycling Center', 'Sorts, repairs and recycles about 30 t of materials a day.'],
+  ['Circular Recycling Center', 'Sorts, repairs and recycles about 30 tonnes of materials a day.'],
   ['Aurora Snow Stadium', 'About 8,000 seats for snow sports, school sports days and the Midwinter Aurora Festival.'],
 ];
 {
@@ -1376,7 +1385,7 @@ const PLACES = [
   pageHead(s, 'Research integrity', 'Sources & Assumptions', C.accent6);
   text(s, 'HOW TO READ OUR NUMBERS', { x: M, y: 1.55, w: CW, h: 0.22, fontSize: 9, bold: true, charSpacing: 3, color: C.text2 });
   const kinds = [
-    ['Design values', 'Figures for our own city plan, such as 300 MW of electricity or 3,000 t of snow a day. They come from our design, not from a real city.'],
+    ['Design values', 'Figures for our own city plan, such as 300 MW of electricity or 3,000 tonnes of snow a day. They come from our design, not from a real city.'],
     ['Our estimates', 'Calculations we made ourselves and marked “our estimate”, such as the metro capacity, or worked out in the Reality check boxes. They show an idea is reasonable, not exact.'],
     ['Future concepts', 'The fusion station and the snow-to-food plant do not exist at this size today. They are our team’s ideas for the future; no prototype has been tested.'],
   ];
@@ -1461,9 +1470,11 @@ blankPage('Guide');
   text(s, [
     { text: 'CONTACT THE TEAM', options: { bold: true, charSpacing: 2, color: C.accent1, breakLine: true, paraSpaceAfter: 4 } },
     { text: 'Polar City', options: { bold: true, breakLine: true } },
-    { text: 'Nguyễn Đông Bảo · Nguyễn Bá Hiếu Thiện · Phan Minh Khôi · Dương Hàng Nguyên · Phạm Phước Khoa · Nguyễn Minh Triết', options: { fontFace: VN, fontSize: 8, breakLine: true } },
+    // One name per line, so no name is broken across two lines.
+    ...['Nguyễn Đông Bảo', 'Nguyễn Bá Hiếu Thiện', 'Phan Minh Khôi', 'Dương Hàng Nguyên', 'Phạm Phước Khoa', 'Nguyễn Minh Triết']
+      .map((n) => ({ text: n, options: { fontFace: VN, fontSize: 8, breakLine: true } })),
     { text: 'Class 11A4 · Lê Quý Đôn High School', options: { fontFace: VN, fontSize: 8 } },
-  ], { x: px + 0.2, y: 1.95, w: pw - 1.55, h: 1.4, fontSize: 9.5, color: C.background1, lineSpacingMultiple: 1.04 });
+  ], { x: px + 0.2, y: 1.9, w: pw - 1.55, h: 1.5, fontSize: 9.5, color: C.background1, lineSpacingMultiple: 1.0 });
   s.addImage({ path: img('ui/school_logo.png'), x: px + pw - 1.22, y: 2.05, w: 1.05, h: 1.05, objectName: 'school-logo' });
   qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12, flipbook: true });
 }
