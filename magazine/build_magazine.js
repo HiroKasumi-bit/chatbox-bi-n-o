@@ -435,9 +435,9 @@ blankPage('Cover');
   text(s, 'The Polar City team', { x: M + COL2 + GUT, y: 8.3, w: COL2, h: 0.25, fontFace: HEAD, italic: true, fontSize: 12, bold: true });
   text(s, 'Class 11A4 · Lê Quý Đôn High School', { x: M + COL2 + GUT, y: 8.57, w: COL2, h: 0.22, fontFace: VN, fontSize: 9, color: C.text2 });
   card(s, M, 9.4, CW, 1.45, C.background2);
-  picture(s, 'renders/cover.jpg', M + 0.15, 9.55, 0.8, 1.15);
+  picture(s, 'renders/cover_real.jpg', M + 0.15, 9.55, 0.8, 1.15);
   kicker(s, 'On the cover', M + 1.15, 9.57, C.accent6, { w: CW - 1.35 });
-  text(s, 'Aurora 81 – Polar Landmark Tower, named in honour of Landmark 81 in Ho Chi Minh City, beside the street that leads to the glowing terraces of the Mount Aurora spa, under the northern lights. Its nine bundled glass tubes step back like bamboo stalks and cut blizzard wind load by about 25%.', {
+  text(s, 'Aurora Haven on a polar night, seen from the east: the Fusion Core and its violet rings in front, Mount Aurora and its glass dome on the left, and on the right Aurora 81, the Polar Landmark Tower named in honour of Landmark 81 in Ho Chi Minh City.', {
     x: M + 1.15, y: 9.83, w: CW - 1.3, h: 0.9, fontSize: 9.5, lineSpacingMultiple: 1.05,
   });
 }
