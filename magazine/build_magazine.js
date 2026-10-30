@@ -275,31 +275,55 @@ function qrCard(s, x, y, w, h, o = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// 1 · Cover
+// 1 · Cover: an aerial photo of the city with the three breakthroughs labelled on it
 // ---------------------------------------------------------------------------
+// The picture is the cover_aerial render, made photographic with an AI image tool
+// (Nano Banana Pro) while keeping the model's layout; see the AI USE note on the sources page.
 {
   pres.addSection({ title: 'Cover' });
   const s = pres.addSlide({ masterName: 'COVER', sectionTitle: 'Cover' });
-  s.addImage({ path: img('renders/cover.jpg'), x: 0, y: 0, w: W, h: H, objectName: 'cover-picture' });
-  shade(s, 'bottom', 0, 7.9, W, 3.79);
-  text(s, 'ISSUE 01   ·   POLAR / ICE CITY   ·   A CITY BUILT IN 3D', { x: M, y: 0.38, w: CW, h: 0.22, fontSize: 8.5, bold: true, charSpacing: 3, color: C.background1, align: 'center' });
-  text(s, 'AURORA HAVEN', { x: 0.2, y: 0.6, w: W - 0.4, h: 1.15, fontFace: HEAD, fontSize: 64, bold: true, color: C.background1, align: 'center', charSpacing: 1 });
-  // The tower is drawn again on top of the masthead, so its spire rises in front of the letters.
-  s.addImage({ path: img('renders/cover_tower_top.png'), x: 0, y: 0, w: W, h: W * ratio('renders/cover_tower_top.png'), objectName: 'cover-tower-overlay' });
-  text(s, 'A polar city that thrives', { x: 0.2, y: 1.78, w: W - 0.4, h: 0.35, fontFace: HEAD, italic: true, fontSize: 15, color: C.background1, align: 'center' });
+  picture(s, 'renders/cover_real.jpg', 0, 0, W, H);
+  shade(s, 'top', 0, 0, W, 2.6);
+  shade(s, 'fade', 0, 7.9, W, H - 7.9);
 
-  // One text box per cover line, so the headline, the sell and the page reference flow together.
-  const line = (x, y, w, head, sub, pg, align) => {
+  // Masthead.
+  text(s, 'THE IDEAL CITY OF THE FUTURE', { x: M, y: 0.36, w: 4.5, h: 0.22, fontSize: 8.5, bold: true, charSpacing: 3, color: C.accent1 });
+  text(s, 'ISSUE 01  ·  2026', { x: W - M - 3, y: 0.36, w: 3, h: 0.22, fontSize: 8.5, bold: true, charSpacing: 3, color: C.background1, align: 'right' });
+  text(s, 'AURORA HAVEN', { x: 0.15, y: 0.58, w: W - 0.3, h: 1.2, fontFace: HEAD, fontSize: 68, bold: true, color: C.background1, align: 'center', shadow: shadow() });
+  text(s, 'A POLAR CITY THAT THRIVES', { x: M, y: 1.78, w: CW, h: 0.3, fontSize: 11, bold: true, charSpacing: 6, color: C.background1, align: 'center', shadow: shadow() });
+
+  // The three breakthroughs, labelled where they stand in the photo: a pin on the building,
+  // a leader line and a dark label with the number, the name and the page.
+  const callout = (n, head, sub, pg, color, bx, by, bw, tx, ty, lx, ly) => {
+    s.addShape(pres.shapes.LINE, {
+      x: Math.min(lx, tx), y: Math.min(ly, ty), w: Math.max(Math.abs(tx - lx), 0.001), h: Math.max(Math.abs(ty - ly), 0.001),
+      flipH: tx < lx, flipV: ty < ly, line: { color: C.background1, width: 1.25 }, objectName: name('cover-leader'),
+    });
+    s.addShape(pres.shapes.OVAL, { x: tx - 0.09, y: ty - 0.09, w: 0.18, h: 0.18, fill: { color }, line: { color: C.background1, width: 1.5 }, objectName: name('cover-pin') });
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: bx, y: by, w: bw, h: 0.64, rectRadius: 0.06, fill: { color: C.text1, transparency: 12 }, line: { color, width: 1.25 }, objectName: name('cover-label') });
+    marker(s, n, bx + 0.1, by + 0.12, 0.4, color, { size: 12 });
     text(s, [
-      { text: head, options: { fontFace: HEAD, fontSize: 15, bold: true, color: C.background1, breakLine: true, paraSpaceAfter: 3 } },
-      { text: sub, options: { fontSize: 10.5, color: C.background2, breakLine: true, paraSpaceAfter: 3 } },
-      { text: pg, options: { fontSize: 8, bold: true, charSpacing: 2, color: C.accent1 } },
-    ], { x, y, w, h: 1.45, align, lineSpacingMultiple: 1.05, shadow: shadow() });
+      { text: head, options: { bold: true, fontSize: 10, charSpacing: 1.5, color: C.background1, breakLine: true } },
+      { text: `${sub}  ·  P. ${pg}`, options: { fontSize: 8.5, italic: true, color: C.background2 } },
+    ], { x: bx + 0.58, y: by + 0.06, w: bw - 0.66, h: 0.52, valign: 'middle', margin: 0, lineSpacingMultiple: 1.05 });
   };
-  line(5.32, 2.2, 2.35, "The city's own sun", 'A compact fusion station keeps 45,000 people warm through the polar night', 'PAGE 12', 'right');
-  line(5.32, 3.45, 2.35, 'A snow mountain\nyou can walk inside', 'A whole leisure world inside a 35-metre snow peak', 'PAGE 17', 'right');
-  line(M, 9.75, 3.3, 'Bread and water from snow and air', 'Inside the plant that feeds a city with no farmland', 'PAGE 15', 'left');
-  line(4.37, 9.75, 3.3, '−45 °C. 120 km/h. No sun.', 'The polar challenge, and the five ideas that answer it', 'PAGE 6', 'right');
+  callout('1', 'FUSION CORE', 'The city’s own sun', 12, C.accent3, 2.75, 7.45, 2.6, 2.02, 6.72, 2.95, 7.45);
+  callout('2', 'SNOW-TO-FOOD PLANT', 'Bread and water from snow', 15, C.accent4, 4.3, 4.2, 2.65, 7.21, 6.66, 6.6, 4.84);
+  callout('3', 'MOUNT AURORA', 'A snow mountain you can walk inside', 17, C.accent5, 0.4, 3.85, 2.85, 1.79, 5.2, 1.79, 4.49);
+
+  // Slogan, the issue's other stories and the team.
+  text(s, [
+    { text: 'Its own sun. Its own food.', options: { color: C.background1, breakLine: true } },
+    { text: 'A mountain you can walk inside.', options: { color: C.accent1 } },
+  ], { x: M, y: 9.12, w: CW, h: 1.0, fontFace: HEAD, fontSize: 25, bold: true, lineSpacingMultiple: 1.0, shadow: shadow() });
+  text(s, [
+    { text: 'INSIDE   ', options: { bold: true, charSpacing: 2, color: C.accent1 } },
+    { text: '−45 °C and no sun: the polar challenge  p. 6   ·   Explore our 3D city  p. 21   ·   Invest in Aurora Haven  p. 32', options: { color: C.background1 } },
+  ], { x: M, y: 10.2, w: CW, h: 0.3, fontSize: 8.5 });
+  s.addShape(pres.shapes.LINE, { x: M, y: 10.62, w: CW, h: 0, line: { color: C.background1, width: 0.5, transparency: 50 }, objectName: 'cover-footer-rule' });
+  s.addImage({ path: img('ui/school_logo.png'), x: M, y: 10.76, w: 0.55, h: 0.55, objectName: 'cover-school-logo' });
+  text(s, 'POLAR CITY  ·  CLASS 11A4  ·  LÊ QUÝ ĐÔN HIGH SCHOOL', { x: M + 0.7, y: 10.9, w: 4.4, h: 0.26, fontFace: VN, fontSize: 8, bold: true, color: C.background1 });
+  text(s, 'A CONCEPT MAGAZINE', { x: W - M - 2, y: 10.9, w: 2, h: 0.26, fontSize: 8, bold: true, charSpacing: 2, color: C.background2, align: 'right' });
 }
 
 // ---------------------------------------------------------------------------
