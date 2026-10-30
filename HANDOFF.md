@@ -1,6 +1,6 @@
 # Aurora Haven: handoff notes for the next AI
 
-> **Tóm tắt cho nhóm:** đây là file bàn giao để AI khác đọc và làm tiếp tạp chí. File ghi lại tình trạng hiện tại, cách dựng lại file, các quyết định của nhóm không được đổi, và việc còn dang dở (làm ảnh như thật bằng Gemini).
+> **Tóm tắt cho nhóm:** đây là file bàn giao để AI khác đọc và làm tiếp tạp chí. File ghi lại tình trạng hiện tại, cách dựng lại file, các quyết định của nhóm không được đổi, và việc còn dang dở: AI tiếp theo tự tạo ảnh như thật cho các ảnh 3D rồi ghép vào tạp chí.
 
 ## 1. What this is
 
@@ -27,7 +27,7 @@
 | `city3d/` | The 3D city in three.js 0.160. `src/layout.js` holds the city plan: one unit is 1 m, x points east, z points south. `tools/shots.json` lists every camera. `tools/render.js` renders through Playwright and Chromium. `tools/plans.js` draws the 2D plans. |
 | `output/` | Finished files, listed below. |
 | `.github/workflows/map-release.yml` | Re-uploads `Aurora_Haven.json` to the GitHub Release `map-v1` whenever the file changes, so the page 21 QR code always downloads the latest map. |
-| `gemini_kit/` | Zip only. The pending AI-photo job; see section 6. |
+| `image_kit/prompts.md` | Zip only. The pending AI-photo job: one prompt per picture; see section 6. |
 
 The files in `output/`:
 - `Aurora_Haven_Magazine.pptx`: the editable file.
@@ -104,26 +104,40 @@ Check every build:
   The user cannot replace the PDF inside an existing FlipHTML5 book. A new upload means a new link, so update `FLIPBOOK_URL` in both `build_magazine.js` and `tools/make_graphics.py`, then run `make_graphics.py`.
 - **No penguins.** They live in the Antarctic and the city is in the Arctic; the user agreed to drop the idea.
 
-## 6. Unfinished job: AI-photoreal pictures
+## 6. Unfinished job: make the 3D pictures photoreal (you do this)
 
-The user wants every 3D render in the magazine to look like a real photo, except the Eco-Polis screenshots, which stay as they are. The user makes the pictures in the **Gemini app** (they have Gemini Pro) and sends them back one by one as "ảnh N".
+The user wants every 3D render in the magazine to look like a real photograph, as the cover already does. The Eco-Polis screenshots in `magazine/assets/ecopolis/` stay as they are. **Generate these pictures yourself** with the image tool you have (image editing with the original render as input), then place them in the magazine.
 
-- **The kit:** `gemini_kit/` holds the step-by-step page (`index.html`, open it in a browser), the preview images, and `prompts.md` with all 23 prompts. The same page is published as a private Claude artifact, so other AIs cannot open that link.
-- **Picture map:** `gemini_kit/prompts.md` maps each number N to a render name and a magazine page. The full-size originals are in `magazine/renders_raw/<name>.jpg`.
-- **Placing a returned picture:**
-  1. Back up the original render.
-  2. Resize or crop the new image to the original's pixel size and aspect ratio.
-  3. Save it as `magazine/renders_raw/<name>.jpg`.
-  4. Run `python3 tools/prepare_renders.py renders_raw`, rebuild, and check the page.
+**Steps:**
 
-  For spreads, check that the gutter does not cut through the main subject and that overlaid text stays readable.
-- **Compare each picture with the original before using it.** Reject it if the mountain grew, buildings moved or disappeared, or text or logos were added.
-- **Weave / Nano Banana via the Figma connector:** the free Weave plan allows only 2 model runs, and both were used (for the cover). 128 credits remain, but runs are refused until the user buys a paid Weave plan.
-- **Other options already tried:**
-  - Pollinations' free model ignores the input image.
-  - The FLUX.1 Kontext Hugging Face Space needs a logged-in token for GPU quota.
-  - Local Stable Diffusion on CPU is too slow and changes little.
-  - The Gemini API key in the environment has a free-tier image quota of 0.
+1. **The list:** `image_kit/prompts.md` maps each picture number to a render file and a magazine page, and gives a ready-made prompt for each picture. There are 23 pictures; numbers 1–11 matter most (the spreads, the three breakthroughs, the resident's view, the back cover).
+2. **Input:** the full-size original is `magazine/renders_raw/<file>.jpg`. Always edit from the original render, never generate from text alone, so the picture keeps the team's model.
+3. **Compare with the original before using a result.** Reject it and try again if any of these happened:
+   - Mount Aurora grew (it must stay a small 35 m peak);
+   - the glass dome on top of the spa disappeared;
+   - buildings, trees or people moved, appeared or vanished;
+   - the statue looks like a real person;
+   - any text, logo or watermark was added.
+4. **Placing it:**
+   1. Back up the original render (for example in `magazine/renders_raw/orig/`).
+   2. Resize or crop the new image to the original's pixel size and aspect ratio, and save it as `magazine/renders_raw/<file>.jpg`.
+   3. Run `cd magazine && python3 tools/prepare_renders.py renders_raw`, then `node build_magazine.js`.
+   4. Look at the page.
+
+   For the four spreads (`welcome_pano`, `liberty_dusk`, `fusion_spread`, `grotto`), check that the gutter does not cut through the main subject and that the text over the picture stays readable.
+5. **Update the PICTURES line on the sources page** (page 36, in `build_magazine.js`) so it names every picture made photoreal with AI, not just the cover.
+6. **Finish:**
+   - rebuild the PDFs and the Word copy;
+   - scan the QR codes;
+   - commit, push and update the PR description in Vietnamese;
+   - send the user the new PDF.
+
+**What did not work in the previous session** (so you do not repeat it):
+- **Weave (Nano Banana through the Figma connector):** the free Weave plan allows only 2 model runs; both were used for the cover.
+- **Pollinations:** the free model ignores the input image.
+- **FLUX.1 Kontext Hugging Face Space:** needs a logged-in token for GPU quota.
+- **Local Stable Diffusion on CPU:** too slow and changes little.
+- **Gemini API key in the environment:** its free-tier image quota is 0.
 
 ## 7. Printing
 
