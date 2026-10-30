@@ -1,0 +1,88 @@
+[
+ {
+  "w": 2400,
+  "h": 1300,
+  "shadowRadius": 750,
+  "shadowCentre": [
+   -30,
+   0,
+   -560
+  ],
+  "ss": 1.5,
+  "look": {
+   "mode": "sun",
+   "sunElevation": 6,
+   "sunAzimuth": 235,
+   "sunColor": "#ffbe85",
+   "sunIntensity": 4.5,
+   "exposure": 0.62,
+   "hemi": 0.38,
+   "env": 0.3,
+   "fog": "#d9cdc6",
+   "fogNear": 700,
+   "fogFar": 4500,
+   "grade": {
+    "lift": "#080c18",
+    "gain": "#fff6ec",
+    "contrast": 1.08,
+    "saturation": 1.08,
+    "vignette": 0.22
+   }
+  },
+  "name": "band_a",
+  "fov": 40,
+  "pos": [
+   -33,
+   120,
+   -110
+  ],
+  "target": [
+   -33,
+   0,
+   -420
+  ]
+ },
+ {
+  "w": 2400,
+  "h": 1300,
+  "shadowRadius": 750,
+  "shadowCentre": [
+   -30,
+   0,
+   -560
+  ],
+  "ss": 1.5,
+  "look": {
+   "mode": "sun",
+   "sunElevation": 6,
+   "sunAzimuth": 235,
+   "sunColor": "#ffbe85",
+   "sunIntensity": 4.5,
+   "exposure": 0.62,
+   "hemi": 0.38,
+   "env": 0.3,
+   "fog": "#d9cdc6",
+   "fogNear": 700,
+   "fogFar": 4500,
+   "grade": {
+    "lift": "#080c18",
+    "gain": "#fff6ec",
+    "contrast": 1.08,
+    "saturation": 1.08,
+    "vignette": 0.22
+   }
+  },
+  "name": "band_b",
+  "fov": 42,
+  "pos": [
+   -33,
+   95,
+   -150
+  ],
+  "target": [
+   -33,
+   0,
+   -430
+  ]
+ }
+]
