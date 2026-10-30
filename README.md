@@ -40,9 +40,9 @@ Số trang in trên tạp chí không tính bìa trước và mặt trong của 
 
 | Trang | Nội dung | Mục trong hướng dẫn |
 |---|---|---|
-| Bìa trước | Bìa: tên, ảnh, khẩu hiệu "A polar city that thrives" | Cover |
+| Bìa trước | Bìa: ảnh flycam ban đêm như ảnh chụp thật (góc `cover_aerial` của mô hình 3D, làm thật bằng Nano Banana Pro), nhãn chỉ vào 3 đột phá kèm số trang, khẩu hiệu "A polar city that thrives" | Cover |
 | (không đánh số) | Để trắng (mặt trong bìa trước) | |
-| 1 | Mục lục | Table of contents |
+| 1 | Mục lục, chia theo phần: Welcome, The city, The breakthroughs, Invest, Systems & life, The guide | Table of contents |
 | 2 | Thư của nhóm sáng lập (phần mở đầu do nhóm viết) | Letter from the Founders |
 | 3 | 6 thành viên: ảnh, vai trò; mã QR tới video phỏng vấn | Letter from the Founders |
 | 4–5 | Trang đôi: toàn cảnh thành phố, giới thiệu chung; trang 5 tóm tắt 3 tính năng đặc sắc nhất (3 đột phá), kèm số trang | Breakthrough innovations |
@@ -51,7 +51,7 @@ Số trang in trên tạp chí không tính bìa trước và mặt trong của 
 | 8–9 | Trang đôi: Liberty Mall và tượng đài Founding Mayor Monument | Housing & special locations |
 | 10 | Bản đồ tổng thể (một trang) | Housing & special locations |
 | 11 | 9 ô phố trung tâm | Housing & special locations |
-| 12–20 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, ngọn núi tuyết có khu giải trí bên trong (trang đôi 12–13 và 18–19). Mỗi đột phá có ô "Where the world is today" và "Reality check" đặt ngay trên ảnh; trang 14 có ô "Why it's green" | Breakthrough innovations |
+| 12–20 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, ngọn núi tuyết có khu giải trí bên trong (trang đôi 12–13 và 18–19). Trang mở đầu mỗi đột phá có khung "In brief" (The problem · The idea · What's new · The impact); mỗi đột phá có ô "Where the world is today" và "Reality check" đặt ngay trên ảnh; trang 14 có ô "Why it's green" | Breakthrough innovations |
 | 21 | Built by Us: ảnh thật mô hình Ecopolis của nhóm, 2 mã QR (tải file bản đồ, mở web Eco-Polis) và 5 bước hướng dẫn | Breakthrough innovations |
 | 22 | Vòng tuần hoàn giữa ba khu | Infrastructure |
 | 23 | Đời sống hằng ngày: trường, y tế, mua sắm, văn hóa | Housing & special locations |

@@ -66,13 +66,14 @@ const VN = 'Arial'; // for Vietnamese names: Arial has every Vietnamese accent i
 const FOLIO = 'AURORA HAVEN  ·  ISSUE 01';
 
 // ---------------------------------------------------------------------------
-// Masters: left and right pages carry the page number on their outer edge.
+// Masters: plain backgrounds; the page number and running foot are added to each page at the end.
 // ---------------------------------------------------------------------------
-function folioObjects(side, dark) {
-  const color = dark ? C.background2 : C.text2;
-  const x = side === 'L' ? M + 0.5 : W - M - 4.5;
-  return [{ text: { text: FOLIO, options: { x, y: 11.15, w: 4, h: 0.2, fontSize: 7, bold: true, charSpacing: 2, color, align: side === 'L' ? 'left' : 'right', margin: 0 } } }];
-}
+// The running foot: the magazine's name and the section the page belongs to.
+const SECTION_FOLIO = { Welcome: 'WELCOME', 'The City': 'THE CITY', 'Signature Districts': 'THE BREAKTHROUGHS', 'Living in Aurora Haven': 'SYSTEMS & LIFE', Invest: 'INVEST', Guide: 'THE GUIDE' };
+const folioOptions = (side) => ({
+  x: side === 'L' ? M + 0.5 : W - M - 4.5, y: 11.15, w: 4, h: 0.2, fontSize: 7, bold: true, charSpacing: 2,
+  align: side === 'L' ? 'left' : 'right', margin: 0, isTextBox: true, objectName: 'folio',
+});
 const pageNumber = (side, dark) => ({
   x: side === 'L' ? M : W - M - 0.45, y: 11.13, w: 0.45, h: 0.24, fontSize: 9, bold: true,
   color: dark ? C.background1 : C.text1, align: side === 'L' ? 'left' : 'right', margin: 0,
@@ -81,13 +82,13 @@ const pageNumber = (side, dark) => ({
 pres.defineSlideMaster({ title: 'COVER', background: { color: C.text1 }, objects: [] });
 pres.defineSlideMaster({ title: 'BLANK', background: { color: C.background1 }, objects: [] });
 for (const side of ['L', 'R']) {
-  pres.defineSlideMaster({ title: `${side}_LIGHT`, background: { color: C.background1 }, objects: folioObjects(side, false) });
-  pres.defineSlideMaster({ title: `${side}_ICE`, background: { color: C.background2 }, objects: folioObjects(side, false) });
-  pres.defineSlideMaster({ title: `${side}_DARK`, background: { color: C.text1 }, objects: folioObjects(side, true) });
+  pres.defineSlideMaster({ title: `${side}_LIGHT`, background: { color: C.background1 }, objects: [] });
+  pres.defineSlideMaster({ title: `${side}_ICE`, background: { color: C.background2 }, objects: [] });
+  pres.defineSlideMaster({ title: `${side}_DARK`, background: { color: C.text1 }, objects: [] });
 }
 
 let pageNo = 1; // position in the file; the cover is the first sheet
-// The printed page number leaves out the cover and its blank inside, so the contents page is page -1.
+// The printed page number leaves out the cover and its blank inside, so the contents page is page 1.
 const FIRST_NUMBERED = 3;
 const folio = (n) => n - FIRST_NUMBERED + 1;
 const numbered = []; // page numbers are added last, so they sit above full-bleed pictures
@@ -95,7 +96,7 @@ function page(kind, section) {
   pageNo += 1;
   const side = pageNo % 2 === 0 ? 'L' : 'R';
   const s = pres.addSlide({ masterName: `${side}_${kind}`, sectionTitle: section });
-  numbered.push([s, side, kind === 'DARK', folio(pageNo)]);
+  numbered.push([s, side, kind === 'DARK', folio(pageNo), section]);
   return s;
 }
 
@@ -245,6 +246,21 @@ function sideBox(s, x, y, w, h, head, body, o = {}) {
 }
 
 // A short list of bold lead-ins and text, one paragraph each.
+// "In brief": the four questions every breakthrough answers (the problem, the idea, what is
+// new and the impact), as a 2 × 2 fact file on a dark panel over the opener's photo.
+function inBrief(s, x, y, w, color, items) {
+  const cw = (w - 0.3) / 2;
+  const rh = 1.02;
+  panel(s, x, y, w, 0.42 + 2 * rh, 12);
+  kicker(s, 'In brief', x + 0.18, y + 0.14, color, { textColor: C.background1 });
+  items.forEach(([head, body], i) => {
+    const cx = x + 0.15 + (i % 2) * (cw + 0.05);
+    const cy = y + 0.46 + Math.floor(i / 2) * rh;
+    text(s, head.toUpperCase(), { x: cx + 0.03, y: cy, w: cw - 0.1, h: 0.2, fontSize: 8, bold: true, charSpacing: 2, color });
+    text(s, body, { x: cx + 0.03, y: cy + 0.21, w: cw - 0.1, h: rh - 0.26, fontSize: 9.5, color: C.background1, lineSpacingMultiple: 1.05 });
+  });
+}
+
 const leadList = (items, o = {}) => items.flatMap(([t, d], i) => [
   { text: `${t} `, options: { bold: true, color: o.lead || undefined } },
   { text: d, options: { breakLine: i < items.length - 1, paraSpaceAfter: o.gap ?? 5 } },
@@ -337,47 +353,66 @@ blankPage('Cover');
 {
   pres.addSection({ title: 'Welcome' });
   const s = page('LIGHT', 'Welcome');
-  picture(s, 'renders/street_dusk.jpg', 0, 0, W, 4.3);
-  shade(s, 'bottom', 0, 1.8, W, 2.5);
-  kicker(s, 'Inside this issue', M, 2.98, C.accent1, { textColor: C.background1 });
-  title(s, 'Contents', M, 3.26, CW, 0.8, { fontSize: 44, color: C.background1 });
-  caption(s, 'Shops and cafés on a downtown street at dusk. The streets are warmed from below, so they stay clear of ice without salt.', M, 4.38, CW, 0.25);
-  const items = [
-    ['2', 'Letter from the Founders', 'Who we are, our team and why we built Aurora Haven'],
-    ['4', 'Welcome to Aurora Haven', 'A compact city of 45,000 under a snow peak'],
-    ['6', 'The Polar Challenge', 'Cold, darkness, wind and thawing ground'],
-    ['7', 'Our Vision & Mission', 'Who is affected, and the five ideas that answer it'],
-    ['8', 'Nine Blocks, One Short Walk', 'Downtown around the Aurora Roundabout'],
-    ['10', 'The Whole City Plan', 'From the wind farm to Mount Aurora'],
-    ['12', "The City's Own Sun", 'Breakthrough 1 · Fusion Power Station'],
-    ['15', 'Bread and Water from Snow and Air', 'Breakthrough 2 · Snow-to-Food & Water Plant'],
-    ['17', 'A Snow Mountain You Can Walk Inside', 'Breakthrough 3 · Mount Aurora'],
-    ['21', 'Built by Us', 'Our Eco-Polis model, and how to explore it'],
-    ['22', 'Three Districts, One Loop', 'How heat, water, oxygen and waste go round'],
-    ['23', 'A Livable City Every Day', 'Schools, health, shops and culture'],
-    ['24', 'Homes for the Polar Night', 'Housing for every age, built for −45 °C'],
-    ['25', 'Energy for the Polar Night', 'Fusion, wind, sun, geothermal and storage'],
-    ['26', 'Nothing Is Wasted', 'Water and waste in closed loops'],
-    ['27', 'Wild Neighbours', 'Our urban eco-system: plants and animals'],
-    ['28', 'Getting Around Fossil-Free', 'Routes, users, capacity, safety and energy'],
-    ['29', 'Salad Under the Northern Lights', 'Inside the Evergreen Greenhouse Dome'],
-    ['30', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
-    ['31', 'Pros & Cons', 'Advantages, risks, costs and trade-offs'],
-    ['32', 'Invest in Aurora Haven', 'Three ways to fund the city, stage by stage'],
-    ['33', 'Take the Tour', 'Eight stops around the city'],
-    ['34', 'Places to Visit', '35 key places and what they do'],
-    ['35', 'Through a Resident’s Eyes', 'An imagined day in the polar night'],
-    ['36', 'Sources & Assumptions', 'Where our facts come from'],
+  picture(s, 'renders/street_dusk.jpg', 0, 0, W, 4.0);
+  shade(s, 'bottom', 0, 1.5, W, 2.5);
+  kicker(s, 'Inside this issue', M, 2.68, C.accent1, { textColor: C.background1 });
+  title(s, 'Contents', M, 2.96, CW, 0.8, { fontSize: 44, color: C.background1 });
+  // The issue in its sections, as the course guidelines order them: context, the city,
+  // the three breakthroughs, the systems, the investment case and the guide.
+  const groups = [
+    ['Welcome', C.accent6, [
+      ['2', 'Letter from the Founders', 'Who we are and why we built Aurora Haven'],
+      ['4', 'Welcome to Aurora Haven', 'A compact city of 45,000 under a snow peak'],
+      ['6', 'The Polar Challenge', 'Cold, darkness, wind and thawing ground'],
+      ['7', 'Our Vision & Mission', 'Who is affected, and the five ideas that answer it'],
+    ]],
+    ['The city', C.accent6, [
+      ['8', 'Nine Blocks, One Short Walk', 'Downtown around the Aurora Roundabout'],
+      ['10', 'The Whole City Plan', 'From the wind farm to Mount Aurora'],
+    ]],
+    ['The breakthroughs', C.accent5, [
+      ['12', "The City's Own Sun", 'Breakthrough 1 · Fusion Power Station', C.accent3],
+      ['15', 'Bread and Water from Snow and Air', 'Breakthrough 2 · Snow-to-Food & Water Plant', C.accent4],
+      ['17', 'A Snow Mountain You Can Walk Inside', 'Breakthrough 3 · Mount Aurora', C.accent5],
+      ['21', 'Built by Us', 'Our Eco-Polis model, and how to explore it'],
+    ]],
+    ['Invest', C.accent2, [
+      ['32', 'Invest in Aurora Haven', 'Three ways to fund the city, stage by stage'],
+    ]],
+    ['Systems & life', C.accent4, [
+      ['22', 'Three Districts, One Loop', 'How heat, water, oxygen and waste go round'],
+      ['23', 'A Livable City Every Day', 'Schools, health, shops and culture'],
+      ['24', 'Homes for the Polar Night', 'Housing for every age, built for −45 °C'],
+      ['25', 'Energy for the Polar Night', 'Fusion, wind, sun, geothermal and storage'],
+      ['26', 'Nothing Is Wasted', 'Water and waste in closed loops'],
+      ['27', 'Wild Neighbours', 'Our urban eco-system: plants and animals'],
+      ['28', 'Getting Around Fossil-Free', 'Routes, users, capacity, safety and energy'],
+      ['29', 'Salad Under the Northern Lights', 'Inside the Evergreen Greenhouse Dome'],
+      ['30', 'Safe and Ready for Any Storm', 'Rescue, shelters and blizzard forecasts'],
+      ['31', 'Pros & Cons', 'Advantages, risks, costs and trade-offs'],
+    ]],
+    ['The guide', C.accent1, [
+      ['33', 'Take the Tour', 'Eight stops around the city'],
+      ['34', 'Places to Visit', '35 key places and what they do'],
+      ['35', 'Through a Resident’s Eyes', 'An imagined day in the polar night'],
+      ['36', 'Sources & Assumptions', 'Where our facts come from'],
+    ]],
   ];
-  const ly = 4.8;
-  const rowH = 0.46;
-  const per = 13;
-  items.forEach(([p, t, d], i) => {
-    const x = M + Math.floor(i / per) * (COL2 + GUT);
-    const y = ly + (i % per) * rowH;
-    text(s, p, { x, y, w: 0.5, h: 0.4, fontFace: HEAD, fontSize: 17, bold: true, color: C.accent6 });
-    text(s, t, { x: x + 0.55, y: y + 0.02, w: COL2 - 0.55, h: 0.22, fontSize: 10.5, bold: true });
-    text(s, d, { x: x + 0.55, y: y + 0.23, w: COL2 - 0.55, h: 0.22, fontSize: 8.5, color: C.text2 });
+  const rowH = 0.4;
+  const headH = 0.36;
+  let x = M;
+  let y = 4.35;
+  groups.forEach(([head, color, items], g) => {
+    if (g === 4) { x = M + COL2 + GUT; y = 4.35; } // the right-hand column
+    kicker(s, head, x, y, color, { w: COL2 - 0.2 });
+    y += headH;
+    items.forEach(([p, t, d, pc]) => {
+      text(s, p, { x, y: y - 0.03, w: 0.5, h: 0.36, fontFace: HEAD, fontSize: 16, bold: true, color: pc || C.accent6 });
+      text(s, t, { x: x + 0.55, y, w: COL2 - 0.55, h: 0.2, fontSize: 10, bold: true });
+      text(s, d, { x: x + 0.55, y: y + 0.19, w: COL2 - 0.55, h: 0.2, fontSize: 8, color: C.text2 });
+      y += rowH;
+    });
+    y += 0.12;
   });
 }
 
@@ -650,13 +685,12 @@ blankPage('Cover');
   kicker(L, 'Signature district 1 · Fusion Power Station', M, 1.65, C.accent3, { textColor: C.background1 });
   title(L, "The City's Own Sun", M, 1.93, CW, 0.95, { fontSize: 50, color: C.background1 });
   standfirst(L, 'Our big idea: put a fusion reactor inside the city itself, so one machine lights every home, heats every street and melts the snow we drink.', M, 2.95, 5.6, 1.0, { color: C.background1, fontSize: 15 });
-  const px = M;
-  panel(L, px - 0.25, 7.55, 3.8, 2.9);
-  paras(L, [
-    'Our first signature district is the city’s own sun. Stage 1 takes deuterium from snowmelt water, so the fuel literally falls from the sky as snow. Stage 2 breeds tritium in a lithium blanket, so none is imported.',
-    'Stage 3 is the tokamak, where superconducting magnets hold a 150-million-degree plasma that makes about 800 megawatts of heat. Stage 4 turns that heat into about 300 megawatts of electricity and sends 450 megawatts into the district-heating loop.',
-    'The reactor runs on about 170 grams of fuel a day. If anything fails, the plasma simply goes out in a split second, so it cannot melt down or run away.',
-  ], px, 7.8, 3.3, 2.95, { color: C.background1, fontSize: 10 });
+  inBrief(L, M - 0.2, 8.25, CW + 0.2, C.accent3, [
+    ['The problem', 'Two months of polar night at −45 °C. The city needs heat and power that never stop, even when supply flights cannot land.'],
+    ['The idea', 'A compact tokamak inside the city burns about 170 g of fuel a day and gives 300 MW of electricity and 450 MW of heat.'],
+    ['What’s new', 'No fusion plant sells power yet (page 13). We build a whole city around one, with fuel from snowmelt and tritium bred on site.'],
+    ['The impact', 'No fuel to ship in and no CO₂. If anything fails, the plasma simply goes out, so it cannot melt down.'],
+  ]);
 
   const R = page('DARK', 'Signature Districts');
   bleed(R, 'renders/fusion_spread_R.jpg');
@@ -705,13 +739,13 @@ blankPage('Cover');
   kicker(s, 'Signature district 2 · Snow-to-Food & Water Plant', M, 1.65, C.accent1, { textColor: C.background1 });
   title(s, 'Bread and Water from Snow and Air', M, 1.93, CW, 1.6, { fontSize: 44, color: C.background1 });
   standfirst(s, 'Our big idea: a factory that bakes bread and pours drinking water out of snow and air, so a city with no farmland can feed itself.', M, 3.55, 6.2, 0.8, { color: C.background1, fontSize: 14.5 });
-  paras(s, [
-    'What do you eat where nothing grows? Stage 1 melts about 3,000 tonnes of clean tundra snow a day with spare heat from the fusion station, so the snow does the job of a cooling tower. Stage 2 turns the meltwater into all the city’s drinking water.',
-  ], M, 9.2, COL2, 1.8, { color: C.background1, fontSize: 10 });
-  paras(s, [
-    'Stage 3 splits water into hydrogen and oxygen and captures CO₂ from the air; Stage 4 turns them into starch and fats. In Stage 5, microbes in six silos make about 2.5 tonnes of protein flour a day. Stage 6 cooks bread, noodles and drinks for the city.',
-  ], M + COL2 + GUT, 9.2, COL2, 1.8, { color: C.background1, fontSize: 10 });
-  caption(s, 'The six Bioreactor Silos in the low sun.', M, 8.85, CW, 0.25, { color: C.background2 });
+  caption(s, 'The six Bioreactor Silos in the low sun.', M, 7.95, CW, 0.25, { color: C.background2 });
+  inBrief(s, M - 0.2, 8.3, CW + 0.4, C.accent1, [
+    ['The problem', 'Almost nothing grows at −45 °C, and in deep winter food can only arrive by air.'],
+    ['The idea', 'Spare fusion heat melts 3,000 tonnes of snow a day for drinking water; microbes turn water and CO₂ into about 2.5 tonnes of protein a day.'],
+    ['What’s new', 'Each step exists today, but apart (page 16). We link them in one plant that also cools the fusion station.'],
+    ['The impact', 'Bread, noodles and drinks made in the city all year, with no farmland and fewer supply flights.'],
+  ]);
 }
 {
   const s = page('LIGHT', 'Signature Districts');
@@ -748,13 +782,13 @@ blankPage('Cover');
   kicker(s, 'Signature district 3 · Mount Aurora', M, 1.65, C.accent5, { textColor: C.background1 });
   title(s, 'A Snow Mountain\nYou Can Walk Inside', M, 1.93, CW, 1.45, { fontSize: 38, color: C.background1 });
   standfirst(s, 'Our big idea: the mountain is the building. Inside a 35-metre snow peak shaped like Nepal’s Ama Dablam, a whole leisure world stays at 28 °C all winter.', M, 3.5, 6.4, 0.8, { color: C.background1, fontSize: 14 });
-  paras(s, [
-    'Guests enter through the North Portal, where a thermal revolving door and an air curtain keep the −45 °C air out. The peak’s deep snow works as a blanket that holds in the geothermal heat, and sensors release the snow load safely before an avalanche can build.',
-  ], M, 9.25, COL2, 1.75, { color: C.background1, fontSize: 10 });
-  paras(s, [
-    'Outside is the Aurora Lagoon, a 38-degree mineral pool for bathing under the northern lights. The spa fights the winter blues, brings tourists and income, and in an emergency can shelter up to 1,000 people.',
-  ], M + COL2 + GUT, 9.25, COL2, 1.75, { color: C.background1, fontSize: 10 });
-  caption(s, 'The four spa levels step out of the north face; the forecourt is warmed by the spa’s used hot water, so guests walk ice-free from the shuttle to the door.', M, 8.6, CW, 0.45, { color: C.background2 });
+  caption(s, 'The four spa levels step out of the north face, crowned by the glass Aurora Eye.', M, 7.95, CW, 0.25, { color: C.background2 });
+  inBrief(s, M - 0.2, 8.3, CW + 0.4, C.accent5, [
+    ['The problem', 'Months of darkness bring winter blues, and the city needs a warm place to meet and to shelter in a disaster.'],
+    ['The idea', 'The mountain is the building: a 35-metre snow peak wraps four spa levels, kept at 28 °C by a geothermal spring.'],
+    ['What’s new', 'Spas like Iceland’s Blue Lagoon use geothermal water (page 19). We turn a whole snow peak into an insulated leisure world.'],
+    ['The impact', 'Rest and health for residents, tourists and income for the city, and shelter for up to 1,000 people.'],
+  ]);
 }
 {
   const L = page('DARK', 'Signature Districts');
@@ -1067,19 +1101,19 @@ blankPage('Cover');
     text(s, items.flatMap(([t, d], i) => [
       { text: `${t}. `, options: { bold: true, color: C.text1 } },
       { text: d, options: { color: C.text1, breakLine: i < items.length - 1, paraSpaceAfter: 5 } },
-    ]), { x, y: 6.78, w: COL2, h: 3.05, fontSize: 10, lineSpacingMultiple: 1.06 });
+    ]), { x, y: 6.78, w: COL2, h: 3.05, fontSize: 10.5, lineSpacingMultiple: 1.08 });
   };
   col(M, 'ANIMALS', C.accent4, [
-    ['Wildlife corridors', 'Snow-laden trees on the eastern and western edges give snow buntings, ptarmigans, arctic foxes and hares cover between the open tundra and the parks. Roads beside them have dimmed lights and wildlife underpasses.'],
-    ['Fences with gaps', 'Park fences have open rails, so drifting snow blows through, and gaps at ground level, so foxes and hares pass freely.'],
-    ['Reindeer', 'The eco-tour herd is cared for by herders who follow Sámi traditions. Rides last only a few hours a day, and GPS collars help find animals grazing on the tundra.'],
-    ['Polar bears', 'Fibre-optic sensors in the air base fence alert a wildlife team when a bear comes close, so people and bears stay apart safely.'],
+    ['Wildlife corridors', 'Snowy tree belts on the east and west edges link the tundra to the parks for foxes, hares and ptarmigans; the roads beside them have dim lights and underpasses.'],
+    ['Fences with gaps', 'Open rails let drifting snow blow through, and gaps at ground level let foxes and hares pass.'],
+    ['Reindeer', 'Herders who follow Sámi traditions care for the eco-tour herd; rides are short, and GPS collars track the animals on the tundra.'],
+    ['Polar bears', 'Fibre-optic sensors in the air base fence call a wildlife team when a bear comes close.'],
   ]);
   col(M + COL2 + GUT, 'PLANTS AND FARMED LIFE', C.accent1, [
-    ['Living snow fences', 'Belts of snow spruces and arctic pines trap drifting snow before it reaches the streets; the clean snow is collected for the food plant.'],
-    ['Green stepping stones', 'Snow lindens line Liberty Mall, and dwarf pines in heated planters on the Aurora 81 Sky Garden give birds a stepping stone across the city.'],
-    ['Aquaponics', 'In the Evergreen Aquaponics Dome, Arctic char and rainbow trout feed beds of lettuce, herbs and strawberries; the loop loses under 2% of its water a day.'],
-    ['Shelter and science', 'Rock gardens and boulders shelter ptarmigans and hares; nest boxes and a camera let schoolchildren count visitors with the Polar Climate & Ice Research Institute.'],
+    ['Living snow fences', 'Belts of spruce and pine trap drifting snow before it reaches the streets; the clean snow goes to the food plant.'],
+    ['Green stepping stones', 'Snow lindens on Liberty Mall and heated planters on the Aurora 81 Sky Garden give birds stepping stones across the city.'],
+    ['Aquaponics', 'In the Evergreen Aquaponics Dome, Arctic char and trout feed lettuce, herbs and strawberries; the loop loses under 2% of its water a day.'],
+    ['Shelter and science', 'Rock gardens shelter ptarmigans and hares, and nest-box cameras let schoolchildren count them.'],
   ]);
   card(s, M, 9.95, CW, 0.95, C.background2);
   text(s, [
@@ -1097,10 +1131,10 @@ blankPage('Cover');
   picture(s, 'renders/airport.jpg', 0, 1.65, W, 3.0);
   caption(s, 'Compact Polar Airport at dusk: the glass terminal, the control tower and Flight VN-81 climbing out.', M, 4.7, CW, 0.25);
   paras(s, [
-    'Transport in Aurora Haven is electric and built for the cold. The heart of it is the metro: the north–south Aurora Line and the deep east–west Glacier Line meet at the Central Interchange Station under Liberty Mall. The driverless four-car trains run underground, so blizzards never stop them.',
-    'On the streets there are electric trams, buses and shared robotaxis, and people wait in heated bus shelters. The roads are warmed from below, so no salt is needed, as in Reykjavík, where water returning from home heating melts the snow under streets [18].',
+    'Everything that moves in Aurora Haven is electric and built for the cold. Two driverless metro lines, the north–south Aurora Line and the east–west Glacier Line, run deep underground and meet under Liberty Mall, so blizzards never stop them.',
+    'Above ground, electric trams, buses and shared robotaxis stop at heated shelters. Streets are warmed from below, as in Reykjavík, where water returning from home heating melts the snow [18].',
     'The airport, with its heated runway and e-fuel planes, keeps the city supplied through deep winter.',
-  ], M, 5.1, 3.95, 3.0, { fontSize: 10 });
+  ], M, 5.1, 3.95, 3.0, { fontSize: 10.5 });
   // Metro diagram: the two lines cross at the interchange.
   const mx = 4.95;
   const mw = W - M - mx;
@@ -1121,13 +1155,10 @@ blankPage('Cover');
   const fw = (CW - 3 * 0.12) / 4;
   facts.forEach(([t, d], i) => {
     const x = M + i * (fw + 0.12);
-    card(s, x, 8.15, fw, 1.68, C.background2);
-    text(s, t, { x: x + 0.1, y: 8.24, w: fw - 0.2, h: 0.24, fontSize: 9.5, bold: true, color: C.accent6 });
-    text(s, d, { x: x + 0.1, y: 8.5, w: fw - 0.2, h: 1.3, fontSize: 8.5, lineSpacingMultiple: 1.02 });
+    card(s, x, 8.4, fw, 2.4, C.background2);
+    text(s, t, { x: x + 0.12, y: 8.52, w: fw - 0.24, h: 0.26, fontSize: 11, bold: true, color: C.accent6 });
+    text(s, d, { x: x + 0.12, y: 8.84, w: fw - 0.24, h: 1.9, fontSize: 10, lineSpacingMultiple: 1.06 });
   });
-  const st = [['3 min', 'between trains at rush hour'], ['30%', 'of train energy returned by braking'], ['2,800 m', 'heated airport runway']];
-  const sw = CW / 3;
-  st.forEach(([n, l], i) => stat(s, n, l, M + i * sw, 9.97, sw - 0.12, C.accent6, { size: 20, lh: 0.4, lsize: 8.5 }));
 }
 
 // ---------------------------------------------------------------------------
@@ -1470,7 +1501,7 @@ const PLACES = [
   card(s, M, 9.85, CW, 1.05, C.background2);
   text(s, [
     { text: 'PICTURES  ', options: { bold: true, charSpacing: 2, color: C.accent6 } },
-    { text: 'Every picture, plan and diagram in this magazine was made from our own 3D model of Aurora Haven (built with three.js). Text facts about the city come from our city plan and its place cards.', options: { breakLine: true, paraSpaceAfter: 4 } },
+    { text: 'Every picture, plan and diagram in this magazine was made from our own 3D model of Aurora Haven (built with three.js). The cover photo is a render of that model made photo-realistic with an AI image tool (Nano Banana Pro), keeping its layout. Text facts about the city come from our city plan and its place cards.', options: { breakLine: true, paraSpaceAfter: 4 } },
     { text: 'AI USE  ', options: { bold: true, charSpacing: 2, color: C.accent6 } },
     { text: 'We used AI tools to help us build the 3D model of the city and make the pictures, plans and diagrams in this magazine, and to check our spelling and fix logic errors in the text.' },
   ], { x: M + 0.15, y: 9.93, w: CW - 0.3, h: 0.9, fontSize: 9, valign: 'middle', lineSpacingMultiple: 1.04 });
@@ -1520,8 +1551,12 @@ blankPage('Guide');
   qrCard(s, px + 0.15, 3.4, pw - 0.3, 1.95, { fill: C.background1, size: 12, flipbook: true });
 }
 
-for (const [s, side, dark, n] of numbered) {
+for (const [s, side, dark, n, section] of numbered) {
   s.addText(String(n), Object.assign(pageNumber(side, dark), { isTextBox: true, objectName: 'page-number' }));
+  s.addText([
+    { text: `${FOLIO}  ·  `, options: { color: dark ? C.background2 : C.text2 } },
+    { text: SECTION_FOLIO[section] || section.toUpperCase(), options: { color: dark ? C.background1 : C.accent6 } },
+  ], folioOptions(side));
 }
 if (pageNo !== 39) throw new Error(`Expected 39 inside pages before the back cover, got ${pageNo}`);
 
