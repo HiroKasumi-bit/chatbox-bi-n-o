@@ -1,5 +1,7 @@
 # Tạp chí Aurora Haven
 
+> Bàn giao cho AI khác: xem [HANDOFF.md](HANDOFF.md).
+
 Tạp chí khổ A4, 40 trang, viết bằng tiếng Anh, giới thiệu **Aurora Haven**, thành phố vùng cực. Bố cục bám theo hai file hướng dẫn của môn (Magazine guidelines và Report guidelines): đủ các mục bắt buộc, có mã QR tới video phỏng vấn thực tế, có trích nguồn và ghi rõ đâu là số thiết kế, đâu là ước tính, đâu là ý tưởng tương lai.
 
 Mọi hình ảnh trong tạp chí đều do mình tự dựng và tự chụp từ mô hình 3D của thành phố (thư mục `city3d/`, viết bằng three.js), theo phong cách diễn họa kiến trúc:
