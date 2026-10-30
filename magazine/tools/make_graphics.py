@@ -18,7 +18,7 @@ OUT = Path(__file__).resolve().parent.parent / "assets" / "ui"
 INTERVIEW_URL = "https://youtu.be/QwcP_2Q3Esc"
 ECOPOLIS_URL = "https://ecopolis3d.netlify.app/"
 MAP_FILE_URL = "https://github.com/HiroKasumi-bit/chatbox-bi-n-o/releases/latest/download/Aurora_Haven.json"
-FLIPBOOK_URL = "https://online.fliphtml5.com/aidsfjas4239PolarCut/Aurora_Haven_Magazine_web/"
+FLIPBOOK_URL = "https://online.fliphtml5.com/aidsfjas4239PolarCut/Aurora_Haven_Magazine/"
 NAVY = (14, 26, 54)
 
 

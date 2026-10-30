@@ -104,7 +104,9 @@ Check every build:
   The user cannot replace the PDF inside an existing FlipHTML5 book. A new upload means a new link, so update `FLIPBOOK_URL` in both `build_magazine.js` and `tools/make_graphics.py`, then run `make_graphics.py`.
 - **No penguins.** They live in the Antarctic and the city is in the Arctic; the user agreed to drop the idea.
 
-## 6. Unfinished job: make the 3D pictures photoreal (you do this)
+## 6. Done (30 Oct 2026): make the 3D pictures photoreal
+
+> **Status:** done. All renders (and a new whole-city cover without callouts) were made photoreal with Stable Diffusion XL (RealVisXL V5) running locally on an RTX 4060; the tools are in `magazine/tools/photoreal/` and the README section "Làm ảnh như thật (SDXL)" explains them. The user then asked for more changes that are already in: a modern fusion dome that does not sit on a road, a Mount Aurora cutaway with no second peak behind it, a section on page 20 built from real interior photos, a fuller stadium, and an energy picture split top/bottom (wind above, solar below). Text was cut by about 40% with fewer numbers, three mechanism diagrams were added, and stretched pictures were fixed. The notes below are kept as history.
 
 The user wants every 3D render in the magazine to look like a real photograph, as the cover already does. The Eco-Polis screenshots in `magazine/assets/ecopolis/` stay as they are. **Generate these pictures yourself** with the image tool you have (image editing with the original render as input), then place them in the magazine.
 

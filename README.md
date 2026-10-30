@@ -12,6 +12,8 @@ Mọi hình ảnh trong tạp chí đều do mình tự dựng và tự chụp t
 
 Bốn bản đồ 2D (bản đồ tổng thể, hai khu đặc trưng, các tầng spa) cũng được vẽ từ chính mô hình này.
 
+Sau đó, các ảnh render được làm thành ảnh như chụp thật bằng AI tạo ảnh chạy trên máy tính (Stable Diffusion XL, model RealVisXL V5), lấy chính ảnh render làm đầu vào. Riêng ảnh chụp mô hình Eco-Polis của nhóm giữ nguyên. Cách làm ở mục [Làm ảnh như thật](#làm-ảnh-như-thật-sdxl).
+
 ## Mở tạp chí
 
 | File | Dùng để |
@@ -32,7 +34,7 @@ Nên xem file PDF ở chế độ **hai trang** (Two Page View, có trang bìa r
 2. Đọc lại và viết lại chữ bằng lời của nhóm. Hướng dẫn yêu cầu nội dung là của nhóm, nên phần chữ ở đây chỉ là bản nháp để nhóm sửa.
 3. Mở link video (https://youtu.be/QwcP_2Q3Esc) xem video có để chế độ công khai (Public hoặc Unlisted) chưa, rồi quét thử mã QR bằng điện thoại.
 
-**Mã QR:** trang 3 có mã tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc; bìa sau có mã tới bản tạp chí tương tác trên FlipHTML5 (https://online.fliphtml5.com/aidsfjas4239PolarCut/Aurora_Haven_Magazine_web/). Script `magazine/tools/make_graphics.py` vẽ các mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được.
+**Mã QR:** trang 3 có mã tới video phỏng vấn https://youtu.be/QwcP_2Q3Esc; bìa sau có mã tới bản tạp chí tương tác trên FlipHTML5 (https://online.fliphtml5.com/aidsfjas4239PolarCut/Aurora_Haven_Magazine/). Script `magazine/tools/make_graphics.py` vẽ các mã rồi tự đọc lại bằng OpenCV, mã nào đọc không ra thì không được lưu. Trong file .pptx và .pdf, bấm vào mã hoặc dòng link bên cạnh cũng mở được.
 
 **File bản đồ 3D:** `magazine/source/Aurora_Haven.json` mở bằng web Eco-Polis Builder (https://ecopolis3d.netlify.app/, nút 📂 Load). Ảnh chụp mô hình Ecopolis của nhóm nằm trong `magazine/assets/ecopolis/`. Mỗi khi file này thay đổi trên GitHub, workflow `.github/workflows/map-release.yml` tự đăng lại file lên Release `map-v1`, nên link tải https://github.com/HiroKasumi-bit/chatbox-bi-n-o/releases/latest/download/Aurora_Haven.json luôn là bản mới nhất.
 
@@ -42,7 +44,7 @@ Số trang in trên tạp chí không tính bìa trước và mặt trong của 
 
 | Trang | Nội dung | Mục trong hướng dẫn |
 |---|---|---|
-| Bìa trước | Bìa: ảnh flycam ban đêm như ảnh chụp thật (góc `cover_aerial` của mô hình 3D, làm thật bằng Nano Banana Pro), nhãn chỉ vào 3 đột phá kèm số trang, khẩu hiệu "A polar city that thrives" | Cover |
+| Bìa trước | Bìa: ảnh flycam toàn cảnh cả thành phố ban đêm dưới cực quang (góc chụp mới trong `city3d/tools/shots_cover_overview.json`, làm thật bằng Stable Diffusion XL), khẩu hiệu "A polar city that thrives"; không còn nhãn chú thích trên ảnh | Cover |
 | (không đánh số) | Để trắng (mặt trong bìa trước) | |
 | 1 | Mục lục, chia theo phần: Welcome, The city, The breakthroughs, Invest, Systems & life, The guide | Table of contents |
 | 2 | Thư của nhóm sáng lập (phần mở đầu do nhóm viết) | Letter from the Founders |
@@ -53,12 +55,12 @@ Số trang in trên tạp chí không tính bìa trước và mặt trong của 
 | 8–9 | Trang đôi: Liberty Mall và tượng đài Founding Mayor Monument | Housing & special locations |
 | 10 | Bản đồ tổng thể (một trang) | Housing & special locations |
 | 11 | 9 ô phố trung tâm | Housing & special locations |
-| 12–20 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, ngọn núi tuyết có khu giải trí bên trong (trang đôi 12–13 và 18–19). Trang mở đầu mỗi đột phá có khung "In brief" (The problem · The idea · What's new · The impact); mỗi đột phá có ô "Where the world is today" và "Reality check" đặt ngay trên ảnh; trang 14 có ô "Why it's green" | Breakthrough innovations |
+| 12–20 | Ba đột phá: nhà máy nhiệt hạch, nhà máy Snow-to-Food, ngọn núi tuyết có khu giải trí bên trong (trang đôi 12–13 và 18–19). Trang mở đầu mỗi đột phá có khung "In brief" (The problem · The idea · What's new · The impact); mỗi đột phá có ô "Where the world is today" và "Reality check" đặt ngay trên ảnh; mỗi đột phá có một sơ đồ cơ chế (trang 14, 16, 20); trang 17 là ảnh mặt cắt núi trong suốt thấy spa bên trong, trang 20 là mặt cắt núi dựng từ ảnh thật | Breakthrough innovations |
 | 21 | Built by Us: ảnh thật mô hình Ecopolis của nhóm, 2 mã QR (tải file bản đồ, mở web Eco-Polis) và 5 bước hướng dẫn | Breakthrough innovations |
 | 22 | Vòng tuần hoàn giữa ba khu | Infrastructure |
 | 23 | Đời sống hằng ngày: trường, y tế, mua sắm, văn hóa | Housing & special locations |
 | 24 | Nhà ở: cách nhà chống lạnh, nhà cho mọi lứa tuổi | Transport & Housing |
-| 25 | Năng lượng 3 giai đoạn: gió + mặt trời khởi động nhiệt hạch, nhiệt hạch cấp điện, gió + mặt trời làm dự phòng | Infrastructure |
+| 25 | Năng lượng 3 giai đoạn: gió + mặt trời khởi động nhiệt hạch, nhiệt hạch cấp điện, gió + mặt trời làm dự phòng; ảnh khu năng lượng chia trên – dưới (nửa trên điện gió, nửa dưới điện mặt trời) | Infrastructure |
 | 26 | Nước và rác | Infrastructure |
 | 27 | Hệ sinh thái đô thị | Urban Eco-System |
 | 28 | Giao thông | Getting Around |
@@ -67,7 +69,7 @@ Số trang in trên tạp chí không tính bìa trước và mặt trong của 
 | 32 | Gọi vốn | Investment CTA |
 | 33–34 | Tham quan 8 điểm, 35 địa điểm | Housing & special locations |
 | 35 | Through a Resident's Eyes: một ngày của cư dân (câu chuyện tưởng tượng) | Housing & special locations |
-| 36 | Nguồn tham khảo [1]–[20], cách đọc số liệu, khai báo dùng AI | Sources |
+| 36 | Nguồn tham khảo [1]–[18], cách đọc số liệu, khai báo dùng AI | Sources |
 | (không đánh số) | Để trắng (mặt trong bìa sau) | |
 | Bìa sau | Bìa sau: phần kết do nhóm viết, lời kêu gọi, liên hệ nhóm, logo, mã QR | Back cover |
 
@@ -102,6 +104,9 @@ magazine/
   tools/make_shades.py        vẽ các lớp tối mờ trong assets/ui
   tools/make_graphics.py      vẽ mã QR tới video phỏng vấn (có quét thử) và logo thành phố
   tools/apply_theme.js        ghi bảng màu của tạp chí vào file PowerPoint
+  tools/photoreal/            làm ảnh như thật bằng Stable Diffusion XL, xuất PDF bằng PowerPoint
+  tools/section/              dựng ảnh mặt cắt Mount Aurora (trang 20) từ SVG và các ảnh nội thất
+  assets/diagrams/            ảnh mặt cắt Mount Aurora đã dựng
 city3d/
   index.html                  mở thành phố 3D trên trình duyệt
   src/layout.js               quy hoạch: vị trí các khu và 35 địa điểm (dùng cho cả 3D và bản đồ)
@@ -113,6 +118,9 @@ city3d/
   src/*.js                    địa hình, khu trung tâm, núi và spa, các nhà máy, sân bay, sân vận động
   tools/render.js             chụp ảnh cho tạp chí
   tools/shots.json            góc chụp, kiểu trời và kích thước của từng ảnh
+  tools/shots_cover_overview.json   góc chụp toàn cảnh cho bìa
+  tools/shots_energy_park.json      góc chụp khu năng lượng (dùng cùng energy_park_render.patch)
+  tools/energy_park_render.patch    bản sửa chỉ để chụp ảnh trang 25 (thêm hàng tuabin, mở rộng bãi pin)
   tools/plans.js              vẽ 4 bản đồ 2D từ mô hình
 ```
 
@@ -146,7 +154,20 @@ node build_magazine.js
 
 Muốn chụp lại vài ảnh thôi thì thêm tên ảnh vào cuối lệnh render, ví dụ `node tools/render.js tools/shots.json ../magazine/renders_raw cover,spa`.
 
+## Làm ảnh như thật (SDXL)
+
+Các ảnh trong tạp chí (trừ ảnh chụp mô hình Eco-Polis) được làm thật bằng `magazine/tools/photoreal/`, chạy trên máy có card NVIDIA (đã dùng RTX 4060 8 GB, khoảng 20–30 giây một ảnh). Cần Python 3.12, PyTorch có CUDA và `diffusers transformers accelerate safetensors opencv-python-headless pillow`; lần đầu chạy sẽ tải khoảng 9 GB model từ Hugging Face (`SG161222/RealVisXL_V5.0`, `madebyollin/sdxl-vae-fp16-fix`, `xinsir/controlnet-canny-sdxl-1.0`).
+
+- `batch.py RAW OUT jobs.json`: tạo nhiều ảnh thử (mỗi ảnh một vài seed) từ ảnh render, kèm ảnh so sánh.
+- `finalize.py RAW OUT picks.json`: làm nét ảnh đã chọn ở đúng kích thước gốc (vẽ lại từng ô ở cường độ thấp).
+- `cutaway.py`, `spa_clean.py`: ghép ảnh mặt cắt trang 17 (bỏ ngọn núi phía sau, phủ vỏ núi trong suốt có tuyết lên khối spa).
+- `export_pdf.ps1`: xuất PDF bằng PowerPoint thật; `web_pdf.py`: làm bản PDF nhẹ cho FlipHTML5.
+
+Ảnh làm xong đặt vào `magazine/renders_raw/<tên>.jpg` (giữ đúng kích thước pixel của ảnh render), rồi chạy `python3 tools/prepare_renders.py renders_raw` và `node build_magazine.js`. Ảnh mặt cắt trang 20 dựng bằng `node tools/section/section.mjs --mode=art --photos=tools/section/photos OUT.png` rồi chồng lớp chữ (`--mode=labels`); cần `npm install --no-save @resvg/resvg-js@2.6.2`. Ảnh trang 25 chụp từ một bản sao của `city3d` đã áp `city3d/tools/energy_park_render.patch` (`git apply`), không sửa mô hình gốc của nhóm.
+
 ## Khôi phục
+
+- **Bản trước đợt làm ảnh như thật và biên tập lại (ảnh render, bìa có 3 nhãn chú thích, chữ dài hơn):** ở commit `a8eb556`. Lấy lại bằng `git checkout a8eb556 -- magazine output README.md city3d`.
 
 - **Bản 36 trang trước khi thêm trang gọi vốn và trang trắng:** ở commit `091654d`. Lấy lại bằng `git checkout 091654d -- output magazine`.
 - **Bản trước khi xếp lại ô phố trung tâm theo file `.json`:** ở commit `5db628b`. Lấy lại bằng `git checkout 5db628b -- output magazine city3d`.
