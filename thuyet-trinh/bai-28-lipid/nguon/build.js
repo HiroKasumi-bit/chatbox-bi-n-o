@@ -56,71 +56,38 @@ async function main() {
   await prepIcons(names.flatMap(n=>allC.map(c=>[n,c])));
 
   let s, n;
+  const runs = L.runs;
+  const struct3 = (s, x, y, lefts, size = 22, col = C.text1, o = {}) => {
+    // lefts: 3 strings (acid residues); draws "R–COO – CH2/CH/CH2" with vertical bonds
+    const rowH = 0.72, lw = o.lw || 2.6;
+    const names = [];
+    lefts.forEach((l, i) => {
+      names.push(tx(s, l + ' –', x, y + i * rowH, lw, rowH, { size, align: 'right', valign: 'middle', margin: 0, color: col, font: 'Cambria' }));
+      names.push(tx(s, ['CH2', 'CH', 'CH2'][i], x + lw + 0.08, y + i * rowH, 0.9, rowH, { size, valign: 'middle', margin: 0, color: col, font: 'Cambria' }));
+    });
+    const bx = x + lw + 0.08 + size * 0.0105;
+    names.push(line(s, bx, y + rowH * 0.78, bx, y + rowH * 1.22, { color: col, width: 1.5 }));
+    names.push(line(s, bx, y + rowH * 1.78, bx, y + rowH * 2.22, { color: col, width: 1.5 }));
+    return names;
+  };
   const SEC = { intro: 'Mở đầu', lipid: 'I. Lipid', fat: 'II. Chất béo', use: 'Ứng dụng & sức khoẻ', prac: 'Luyện tập', app: 'Vận dụng', end: 'Tổng kết' };
   pres.addSection({ title: SEC.intro });
 
-  // ---------- 1. COVER ----------
+  // ---------- CHÀO MỪNG ----------
   s = newSlide('COVER', SEC.intro, 'fade');
   bubbles(s, true);
-  const c1 = img(s, 's_dau.png', 7.75, 1.05, 4.7, 4.7, { name: '!!c1', alt: 'Dầu thực vật' });
-  const c2 = img(s, 's_bo.png', 11.05, 4.55, 1.95, 1.95, { name: '!!c2', alt: 'Bơ' });
-  const c3 = img(s, 's_dua.png', 7.1, 5.0, 1.6, 1.6, { name: '!!c3', alt: 'Dầu dừa' });
-  const k1 = tx(s, 'KHOA HỌC TỰ NHIÊN 9  ·  CHƯƠNG IX', 0.8, 1.35, 6.5, 0.4, { size: 14, bold: true, color: C.accent1, cs: 3, margin: 0 });
-  const p1 = tx(s, 'BÀI 28', 0.8, 1.9, 1.55, 0.5, { size: 18, bold: true, color: C.text2, align: 'center', valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.accent1, r: 0.25, cs: 2, name: '!!badge' });
-  const t1 = tx(s, 'LIPID', 0.8, 2.45, 6.6, 1.7, { size: 110, bold: true, font: 'Cambria', color: C.background1, margin: 0, valign: 'middle', name: '!!bigtitle' });
-  const st1 = tx(s, 'Chất béo – từ bữa ăn hằng ngày\nđến bánh xà phòng', 0.8, 4.2, 6.4, 1.0, { size: 24, color: C.accent6, margin: 0, italic: true, font: 'Cambria' });
-  const i1 = tx(s, 'Giáo viên: [Họ và tên]   ·   [Tên trường]\nThời lượng: 2 tiết', 0.8, 5.65, 6.4, 0.8, { size: 16, color: C.background1, margin: 0 });
-  withP(s, t1, 'zoom', { dur: 700 }); after(s, [k1, p1], 'fade'); after(s, st1, 'float'); after(s, i1, 'fade');
-  s.addNotes('Giới thiệu bài 28 – Lipid (2 tiết). Điền tên giáo viên và tên trường vào dòng thông tin.');
-
-  // ---------- 2. MỤC TIÊU ----------
-  s = newSlide('CONTENT', SEC.intro);
-  bubbles(s);
-  kicker(s, 'SAU BÀI HỌC, EM CÓ THỂ');
-  title(s, 'Mục tiêu bài học');
-  const goals = [
-    ['FaBookOpen', 'Khái niệm', 'Nêu được khái niệm lipid, chất béo, trạng thái tự nhiên, công thức chung (R–COO)3C3H5 và đặc điểm cấu tạo.'],
-    ['FaFlask', 'Tính chất', 'Trình bày tính chất vật lí (trạng thái, tính tan), tính chất hoá học (phản ứng xà phòng hoá); viết được PTHH.'],
-    ['FaHeartbeat', 'Vai trò', 'Nêu được vai trò của lipid: tham gia cấu tạo tế bào và tích luỹ năng lượng trong cơ thể.'],
-    ['FaLightbulb', 'Ứng dụng & sức khoẻ', 'Trình bày ứng dụng của chất béo; đề xuất cách dùng chất béo hợp lí để khoẻ mạnh, tránh béo phì.'],
-  ];
-  const gNames = [];
-  goals.forEach((g, i) => {
-    const x = 0.6 + (i % 2) * 6.2, y = 1.8 + Math.floor(i / 2) * 2.55;
-    const cd = box(s, x, y, 5.9, 2.25, { fill: C.background1, shadow: 'soft' });
-    const [dc, di] = iconDot(s, g[0], HEX.green, x + 0.35, y + 0.4, 1.0);
-    const ttl = tx(s, g[1], x + 1.6, y + 0.32, 4.0, 0.5, { size: 21, bold: true, color: C.text2, font: 'Cambria', margin: 0 });
-    const body = tx(s, g[2], x + 1.6, y + 0.85, 4.05, 1.25, { size: 16, margin: 0 });
-    gNames.push([cd, dc, di, ttl, body]);
-  });
-  gNames.forEach((g, i) => anim(s, i === 0 ? 'click' : 'after', g, 'float', { delay: i ? 0 : 0, dur: 600 }));
-  s.addNotes('GV giới thiệu 4 mục tiêu của bài học.');
-
-  // ---------- 3. NỘI DUNG BÀI HỌC ----------
-  s = newSlide('CONTENT', SEC.intro);
-  bubbles(s);
-  kicker(s, 'TIẾN TRÌNH BÀI HỌC');
-  title(s, 'Hành trình 5 hoạt động');
-  const steps = [
-    ['01', 'Mở đầu', 'Trò chơi\n“Tiếp sức đồng đội”'],
-    ['02', 'Hình thành kiến thức', 'I. Lipid\nII. Chất béo (học theo trạm)\nỨng dụng & sức khoẻ'],
-    ['03', 'Luyện tập', '8 câu hỏi\ncá nhân'],
-    ['04', 'Vận dụng', 'Tính toán, giải thích,\nlàm xà phòng từ dầu ăn thừa'],
-    ['05', 'Về nhà', 'Ôn bài, chuẩn bị\nBài 29'],
-  ];
-  const tl = line(s, 1.6, 2.85, 11.75, 2.85, { color: C.accent1, width: 3, dash: 'dash' });
-  const stepN = [];
-  steps.forEach((st, i) => {
-    const cx = 1.6 + i * 2.5375;
-    const c = circle(s, cx - 0.6, 2.25, 1.2, { fill: i === 1 ? C.accent2 : C.text2, shadow: 'soft' });
-    const num = tx(s, st[0], cx - 0.6, 2.25, 1.2, 1.2, { size: 26, bold: true, color: C.background1, align: 'center', valign: 'middle', font: 'Cambria', margin: 0 });
-    const hd = tx(s, st[1], cx - 1.2, 3.7, 2.4, 0.8, { size: 19, bold: true, color: C.text2, align: 'center', margin: 0, font: 'Cambria' });
-    const bd = tx(s, st[2], cx - 1.2, 4.5, 2.4, 1.6, { size: 15, align: 'center', margin: 0, color: C.text1 });
-    stepN.push([c, num, hd, bd]);
-  });
-  withP(s, tl, 'wipeL', { dur: 900 });
-  stepN.forEach((g) => after(s, g, 'zoom', { dur: 350 }));
-  s.addNotes('Tổng quan tiến trình: Mở đầu → Hình thành kiến thức → Luyện tập → Vận dụng → Hướng dẫn về nhà.');
+  const wb = img(s, 'bunting.png', 0.2, -0.05, 4.2, 1.64, { alt: 'Hình trang trí' });
+  const wb2 = img(s, 'bunting.png', 8.95, -0.05, 4.2, 1.64, { alt: 'Hình trang trí' });
+  const lg1 = img(s, 'logo_ud.png', 5.35, 0.75, 1.2, 1.2, { alt: 'Logo Trường Đại học Sư phạm – ĐHĐN' });
+  const lg2 = img(s, 'logo_lh.png', 6.8, 0.75, 1.2, 1.2, { alt: 'Logo Khoa Lý – Hoá' });
+  const sch = tx(s, 'TRƯỜNG ĐẠI HỌC SƯ PHẠM – ĐHĐN  ·  KHOA LÝ – HOÁ', 1.0, 2.15, 11.33, 0.4, { size: 15, bold: true, color: C.accent1, cs: 3, align: 'center', margin: 0 });
+  const wt = tx(s, 'Chào mừng quý thầy cô giáo\nvà các em học sinh', 1.0, 2.75, 11.33, 2.0, { size: 50, bold: true, font: 'Cambria', color: C.background1, align: 'center', valign: 'middle', margin: 0, psa: 0, name: '!!bigtitle' });
+  const ws = tx(s, 'đến với bài học ngày hôm nay', 1.0, 4.8, 11.33, 0.7, { size: 28, italic: true, font: 'Cambria', color: C.accent6, align: 'center', margin: 0 });
+  const cf = img(s, 'confetti.png', 10.6, 4.6, 1.9, 1.98, { alt: 'Hình trang trí' });
+  const cf2 = img(s, 'confetti.png', 0.8, 4.6, 1.9, 1.98, { alt: 'Hình trang trí' });
+  withP(s, [wb, wb2], 'wipeU', { dur: 700 }); after(s, [lg1, lg2], 'zoom', { dur: 500 }); after(s, sch, 'fade');
+  after(s, wt, 'float', { dur: 800 }); after(s, ws, 'fade'); after(s, [cf, cf2], 'zoom', { dur: 500 });
+  s.addNotes('Chào mừng quý thầy cô giáo và các em học sinh đến với bài học ngày hôm nay.');
 
   // ---------- 4. SECTION 01 ----------
   const section = (num, kick, ttl, sub, ic, sec) => {
@@ -135,9 +102,19 @@ async function main() {
     withP(s, nn, 'float', { dur: 800 }); withP(s, ii, 'zoom', { delay: 300, dur: 600 });
     return s;
   };
-  const runs = L.runs;
-  s = section('01', 'HOẠT ĐỘNG 1', 'Mở đầu', 'Trò chơi “Tiếp sức đồng đội”', 'FaGamepad', SEC.intro);
-  s.addNotes('Hoạt động 1 – Mở đầu: tạo hứng thú, giúp HS nhận biết một số lipid trong cuộc sống.');
+  // ---------- CHÀO MỪNG TRÒ CHƠI ----------
+  s = newSlide('SECTION', SEC.intro);
+  bubbles(s, true);
+  tx(s, '01', 0.85, 0.55, 3.2, 1.9, { size: 120, bold: true, font: 'Cambria', color: C.accent1, margin: 0, valign: 'bottom', name: '!!secnum' });
+  tx(s, 'HOẠT ĐỘNG 1 · MỞ ĐẦU', 0.9, 2.62, 8, 0.4, { size: 14, bold: true, color: C.accent6, cs: 3, margin: 0 });
+  s.addText(runs('Tiếp sức đồng đội'), { placeholder: 'title' });
+  s.addText(runs('Chào mừng các bạn đến với trò chơi!'), { placeholder: 'sub' });
+  circle(s, 9.55, 1.95, 3.3, { fill: { color: C.accent1, transparency: 12 }, name: '!!secdot', shadow: 'dark' });
+  const gwi = icon(s, 'FaRunning', HEX.dk, 10.4, 2.8, 1.6);
+  const gwc = img(s, 'confetti.png', 11.6, 1.2, 1.45, 1.5, { alt: 'Hình trang trí' });
+  const gwc2 = img(s, 'confetti.png', 8.9, 4.6, 1.2, 1.25, { alt: 'Hình trang trí' });
+  withP(s, gwi, 'zoom', { delay: 300, dur: 600 }); after(s, [gwc, gwc2], 'zoom', { dur: 500 });
+  s.addNotes('Hoạt động 1 – Mở đầu: chào mừng các bạn đến với trò chơi “Tiếp sức đồng đội”.');
 
   // ---------- 5. LUẬT CHƠI ----------
   s = newSlide('CONTENT', SEC.intro);
@@ -221,6 +198,43 @@ async function main() {
   stagger(s, 'click', lblN, 'fade', 0, 300);
   s.addNotes('Chốt: một số thực phẩm giàu chất béo – dầu ăn, mỡ động vật, lạc, vừng, bơ…');
 
+  // ---------- 1. COVER ----------
+  s = newSlide('COVER', SEC.intro);
+  bubbles(s, true);
+  const c1 = img(s, 's_dau.png', 7.75, 1.05, 4.7, 4.7, { name: '!!c1', alt: 'Dầu thực vật' });
+  const c2 = img(s, 's_bo.png', 11.05, 4.55, 1.95, 1.95, { name: '!!c2', alt: 'Bơ' });
+  const c3 = img(s, 's_dua.png', 7.1, 5.0, 1.6, 1.6, { name: '!!c3', alt: 'Dầu dừa' });
+  const k1 = tx(s, 'KHOA HỌC TỰ NHIÊN 9  ·  CHƯƠNG IX', 0.8, 1.35, 6.5, 0.4, { size: 14, bold: true, color: C.accent1, cs: 3, margin: 0 });
+  const p1 = tx(s, 'BÀI 28', 0.8, 1.9, 1.55, 0.5, { size: 18, bold: true, color: C.text2, align: 'center', valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.accent1, r: 0.25, cs: 2, name: '!!badge' });
+  const t1 = tx(s, 'LIPID', 0.8, 2.45, 6.6, 1.7, { size: 110, bold: true, font: 'Cambria', color: C.background1, margin: 0, valign: 'middle', name: '!!bigtitle' });
+  const st1 = tx(s, 'Chất béo – từ bữa ăn hằng ngày\nđến bánh xà phòng', 0.8, 4.2, 6.4, 1.0, { size: 24, color: C.accent6, margin: 0, italic: true, font: 'Cambria' });
+  const i1 = tx(s, 'Nhóm báo cáo: **26SKT2**\nTrường Đại học Sư phạm – ĐHĐN  ·  Khoa Lý – Hoá', 0.8, 5.65, 6.4, 0.8, { size: 16, color: C.background1, margin: 0, nosub: true });
+  withP(s, t1, 'zoom', { dur: 700 }); after(s, [k1, p1], 'fade'); after(s, st1, 'float'); after(s, i1, 'fade');
+  s.addNotes('Giới thiệu bài học: Khoa học tự nhiên 9 – Bài 28: Lipid. Nhóm báo cáo 26SKT2.');
+
+  // ---------- 2. MỤC TIÊU ----------
+  s = newSlide('CONTENT', SEC.intro);
+  bubbles(s);
+  kicker(s, 'SAU BÀI HỌC, EM CÓ THỂ');
+  title(s, 'Mục tiêu bài học');
+  const goals = [
+    ['FaBookOpen', 'Khái niệm', 'Nêu được khái niệm lipid, chất béo, trạng thái tự nhiên, công thức chung (R–COO)3C3H5 và đặc điểm cấu tạo.'],
+    ['FaFlask', 'Tính chất', 'Trình bày tính chất vật lí (trạng thái, tính tan), tính chất hoá học (phản ứng xà phòng hoá); viết được PTHH.'],
+    ['FaHeartbeat', 'Vai trò', 'Nêu được vai trò của lipid: tham gia cấu tạo tế bào và tích luỹ năng lượng trong cơ thể.'],
+    ['FaLightbulb', 'Ứng dụng & sức khoẻ', 'Trình bày ứng dụng của chất béo; đề xuất cách dùng chất béo hợp lí để khoẻ mạnh, tránh béo phì.'],
+  ];
+  const gNames = [];
+  goals.forEach((g, i) => {
+    const x = 0.6 + (i % 2) * 6.2, y = 1.8 + Math.floor(i / 2) * 2.55;
+    const cd = box(s, x, y, 5.9, 2.25, { fill: C.background1, shadow: 'soft' });
+    const [dc, di] = iconDot(s, g[0], HEX.green, x + 0.35, y + 0.4, 1.0);
+    const ttl = tx(s, g[1], x + 1.6, y + 0.32, 4.0, 0.5, { size: 21, bold: true, color: C.text2, font: 'Cambria', margin: 0 });
+    const body = tx(s, g[2], x + 1.6, y + 0.85, 4.05, 1.25, { size: 16, margin: 0 });
+    gNames.push([cd, dc, di, ttl, body]);
+  });
+  gNames.forEach((g, i) => anim(s, i === 0 ? 'click' : 'after', g, 'float', { delay: i ? 0 : 0, dur: 600 }));
+  s.addNotes('GV giới thiệu 4 mục tiêu của bài học.');
+
   // ---------- 9. CÂU HỎI DẪN DẮT ----------
   s = newSlide('CONTENT_DARK', SEC.intro);
   bubbles(s, true);
@@ -239,10 +253,47 @@ async function main() {
   qN.forEach(g => click(s, g, 'float', { dur: 500 }));
   s.addNotes('Đặt vấn đề: Chất béo là gì? Vai trò? Vì sao tuỳ độ tuổi cần lượng dầu mỡ phù hợp? Dùng thế nào có lợi cho sức khoẻ? Ứng dụng khác? → Bài học hôm nay.');
 
+  // ---------- NỘI DUNG BÀI HỌC ----------
+  s = newSlide('CONTENT', SEC.intro);
+  bubbles(s);
+  kicker(s, 'BÀI 28: LIPID');
+  title(s, 'Nội dung bài học');
+  const agA = [box(s, 0.6, 1.75, 4.3, 4.95, { fill: C.text2, shadow: 'soft', name: '!!agA' }),
+    tx(s, '01', 0.95, 2.0, 2, 1.0, { size: 54, bold: true, font: 'Cambria', color: C.accent1, margin: 0 }),
+    tx(s, 'Lipid', 0.95, 3.1, 3.6, 0.7, { size: 30, bold: true, font: 'Cambria', color: C.background1, margin: 0 }),
+    tx(s, 'Khái niệm · Lipid điển hình · Vai trò', 0.95, 3.85, 3.6, 1.0, { size: 17, color: C.accent6, margin: 0 }),
+    img(s, 'c_palm.png', 3.0, 4.75, 1.6, 1.6, { alt: 'Lá cọ' })];
+  const agB = [box(s, 5.2, 1.75, 7.5, 4.95, { fill: C.background1, shadow: 'soft', name: '!!agB' }),
+    tx(s, '02', 5.55, 2.0, 2, 1.0, { size: 54, bold: true, font: 'Cambria', color: C.accent2, margin: 0 }),
+    tx(s, 'Chất béo', 7.0, 2.15, 4, 0.8, { size: 30, bold: true, font: 'Cambria', color: C.text2, margin: 0, valign: 'middle' })];
+  const agItems = ['Khái niệm', 'Tính chất vật lí', 'Tính chất hoá học', 'Ứng dụng', 'Sử dụng chất béo đúng cách để hạn chế béo phì'];
+  const agN = agItems.map((t, i) => {
+    const y = 3.2 + i * 0.66;
+    return [circle(s, 5.6, y + 0.06, 0.48, { fill: C.accent1 }), tx(s, String(i + 1), 5.6, y + 0.06, 0.48, 0.48, { size: 16, bold: true, color: C.text2, align: 'center', valign: 'middle', margin: 0 }),
+      tx(s, t, 6.3, y, 6.2, 0.6, { size: 19, valign: 'middle', margin: 0 })];
+  });
+  click(s, agA, 'float'); click(s, agB, 'float'); agN.forEach(g => after(s, g, 'fade', { dur: 300 }));
+  s.addNotes('Giới thiệu nội dung bài học gồm 2 phần: I. Lipid và II. Chất béo.');
+
   // ---------- 10. SECTION 02 ----------
   pres.addSection({ title: SEC.lipid });
   s = section('02', 'HOẠT ĐỘNG 2.1 · HÌNH THÀNH KIẾN THỨC', 'I. Lipid', 'Lipid có ở đâu, có tính chất gì và giữ vai trò gì?', 'FaLeaf', SEC.lipid);
   s.addNotes('Hoạt động 2.1 – Tìm hiểu về lipid.');
+
+  // ---------- LIPID LÀ GÌ ----------
+  s = newSlide('CONTENT', SEC.lipid);
+  bubbles(s);
+  kicker(s, 'I. LIPID · SGK TRANG 128');
+  title(s, 'Lipid là gì?');
+  const ld = tx(s, '==Lipid== là những hợp chất hữu cơ có trong **tế bào sống**, **không tan trong nước**, nhưng **tan được trong một số dung môi hữu cơ** như: xăng, dầu hoả,…', 0.6, 1.6, 12.1, 1.0, { size: 21, margin: 0 });
+  const ldc = [['r_bubble.png', 'Không tan trong nước', 'Giọt dầu tách riêng, không hoà vào nước.'], ['r_xang.png', 'Tan trong xăng', 'Xăng là dung môi hữu cơ hoà tan được lipid.'], ['r_dauhoa.png', 'Tan trong dầu hoả', 'Dầu hoả (chế biến từ dầu mỏ) cũng hoà tan được lipid.']];
+  const ldN = ldc.map((c, i) => {
+    const x = 0.6 + i * 4.1;
+    return [box(s, x, 2.85, 3.9, 3.9, { fill: C.background1, shadow: 'soft' }), img(s, c[0], x + 0.2, 3.05, 3.5, 2.57, { alt: c[1] }),
+      tx(s, c[1], x + 0.2, 5.72, 3.5, 0.45, { size: 18, bold: true, color: i ? C.accent2 : C.accent4, margin: 0 }), tx(s, c[2], x + 0.2, 6.15, 3.5, 0.55, { size: 14, margin: 0 })];
+  });
+  withP(s, ld, 'fade'); ldN.forEach(g => click(s, g, 'float', { dur: 500 }));
+  s.addNotes('Lipid là những hợp chất hữu cơ có trong tế bào sống, không tan trong nước, nhưng tan được trong một số dung môi hữu cơ như xăng, dầu hoả…');
 
   // ---------- 11. MỘT SỐ LOẠI LIPID ----------
   s = newSlide('CONTENT', SEC.lipid);
@@ -259,10 +310,10 @@ async function main() {
   });
   const pb = box(s, 8.3, 2.6, 4.4, 4.15, { fill: C.background1, shadow: 'soft' });
   const pbt = tx(s, 'b) Sáp', 8.65, 2.8, 3, 0.5, { size: 22, bold: true, font: 'Cambria', color: C.accent2, margin: 0 });
-  const wax = [['FaAppleAlt', 'Vỏ quả bơ'], ['FaLeaf', 'Bề mặt lá cọ']];
+  const wax = [['c_avocado.png', 'Vỏ quả bơ'], ['c_palm.png', 'Bề mặt lá cọ']];
   const wi = wax.map((w, i) => {
     const x = 8.75 + i * 2.0;
-    return [...iconDot(s, w[0], HEX.green, x, 3.5, 1.5, { tr: 80 }), tx(s, w[1], x - 0.3, 5.15, 2.1, 0.45, { size: 16, bold: true, align: 'center', margin: 0, color: C.text2 })];
+    return [img(s, w[0], x, 3.5, 1.5, 1.5, { alt: w[1] }), tx(s, w[1], x - 0.3, 5.15, 2.1, 0.45, { size: 16, bold: true, align: 'center', margin: 0, color: C.text2 })];
   });
   const wnote = tx(s, 'Có trên lá, thân, trái cây; da, lông một số động vật', 8.6, 5.65, 3.85, 0.9, { size: 14, italic: true, align: 'center', margin: 0, color: C.text1 });
   withP(s, def, 'fade');
@@ -343,6 +394,55 @@ async function main() {
   pres.addSection({ title: SEC.fat });
   s = section('02', 'HOẠT ĐỘNG 2.2 · HỌC THEO TRẠM', 'II. Chất béo', 'Khái niệm · Tính chất vật lí · Tính chất hoá học', 'FaFlask', SEC.fat);
   s.addNotes('Hoạt động 2.2 – Tìm hiểu khái niệm, tính chất vật lí, tính chất hoá học của chất béo theo hình thức học theo trạm.');
+
+  // ---------- PHT 2 ----------
+  s = newSlide('CONTENT', SEC.fat);
+  bubbles(s);
+  kicker(s, 'TRẠM 1 · TÌM HIỂU KHÁI NIỆM CHẤT BÉO');
+  title(s, 'Phiếu học tập số 2');
+  const ws2 = box(s, 0.6, 1.65, 12.1, 5.15, { fill: C.background1, line: { color: C.accent2, width: 1.5, dashType: 'dash' }, shadow: 'soft', r: 0.18 });
+  const wsT2 = tx(s, 'Trạm 1: Tìm hiểu về khái niệm chất béo', 0.9, 1.8, 11.5, 0.45, { size: 17, bold: true, color: C.accent2, margin: 0 });
+  const p2a = tx(s, '**Câu 1.** Lipid có vai trò quan trọng đối với cơ thể. Hình bên giới thiệu một số thực phẩm cung cấp lipid cho cơ thể.\na) Em hãy kể tên một số chất béo có trong tự nhiên?\nb) Chất béo có cấu tạo như thế nào? Viết công thức tổng quát của chất béo?\nc) Lipid có phải chất béo không?', 0.9, 2.35, 5.4, 3.0, { size: 16, margin: 0, psa: 6 });
+  const p2i = [img(s, 's_dua.png', 1.2, 5.3, 1.3, 1.3, { alt: 'Dầu dừa' }), tx(s, 'Dầu dừa', 2.6, 5.7, 1.2, 0.45, { size: 14, bold: true, margin: 0 }), img(s, 's_mo.png', 3.7, 5.3, 1.3, 1.3, { alt: 'Mỡ heo' }), tx(s, 'Mỡ heo', 5.1, 5.7, 1.1, 0.45, { size: 14, bold: true, margin: 0 })];
+  const p2b = tx(s, '**Câu 2.** Hoàn thành bảng sau:', 6.6, 2.35, 5.8, 0.4, { size: 16, margin: 0 });
+  const tw = [1.9, 2.05, 1.85], tx0 = [6.6, 8.5, 10.55];
+  const trows = [['Acid béo', 'Công thức chất béo', 'Tên chất béo'], ['Palmitic acid\nC15H31COOH', '(C15H31COO)3C3H5', 'Glyceryl tripalmitate'], ['Stearic acid\n………………', '(C17H35COO)3C3H5', 'Glyceryl tristearate'], ['Oleic acid\nC17H33COOH', '………………', 'Glyceryl trioleate'], ['………………\nC17H31COOH', '(C17H31COO)3C3H5', 'Glyceryl trilinoleate']];
+  const p2t = [];
+  trows.forEach((r, i) => r.forEach((c, j) => p2t.push(tx(s, c, tx0[j], 2.8 + (i ? 0.42 + (i - 1) * 0.6 : 0), tw[j], i ? 0.6 : 0.42, { size: 14, bold: i === 0, align: 'center', valign: 'middle', margin: 0, color: i ? C.text1 : C.background1, shape: SH.RECTANGLE, fill: i ? (i % 2 ? C.background1 : { color: C.accent2, transparency: 92 }) : C.text2, line: { color: C.accent2, width: 0.75 }, lsm: 0.9, psa: 0 }))));
+  const p2c = tx(s, '**Câu 3.** Viết công thức cấu tạo của một loại chất béo được tạo thành từ oleic acid (C17H33COOH) và glycerol.', 6.6, 5.7, 5.8, 0.9, { size: 16, margin: 0 });
+  withP(s, [ws2, wsT2], 'fade'); click(s, [p2a, ...p2i], 'float'); click(s, [p2b, ...p2t], 'float'); click(s, p2c, 'float');
+  s.addNotes('Phiếu học tập số 2 – Trạm 1: khái niệm chất béo.');
+
+  // ---------- PHT 3 ----------
+  s = newSlide('CONTENT', SEC.fat);
+  bubbles(s);
+  kicker(s, 'TRẠM 2 · TRẠNG THÁI TỰ NHIÊN, TÍNH CHẤT VẬT LÍ');
+  title(s, 'Phiếu học tập số 3');
+  const ws3 = box(s, 0.6, 1.65, 12.1, 5.15, { fill: C.background1, line: { color: C.accent2, width: 1.5, dashType: 'dash' }, shadow: 'soft', r: 0.18 });
+  const wsT3 = tx(s, 'Trạm 2: Tìm hiểu về trạng thái tự nhiên, tính chất vật lí của chất béo', 0.9, 1.8, 11.5, 0.45, { size: 17, bold: true, color: C.accent2, margin: 0 });
+  const p3a = tx(s, '**Câu 1.** Tiến hành thí nghiệm nghiên cứu về tính tan của chất béo theo hướng dẫn và hoàn thành thông tin trong bảng sau:', 0.9, 2.3, 11.5, 0.7, { size: 16, margin: 0 });
+  const p3h = [tx(s, 'Cách tiến hành', 0.9, 3.0, 7.4, 0.42, { size: 15, bold: true, color: C.background1, align: 'center', valign: 'middle', shape: SH.RECTANGLE, fill: C.text2, margin: 0 }), tx(s, 'Nhận xét', 8.3, 3.0, 4.1, 0.42, { size: 15, bold: true, color: C.background1, align: 'center', valign: 'middle', shape: SH.RECTANGLE, fill: C.text2, margin: 0 })];
+  const p3b = [tx(s, '• Thả một ít mỡ lợn vào cốc (1) chứa nước; rót một ít dầu ăn vào cốc (2) chứa nước.\n• Khuấy hoặc lắc 2 cốc một lúc rồi dừng lại. Để lắng một thời gian.\n• Nhận xét về tính tan trong nước của dầu, mỡ.\n• Thả một ít mỡ lợn vào cốc (3) đựng xăng; rót một ít dầu ăn vào cốc (4) đựng xăng.\n• Khuấy hoặc lắc 2 cốc một lúc rồi dừng lại. Để lắng một lúc.\n• Nhận xét về tính tan trong xăng của dầu, mỡ.', 0.9, 3.42, 7.4, 2.45, { size: 14, margin: 0.08, shape: SH.RECTANGLE, fill: C.background1, line: { color: C.accent2, width: 0.75 }, psa: 2 }),
+    tx(s, '……………………………\n……………………………\n……………………………\n……………………………', 8.3, 3.42, 4.1, 2.45, { size: 14, margin: 0.1, shape: SH.RECTANGLE, fill: C.background1, line: { color: C.accent2, width: 0.75 }, color: C.accent2, valign: 'middle', align: 'center', nosub: true })];
+  const p3c = tx(s, '**Câu 2.** Em hãy cho biết trạng thái tự nhiên, tính chất vật lí của chất béo?', 0.9, 6.05, 11.5, 0.5, { size: 16, margin: 0 });
+  withP(s, [ws3, wsT3], 'fade'); click(s, p3a, 'float'); after(s, [...p3h, ...p3b], 'float'); click(s, p3c, 'float');
+  s.addNotes('Phiếu học tập số 3 – Trạm 2: thí nghiệm tính tan, trạng thái tự nhiên và tính chất vật lí của chất béo.');
+
+  // ---------- PHT 4 ----------
+  s = newSlide('CONTENT', SEC.fat);
+  bubbles(s);
+  kicker(s, 'TRẠM 3 · TÍNH CHẤT HOÁ HỌC');
+  title(s, 'Phiếu học tập số 4');
+  const ws4 = box(s, 0.6, 1.65, 12.1, 5.15, { fill: C.background1, line: { color: C.accent2, width: 1.5, dashType: 'dash' }, shadow: 'soft', r: 0.18 });
+  const wsT4 = tx(s, 'Trạm 3: Tìm hiểu về tính chất hoá học của chất béo', 0.9, 1.8, 11.5, 0.45, { size: 17, bold: true, color: C.accent2, margin: 0 });
+  const p4o = tx(s, 'Quan sát thí nghiệm thuỷ phân chất béo trong môi trường kiềm và trả lời câu hỏi:', 0.9, 2.3, 11.5, 0.45, { size: 16, italic: true, margin: 0 });
+  const p4a = tx(s, '**Câu 1.** Viết PTHH thuỷ phân chất béo trong môi trường kiềm dạng tổng quát.', 0.9, 2.9, 6.6, 0.75, { size: 16, margin: 0 });
+  const p4b = tx(s, '**Câu 2.** Theo em, khi đun nóng (C15H31COO)3C3H5 (tripalmitin) với dung dịch NaOH trong điều kiện thích hợp sẽ thu được những sản phẩm gì?', 0.9, 3.75, 6.6, 1.1, { size: 16, margin: 0 });
+  const p4c = tx(s, '**Câu 3.** Viết phương trình hoá học của phản ứng xà phòng hoá xảy ra khi đun nóng dung dịch NaOH với chất béo bên.', 0.9, 4.95, 6.6, 1.1, { size: 16, margin: 0 });
+  const p4box = box(s, 7.8, 3.0, 4.6, 3.3, { fill: { color: C.accent1, transparency: 85 }, r: 0.16 });
+  const p4s = struct3(s, 8.0, 3.55, ['C17H33COO', 'C17H35COO', 'C17H35COO'], 20, C.text1, { lw: 2.45 });
+  withP(s, [ws4, wsT4], 'fade'); click(s, p4o, 'fade'); after(s, p4a, 'float'); after(s, p4b, 'float'); after(s, p4c, 'float'); after(s, [p4box, ...p4s], 'zoom');
+  s.addNotes('Phiếu học tập số 4 – Trạm 3: tính chất hoá học của chất béo (phản ứng xà phòng hoá).');
 
   // ---------- 16. SƠ ĐỒ TRẠM ----------
   s = newSlide('CONTENT', SEC.fat);
@@ -431,19 +531,6 @@ async function main() {
   s.addNotes('Bấm lần lượt để hiện 3 ô trống: C17H35COOH; (C17H33COO)3C3H5; Linoleic acid.');
 
   // ---------- 19. TRẠM 1 – CTCT TRIOLEIN ----------
-  const struct3 = (s, x, y, lefts, size = 22, col = C.text1, o = {}) => {
-    // lefts: 3 strings (acid residues); draws "R–COO – CH2/CH/CH2" with vertical bonds
-    const rowH = 0.72, lw = o.lw || 2.6;
-    const names = [];
-    lefts.forEach((l, i) => {
-      names.push(tx(s, l + ' –', x, y + i * rowH, lw, rowH, { size, align: 'right', valign: 'middle', margin: 0, color: col, font: 'Cambria' }));
-      names.push(tx(s, ['CH2', 'CH', 'CH2'][i], x + lw + 0.08, y + i * rowH, 0.9, rowH, { size, valign: 'middle', margin: 0, color: col, font: 'Cambria' }));
-    });
-    const bx = x + lw + 0.08 + size * 0.0105;
-    names.push(line(s, bx, y + rowH * 0.78, bx, y + rowH * 1.22, { color: col, width: 1.5 }));
-    names.push(line(s, bx, y + rowH * 1.78, bx, y + rowH * 2.22, { color: col, width: 1.5 }));
-    return names;
-  };
   s = newSlide('CONTENT', SEC.fat);
   bubbles(s);
   kicker(s, 'TRẠM 1 · PHIẾU HỌC TẬP SỐ 2 · CÂU 3');
@@ -499,8 +586,16 @@ async function main() {
   title(s, 'Trạng thái tự nhiên & tính chất vật lí');
   const stL = box(s, 0.6, 1.7, 5.9, 5.0, { fill: C.background1, shadow: 'soft' });
   const stLt = tx(s, 'Ở điều kiện thường', 0.95, 1.9, 5.2, 0.5, { size: 21, bold: true, font: 'Cambria', color: C.accent2, margin: 0 });
-  const liq = [img(s, 's_dau.png', 1.05, 2.65, 2.2, 2.2, { alt: 'Dầu thực vật' }), tx(s, '==THỂ LỎNG==\nDầu thực vật: dầu lạc, dầu hướng dương, dầu cá…', 0.8, 4.95, 2.75, 1.6, { size: 15, align: 'center', margin: 0 })];
-  const sol = [img(s, 's_bo.png', 3.85, 2.65, 2.2, 2.2, { alt: 'Bơ' }), tx(s, '==THỂ RẮN==\nMỡ động vật, bơ…', 3.6, 4.95, 2.7, 1.6, { size: 15, align: 'center', margin: 0 })];
+  const liq = [tx(s, '==THỂ LỎNG==', 0.95, 2.45, 3, 0.4, { size: 16, margin: 0 })];
+  [['c_peanutoil.png', 'Dầu lạc'], ['c_sunflower.png', 'Dầu hướng dương'], ['c_fishoil.png', 'Dầu cá']].forEach((f, i) => {
+    const x = 0.95 + i * 1.8;
+    liq.push(img(s, f[0], x, 2.9, 1.35, 1.35, { alt: f[1] }), tx(s, f[1], x - 0.25, 4.27, 1.85, 0.35, { size: 14, bold: true, align: 'center', margin: 0, color: C.text2 }));
+  });
+  const sol = [tx(s, '==THỂ RẮN==', 0.95, 4.75, 3, 0.4, { size: 16, margin: 0 })];
+  [['s_mo.png', 'Mỡ động vật'], ['s_bo.png', 'Bơ']].forEach((f, i) => {
+    const x = 0.95 + i * 2.7;
+    sol.push(img(s, f[0], x, 5.2, 1.3, 1.3, { alt: f[1] }), tx(s, f[1], x + 1.4, 5.55, 1.25, 0.6, { size: 15, bold: true, margin: 0, color: C.text2, valign: 'middle' }));
+  });
   const props = [['FaArrowUp', HEX.teal, 'Nhẹ hơn nước'], ['FaBan', HEX.coral, 'Không tan trong nước'], ['FaVial', HEX.green, 'Tan trong một số dung môi hữu cơ: xăng, benzene, chloroform…']];
   const prN = props.map((p, i) => {
     const y = 1.75 + i * 1.65;
@@ -509,7 +604,7 @@ async function main() {
     const t = tx(s, p[2], 8.25, y + 0.1, 4.25, 1.2, { size: 19, bold: i < 2, valign: 'middle', margin: 0 });
     return [cd, d1, d2, t];
   });
-  click(s, [stL, stLt], 'fade'); after(s, liq, 'zoom'); after(s, sol, 'zoom');
+  click(s, [stL, stLt], 'fade'); after(s, liq, 'zoom', { dur: 400 }); after(s, sol, 'zoom', { dur: 400 });
   prN.forEach((g, i) => anim(s, i ? 'after' : 'click', g, 'float', { dur: 500 }));
   s.addNotes('Chốt trạng thái tự nhiên và tính chất vật lí của chất béo.');
 
@@ -666,6 +761,27 @@ async function main() {
   click(s, [hh, hht, hhb], 'float'); after(s, hheq, 'wipeL'); after(s, hhbad, 'zoom');
   s.addNotes('Chốt tính chất vật lí và tính chất hoá học (phản ứng xà phòng hoá) – HS ghi vở. Điều kiện phản ứng: đun nóng.');
 
+  // ---------- LÀM XÀ PHÒNG THỦ CÔNG (SGK) ----------
+  s = newSlide('CONTENT', SEC.fat);
+  bubbles(s);
+  kicker(s, 'EM CÓ BIẾT? · SGK TRANG 129');
+  title(s, 'Làm xà phòng thủ công');
+  const sgt = tx(s, 'Để làm xà phòng, chất béo (dầu thực vật, mỡ động vật) được **đun với dung dịch kiềm**, khi đó **muối natri của acid béo** được tạo thành ở dạng keo. Các muối này được tách ra, sau đó trộn với các chất phụ gia, hương liệu, chất tạo màu,… rồi **ép thành bánh**.', 0.6, 1.6, 12.1, 1.25, { size: 19, margin: 0.2, shape: SH.ROUNDED_RECTANGLE, fill: { color: C.accent1, transparency: 82 }, r: 0.16, valign: 'middle' });
+  const flow = [['s_dau.png', 'Chất béo', 'Dầu thực vật, mỡ động vật'], [null, 'Đun với kiềm', 'Dung dịch NaOH'], ['soap.png', 'Muối natri dạng keo', 'Tách lấy muối của acid béo'], ['c_cream.png', 'Trộn phụ gia', 'Hương liệu, chất tạo màu…'], ['c_soapbar.png', 'Ép thành bánh', 'Bánh xà phòng hoàn chỉnh']];
+  const flN = [];
+  flow.forEach((f, i) => {
+    const x = 0.75 + i * 2.5;
+    const g = [];
+    if (f[0]) g.push(f[0] === 'soap.png' ? img(s, 'c_soapmix.png', x, 3.2, 1.75, 1.75, { alt: f[1] }) : img(s, f[0], x, 3.2, 1.75, 1.75, { alt: f[1] }));
+    else { g.push(circle(s, x, 3.2, 1.75, { fill: C.text2 })); g.push(icon(s, 'FaFire', HEX.coral, x + 0.5, 3.7, 0.75)); }
+    g.push(tx(s, f[1], x - 0.3, 5.05, 2.35, 0.45, { size: 17, bold: true, align: 'center', color: C.text2, margin: 0 }));
+    g.push(tx(s, f[2], x - 0.3, 5.5, 2.35, 0.7, { size: 14, align: 'center', margin: 0 }));
+    if (i < 4) g.push(line(s, x + 1.85, 4.07, x + 2.4, 4.07, { color: C.accent1, width: 2.5, arrow: true }));
+    flN.push(g);
+  });
+  withP(s, sgt, 'fade'); flN.forEach((g, i) => anim(s, i ? 'after' : 'click', g, 'float', { dur: 450 }));
+  s.addNotes('Mục “Làm xà phòng thủ công” (SGK trang 129).');
+
   // ---------- 29. NHIỆM VỤ VỀ NHÀ: LÀM XÀ PHÒNG ----------
   s = newSlide('CONTENT', SEC.fat);
   bubbles(s);
@@ -798,29 +914,44 @@ async function main() {
   lbN.forEach(g => click(s, g, 'float', { dur: 450 }));
   s.addNotes('GV hướng dẫn HS đọc thông tin chất béo trên bao bì hộp bánh và chai dầu ăn, ý nghĩa các con số.');
 
+  // ---------- CHẤT BÉO TRONG THỰC PHẨM ----------
+  s = newSlide('CONTENT', SEC.use);
+  bubbles(s);
+  kicker(s, '4. ỨNG DỤNG · THỰC PHẨM');
+  title(s, 'Chất béo trong bữa ăn hằng ngày');
+  const grpC = { 'Dầu thực vật': C.accent1, 'Mỡ động vật': C.accent4, 'Bơ': C.accent3, 'Các loại hạt': C.accent2 };
+  const lg = Object.keys(grpC).map((k, i) => tx(s, k, 0.6 + i * 2.3, 1.62, 2.1, 0.42, { size: 15, bold: true, color: i === 0 ? C.text2 : C.background1, align: 'center', valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: grpC[k], r: 0.21, margin: 0 }));
+  const lgt = tx(s, 'Chất béo là thực phẩm thiết yếu của con người.', 9.9, 1.6, 2.8, 0.5, { size: 14, italic: true, margin: 0, valign: 'middle' });
+  const foodT = [['r_sunflower.png', 'Dầu hướng dương', 'Dầu thực vật'], ['r_soy.png', 'Dầu đậu nành', 'Dầu thực vật'], ['r_peanutoil.png', 'Dầu lạc', 'Dầu thực vật'], ['r_mo.png', 'Mỡ lợn, mỡ bò', 'Mỡ động vật'], ['r_salmon.png', 'Mỡ cá', 'Mỡ động vật'],
+    ['r_bo.png', 'Bơ', 'Bơ'], ['r_peanuts.png', 'Hạt lạc', 'Các loại hạt'], ['r_vung.png', 'Hạt vừng', 'Các loại hạt'], ['r_almonds.png', 'Hạnh nhân', 'Các loại hạt'], ['r_walnut.png', 'Óc chó', 'Các loại hạt']];
+  const ftN = foodT.map((f, i) => {
+    const x = 0.6 + (i % 5) * 2.45, y = 2.35 + Math.floor(i / 5) * 2.25;
+    return [box(s, x, y, 2.25, 2.05, { fill: grpC[f[2]], r: 0.14 }), img(s, f[0], x + 0.08, y + 0.08, 2.09, 1.54, { alt: f[1] }),
+      tx(s, f[1], x, y + 1.62, 2.25, 0.43, { size: 15, bold: true, color: f[2] === 'Dầu thực vật' ? C.text2 : C.background1, align: 'center', valign: 'middle', margin: 0 })];
+  });
+  withP(s, [...lg, lgt], 'fade'); ftN.forEach((g, i) => anim(s, i ? 'after' : 'click', g, 'zoom', { dur: 280 }));
+  s.addNotes('Chất béo là một trong các thực phẩm thiết yếu của con người, được sử dụng dưới dạng dầu thực vật (hướng dương, đậu nành, lạc…), mỡ động vật (lợn, bò, cá…), bơ hoặc một số loại hạt (lạc, vừng, hạnh nhân, óc chó…).');
+
   // ---------- 36. ỨNG DỤNG ----------
   s = newSlide('CONTENT', SEC.use);
   bubbles(s);
-  kicker(s, '4. ỨNG DỤNG');
-  title(s, 'Chất béo có mặt khắp nơi');
-  const heroI = img(s, 'hero.png', 0.6, 1.7, 5.4, 3.6, { name: '!!hero', alt: 'Thực phẩm giàu chất béo' });
-  const heroT = tx(s, '**Thực phẩm**\nThực phẩm thiết yếu: dầu thực vật (hướng dương, đậu nành, lạc…), mỡ động vật (lợn, bò, cá…), bơ, các loại hạt (lạc, vừng, hạnh nhân, óc chó…).', 0.6, 5.45, 5.4, 1.3, { size: 15, margin: 0 });
+  kicker(s, '4. ỨNG DỤNG · CÔNG NGHIỆP');
+  title(s, 'Chất béo còn có mặt ở đâu?');
   const uses = [
-    ['FaSpa', 'Mĩ phẩm', 'Chất làm mềm, dưỡng ẩm. Kem dưỡng da chứa ceramide giúp phục hồi hàng rào bảo vệ da.', C.accent6],
-    ['FaPills', 'Dược phẩm', 'Giúp hấp thụ các hoạt chất dược phẩm một cách hiệu quả.', { color: C.accent3, transparency: 78 }],
-    ['FaGasPump', 'Nhiên liệu', 'Diesel sinh học từ dầu thực vật, mỡ động vật, dầu ăn thải.', { color: C.accent2, transparency: 80 }],
-    ['FaPumpSoap', 'Xà phòng', 'Nguyên liệu sản xuất xà phòng nhờ phản ứng xà phòng hoá.', { color: C.accent5, transparency: 82 }],
+    ['r_cream.png', 'Mĩ phẩm', 'Chất làm mềm, dưỡng ẩm. Kem dưỡng da chứa ceramide giúp phục hồi hàng rào bảo vệ da, hạn chế mất nước.', C.accent6],
+    ['r_fishoil.png', 'Dược phẩm', 'Chất béo giúp cơ thể hấp thụ các hoạt chất dược phẩm một cách hiệu quả.', { color: C.accent3, transparency: 78 }],
+    ['r_biodiesel.png', 'Nhiên liệu', 'Diesel sinh học từ dầu thực vật, mỡ động vật, dầu ăn thải.', { color: C.accent2, transparency: 80 }],
+    ['r_soapbar.png', 'Sản xuất xà phòng', 'Nguyên liệu sản xuất xà phòng nhờ phản ứng xà phòng hoá.', { color: C.accent5, transparency: 82 }],
   ];
   const usN = uses.map((u, i) => {
-    const x = 6.3 + (i % 2) * 3.25, y = 1.7 + Math.floor(i / 2) * 2.6;
-    const cd = box(s, x, y, 3.05, 2.4, { fill: u[3], shadow: 'soft' });
-    const ic = icon(s, u[0], HEX.dk, x + 0.25, y + 0.25, 0.6);
-    const hd = tx(s, u[1], x + 1.0, y + 0.25, 1.9, 0.6, { size: 19, bold: true, color: C.text2, valign: 'middle', margin: 0 });
-    const bd = tx(s, u[2], x + 0.25, y + 0.95, 2.6, 1.4, { size: 14, margin: 0 });
+    const x = 0.6 + i * 3.075, y = 1.7;
+    const cd = box(s, x, y, 2.85, 5.05, { fill: u[3], shadow: 'soft' });
+    const ic = img(s, u[0], x + 0.2, y + 0.2, 2.45, 1.8, { alt: u[1] });
+    const hd = tx(s, u[1], x + 0.2, y + 2.15, 2.45, 0.6, { size: 20, bold: true, font: 'Cambria', color: C.text2, valign: 'middle', margin: 0 });
+    const bd = tx(s, u[2], x + 0.2, y + 2.85, 2.45, 2.0, { size: 16, margin: 0 });
     return [cd, ic, hd, bd];
   });
-  withP(s, heroI, 'fade'); click(s, heroT, 'fade');
-  usN.forEach(g => click(s, g, 'zoom', { dur: 400 }));
+  usN.forEach((g, i) => anim(s, i ? 'after' : 'click', g, 'float', { dur: 450 }));
   s.addNotes('Chốt: chất béo có nhiều ứng dụng trong công nghiệp thực phẩm, mĩ phẩm, dược phẩm, làm nhiên liệu, sản xuất xà phòng.');
 
   // ---------- 37. CẦN NHƯNG VỪA ĐỦ ----------
@@ -874,110 +1005,44 @@ async function main() {
   const colY = 1.7, colH = 5.05;
   const L1 = box(s, 0.6, colY, 5.95, colH, { fill: C.background1, shadow: 'soft' });
   const L1h = tx(s, 'NÊN ƯU TIÊN', 0.6, colY, 5.95, 0.8, { size: 20, bold: true, cs: 2, color: C.background1, align: 'center', valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.accent2, r: 0.16 });
-  const goodL = [['FaSeedling', 'Chất béo có nguồn gốc thực vật'], ['FaFish', 'Chất béo giàu omega-3 (cá, hải sản)'], ['FaBalanceScale', 'Đủ lượng theo lứa tuổi, giới tính, nghề nghiệp; cân đối động vật – thực vật'], ['FaRunning', 'Vận động, thể dục thể thao phù hợp']];
+  const goodL = [['c_sunflower.png', 'Chất béo có nguồn gốc thực vật'], ['c_salmon.png', 'Chất béo giàu omega-3 (cá, hải sản)'], ['FaBalanceScale', 'Đủ lượng theo lứa tuổi, giới tính, nghề nghiệp; cân đối động vật – thực vật'], ['FaRunning', 'Vận động, thể dục thể thao phù hợp']];
   const gN = goodL.map((g, i) => {
     const y = colY + 1.05 + i * 0.98;
-    return [icon(s, g[0], HEX.green, 0.95, y + 0.08, 0.5), tx(s, g[1], 1.65, y, 4.7, 0.9, { size: 17, valign: 'middle', margin: 0 })];
+    return [g[0].endsWith('.png') ? img(s, g[0], 0.85, y + 0.02, 0.8, 0.8, { alt: g[1] }) : icon(s, g[0], HEX.green, 0.97, y + 0.17, 0.55), tx(s, g[1], 1.85, y, 4.5, 0.9, { size: 17, valign: 'middle', margin: 0 })];
   });
   const R1 = box(s, 6.75, colY, 5.95, colH, { fill: C.background1, shadow: 'soft' });
   const R1h = tx(s, 'NÊN HẠN CHẾ', 6.75, colY, 5.95, 0.8, { size: 20, bold: true, cs: 2, color: C.background1, align: 'center', valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.accent4, r: 0.16 });
-  const badL = [['FaBan', 'Chất béo nguồn gốc động vật (mỡ lợn, mỡ bò…)'], ['FaBan', 'Các loại bơ nhân tạo'], ['FaFire', 'Thức ăn có chất béo đã qua chế biến ở nhiệt độ cao'], ['FaHamburger', 'Thức ăn nhanh, đồ chiên, nướng…']];
+  const badL = [['s_mo.png', 'Chất béo nguồn gốc động vật (mỡ lợn, mỡ bò…)'], ['FaBan', 'Các loại bơ nhân tạo'], ['FaFire', 'Thức ăn có chất béo đã qua chế biến ở nhiệt độ cao'], ['c_chicken.png', 'Thức ăn nhanh, đồ chiên, nướng…']];
   const bN = badL.map((g, i) => {
     const y = colY + 1.05 + i * 0.98;
-    return [icon(s, g[0], HEX.coral, 7.1, y + 0.08, 0.5), tx(s, g[1], 7.8, y, 4.7, 0.9, { size: 17, valign: 'middle', margin: 0 })];
+    return [g[0].endsWith('.png') ? img(s, g[0], 7.0, y + 0.02, 0.8, 0.8, { alt: g[1] }) : icon(s, g[0], HEX.coral, 7.12, y + 0.17, 0.55), tx(s, g[1], 8.0, y, 4.5, 0.9, { size: 17, valign: 'middle', margin: 0 })];
   });
   click(s, [L1, L1h], 'float'); gN.forEach(g => after(s, g, 'fade', { dur: 300 }));
   click(s, [R1, R1h], 'float'); bN.forEach(g => after(s, g, 'fade', { dur: 300 }));
   s.addNotes('Để có lợi cho sức khoẻ: đảm bảo lượng chất béo phù hợp, cân đối nguồn gốc động vật – thực vật; ưu tiên chất béo thực vật, omega-3; hạn chế mỡ động vật, bơ nhân tạo, đồ chiên nướng; vận động phù hợp.');
 
-  // ---------- 40. SECTION 03 ----------
-  pres.addSection({ title: SEC.prac });
-  s = section('03', 'HOẠT ĐỘNG 3', 'Luyện tập', 'Làm việc cá nhân · 8 câu hỏi · Bấm vào đáp án để kiểm tra', 'FaPuzzlePiece', SEC.prac);
-  s.addNotes('Hoạt động 3 – Luyện tập: HS làm việc cá nhân. Ở các câu trắc nghiệm, bấm trực tiếp vào phương án để kiểm tra đúng/sai.');
-
-  // ---------- 41–45. MCQ ----------
-  const mcq = [
-    ['Công thức chung của chất béo là', ['RCOOH', 'C3H5(OH)3', '(RCOO)3C3H5', 'RCOONa'], 2],
-    ['Trường hợp nào sau đây chứa thành phần chính là chất béo?', ['Trứng gà', 'Tóc', 'Dầu ô liu', 'Dầu hoả'], 2],
-    ['Thuỷ phân chất béo trong môi trường kiềm thu được', ['glycerol và muối của một acid béo', 'glycerol và acid béo', 'glycerol và xà phòng', 'glycerol và muối của các acid béo'], 3],
-    ['Phản ứng thuỷ phân chất béo trong môi trường kiềm còn gọi là phản ứng', ['thuỷ phân hoá', 'xà phòng hoá', 'ester hoá', 'hydrogen hoá'], 1],
-    ['Chất nào sau đây không phải là chất béo?', ['(C17H35COO)3C3H5', '(C15H31COO)3C3H5', '(C17H33COO)3C3H5', '(CH3COO)3C3H5'], 3],
-  ];
-  mcq.forEach((q, qi) => {
-    const s = newSlide('CONTENT', SEC.prac);
-    bubbles(s);
-    kicker(s, 'TRẮC NGHIỆM · CÂU ' + (qi + 1) + '/8');
-    title(s, 'Câu hỏi ' + (qi + 1));
-    const qc = tx(s, q[0] + (q[0].endsWith('?') ? '' : '…'), 0.6, 1.65, 12.1, 1.25, { size: 24, bold: true, color: C.background1, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.text2, r: 0.18, margin: 0.3, font: 'Cambria', name: '!!qcard' });
-    const LET = ['A', 'B', 'C', 'D'];
-    q[1].forEach((opt, i) => {
-      const x = 0.6 + (i % 2) * 6.2, y = 3.15 + Math.floor(i / 2) * 1.6;
-      const oc = s.addText([{ text: LET[i] + '.   ', options: { bold: true, color: C.accent2 } }, ...runs(opt)], { x, y, w: 5.9, h: 1.3, objectName: 'opt' + i, shape: SH.ROUNDED_RECTANGLE, rectRadius: 0.18, fill: { color: C.background1 }, line: { color: C.accent2, width: 1.25 }, shadow: L.shadow('soft'), fontFace: 'Calibri', fontSize: 22, color: C.text1, valign: 'middle', margin: 22 });
-      if (i === q[2]) {
-        const hl = box(s, x - 0.05, y - 0.05, 6.0, 1.4, { fill: { color: C.accent2, transparency: 80 }, line: { color: C.accent2, width: 4 }, r: 0.2, name: 'okhl' });
-        const bd = tx(s, '✓  Chính xác!', x + 3.75, y - 0.3, 2.05, 0.5, { size: 16, bold: true, color: C.background1, align: 'center', valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.accent2, r: 0.25, margin: 0, name: 'okbadge', nosub: true });
-        trig(s, 'opt' + i, [{ names: hl, eff: 'zoom', dur: 400 }, { names: bd, eff: 'zoom', start: 'after', dur: 350 }]);
-      } else {
-        trig(s, 'opt' + i, [{ names: 'opt' + i, eff: 'teeter', dur: 1000 }]);
-      }
-    });
-    tx(s, 'Bấm vào phương án để kiểm tra · Phương án đúng sẽ sáng xanh, phương án sai sẽ rung lắc', 0.6, 6.4, 12.1, 0.4, { size: 14, italic: true, color: C.accent2, margin: 0, align: 'center' });
-    s.addNotes('Đáp án: ' + LET[q[2]] + '. Bấm vào từng phương án để kiểm tra (đúng: sáng xanh + “Chính xác!”, sai: rung lắc).');
+  // ---------- 54. EM ĐÃ HỌC ----------
+  s = newSlide('CONTENT_DARK', SEC.use);
+  bubbles(s, true);
+  kicker(s, 'TỔNG KẾT', true);
+  title(s, 'Em đã học');
+  const sum = [['FaBookOpen', 'Lipid', 'Hợp chất hữu cơ có trong tế bào sống, không tan trong nước, tan trong dung môi hữu cơ (xăng, dầu hoả…). Lipid điển hình: chất béo và sáp.'], ['FaFlask', 'Chất béo', 'Triester của glycerol và các acid béo: (RCOO)3C3H5. Phản ứng đặc trưng: phản ứng xà phòng hoá.'], ['FaHome', 'Ứng dụng', 'Công nghiệp thực phẩm, dược phẩm, làm nhiên liệu, nguyên liệu sản xuất xà phòng…']];
+  const smN = sum.map((m, i) => {
+    const x = 0.6 + i * 4.1;
+    const cd = box(s, x, 1.75, 3.9, 3.75, { fill: { color: C.background1, transparency: 90 }, line: { color: C.accent1, width: 1.25 }, r: 0.2 });
+    const [d1, d2] = iconDot(s, m[0], HEX.gold, x + 0.3, 2.0, 0.9, { tint: C.accent1, tr: 80 });
+    const hd = tx(s, m[1], x + 1.4, 2.1, 2.3, 0.7, { size: 22, bold: true, font: 'Cambria', color: C.accent1, valign: 'middle', margin: 0 });
+    const bd = tx(s, m[2], x + 0.3, 3.1, 3.35, 2.3, { size: 16, color: C.background1, margin: 0 });
+    return [cd, d1, d2, hd, bd];
   });
-
-  // ---------- 46. CÂU 6 ----------
-  s = newSlide('CONTENT', SEC.prac);
-  bubbles(s);
-  kicker(s, 'ĐIỀN TỪ · CÂU 6/8');
-  title(s, 'Câu hỏi 6');
-  tx(s, 'Điền từ thích hợp vào chỗ trống:', 0.6, 1.65, 12.1, 1.25, { size: 24, bold: true, color: C.background1, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.text2, r: 0.18, margin: 0.3, font: 'Cambria', name: '!!qcard' });
-  tx(s, '“Dầu ăn là hỗn hợp nhiều …(1)… của …(2)… và các acid béo.”', 0.6, 3.2, 12.1, 1.1, { size: 30, italic: true, font: 'Cambria', align: 'center', valign: 'middle', margin: 0, color: C.text2, nosub: true });
-  const fb = [['(1)', 'ester'], ['(2)', 'glycerol']].map((f, i) => {
-    const x = 2.2 + i * 4.8;
-    return [tx(s, f[0] + '  ' + f[1], x, 4.75, 4.1, 1.2, { size: 30, bold: true, color: C.text2, align: 'center', valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.accent6, r: 0.2, shadow: 'soft', nosub: true })];
-  });
-  fb.forEach(g => click(s, g, 'zoom'));
-  s.addNotes('Đáp án: Dầu ăn là hỗn hợp nhiều ester của glycerol và các acid béo.');
-
-  // ---------- 47. CÂU 7 ----------
-  s = newSlide('CONTENT', SEC.prac);
-  bubbles(s);
-  kicker(s, 'CHỌN NHIỀU ĐÁP ÁN · CÂU 7/8');
-  title(s, 'Câu hỏi 7');
-  tx(s, 'Chọn những phương pháp có thể làm sạch vết dầu ăn dính vào quần áo và giải thích.', 0.6, 1.65, 12.1, 1.0, { size: 22, bold: true, color: C.background1, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.text2, r: 0.18, margin: 0.3, font: 'Cambria', name: '!!qcard' });
-  const c7 = [['A', 'Giặt bằng nước', false, 'Nước không hoà tan được dầu ăn'], ['B', 'Giặt bằng xà phòng', true, 'Xà phòng hoà tan được dầu ăn'], ['C', 'Tẩy bằng cồn 90°', true, 'Cồn hoà tan được dầu ăn'], ['D', 'Tẩy bằng giấm', false, 'Giấm hoà tan được dầu ăn nhưng làm hỏng quần áo'], ['E', 'Tẩy bằng xăng', true, 'Xăng hoà tan được dầu ăn']];
-  c7.forEach((c, i) => {
-    const y = 2.85 + i * 0.8;
-    s.addText([{ text: c[0] + '.   ', options: { bold: true, color: C.accent2 } }, { text: c[1], options: {} }], { x: 0.6, y, w: 4.9, h: 0.65, objectName: 'opt' + i, shape: SH.ROUNDED_RECTANGLE, rectRadius: 0.16, fill: { color: C.background1 }, line: { color: C.accent2, width: 1.25 }, shadow: L.shadow(), fontFace: 'Calibri', fontSize: 20, color: C.text1, valign: 'middle', margin: 18 });
-    const fbk = tx(s, (c[2] ? '✓  ' : '✗  ') + c[3], 5.75, y, 6.95, 0.65, { size: 18, bold: true, color: c[2] ? C.background1 : C.text2, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: c[2] ? C.accent2 : { color: C.accent4, transparency: 75 }, r: 0.16, margin: 0.25, nosub: true });
-    const steps = [{ names: fbk, eff: c[2] ? 'zoom' : 'wipeL', dur: 400 }];
-    if (!c[2]) steps.push({ names: 'opt' + i, eff: 'teeter', start: 'with', dur: 1000 });
-    trig(s, 'opt' + i, steps);
-  });
-  s.addNotes('Đáp án: B, C, E vì xà phòng, cồn 90°, xăng hoà tan được dầu ăn. Nước không hoà tan được dầu ăn; giấm hoà tan được dầu ăn nhưng làm hỏng quần áo. Bấm từng phương án để hiện giải thích.');
-
-  // ---------- 48. CÂU 8 ----------
-  s = newSlide('CONTENT', SEC.prac);
-  bubbles(s);
-  kicker(s, 'TỰ LUẬN · CÂU 8/8');
-  title(s, 'Câu hỏi 8');
-  tx(s, 'Vì sao cần đảm bảo đủ lượng lipid cho cơ thể?', 0.6, 1.65, 12.1, 1.0, { size: 24, bold: true, color: C.background1, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.text2, r: 0.18, margin: 0.3, font: 'Cambria', name: '!!qcard' });
-  const r8 = [['FaShieldAlt', 'Tham gia cấu tạo màng tế bào'], ['FaBolt', 'Cung cấp năng lượng'], ['FaThermometerHalf', 'Giúp ổn định thân nhiệt'], ['FaBrain', 'Tăng hoạt động trí não'], ['FaTint', 'Hoà tan vitamin A, D, E… giúp cơ thể hấp thụ']];
-  const r8N = r8.map((r, i) => {
-    const x = 0.6 + i * 2.46;
-    const cd = box(s, x, 3.0, 2.26, 3.1, { fill: C.background1, shadow: 'soft' });
-    const [d1, d2] = iconDot(s, r[0], HEX.green, x + 0.58, 3.3, 1.1, { tr: 80 });
-    const t = tx(s, r[1], x + 0.15, 4.6, 1.96, 1.4, { size: 17, bold: true, align: 'center', margin: 0, color: C.text2 });
-    return [cd, d1, d2, t];
-  });
-  const r8c = tx(s, '→ Cần đảm bảo đủ lượng lipid cho cơ thể.', 0.6, 6.3, 12.1, 0.5, { size: 18, bold: true, italic: true, color: C.accent2, align: 'center', margin: 0 });
-  r8N.forEach((g, i) => anim(s, i ? 'after' : 'click', g, 'float', { dur: 400 }));
-  click(s, r8c, 'fade');
-  s.addNotes('Lipid giữ vai trò quan trọng: tham gia cấu tạo màng tế bào, cung cấp năng lượng, ổn định thân nhiệt, tăng hoạt động trí não; hoà tan vitamin A, D, E… giúp cơ thể hấp thụ.');
+  const can = tx(s, '**EM CÓ THỂ:** biết cách lựa chọn, sử dụng chất béo phù hợp trong ăn uống để có lợi cho sức khoẻ.', 0.6, 5.75, 12.1, 0.95, { size: 19, color: C.text2, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.accent1, r: 0.2, margin: 0.3 });
+  smN.forEach((g, i) => anim(s, i ? 'after' : 'click', g, 'float', { dur: 500 }));
+  click(s, can, 'zoom');
+  s.addNotes('Tổng kết bài học theo mục “Em đã học” và “Em có thể” (SGK trang 130).');
 
   // ---------- 49. SECTION 04 ----------
   pres.addSection({ title: SEC.app });
-  s = section('04', 'HOẠT ĐỘNG 4', 'Vận dụng', 'Chất béo trong cuộc sống quanh em', 'FaLightbulb', SEC.app);
+  s = section('03', 'HOẠT ĐỘNG 4', 'Vận dụng', 'Chất béo trong cuộc sống quanh em', 'FaLightbulb', SEC.app);
   s.addNotes('Hoạt động 4 – Vận dụng: HS làm bài tập ở nhà, nộp vào tiết sau.');
 
   // ---------- 50. VẬN DỤNG 1 ----------
@@ -1050,27 +1115,105 @@ async function main() {
   click(s, warn, 'zoom');
   s.addNotes('Quy trình 5 bước làm xà phòng từ dầu ăn thừa. Nhấn mạnh an toàn: đổ NaOH vào nước, không làm ngược lại.');
 
-  // ---------- 54. EM ĐÃ HỌC ----------
-  pres.addSection({ title: SEC.end });
-  s = newSlide('CONTENT_DARK', SEC.end);
-  bubbles(s, true);
-  kicker(s, 'TỔNG KẾT', true);
-  title(s, 'Em đã học');
-  const sum = [['FaBookOpen', 'Lipid', 'Hợp chất hữu cơ có trong tế bào sống, không tan trong nước, tan trong dung môi hữu cơ (xăng, dầu hoả…). Lipid điển hình: chất béo và sáp.'], ['FaFlask', 'Chất béo', 'Triester của glycerol và các acid béo: (RCOO)3C3H5. Phản ứng đặc trưng: phản ứng xà phòng hoá.'], ['FaHome', 'Ứng dụng', 'Công nghiệp thực phẩm, dược phẩm, làm nhiên liệu, nguyên liệu sản xuất xà phòng…']];
-  const smN = sum.map((m, i) => {
-    const x = 0.6 + i * 4.1;
-    const cd = box(s, x, 1.75, 3.9, 3.75, { fill: { color: C.background1, transparency: 90 }, line: { color: C.accent1, width: 1.25 }, r: 0.2 });
-    const [d1, d2] = iconDot(s, m[0], HEX.gold, x + 0.3, 2.0, 0.9, { tint: C.accent1, tr: 80 });
-    const hd = tx(s, m[1], x + 1.4, 2.1, 2.3, 0.7, { size: 22, bold: true, font: 'Cambria', color: C.accent1, valign: 'middle', margin: 0 });
-    const bd = tx(s, m[2], x + 0.3, 3.1, 3.35, 2.3, { size: 16, color: C.background1, margin: 0 });
-    return [cd, d1, d2, hd, bd];
+  // ---------- 40. SECTION 03 ----------
+  pres.addSection({ title: SEC.prac });
+  s = section('04', 'HOẠT ĐỘNG 3 · LUYỆN TẬP', 'Hỏi xoay đáp xoáy', 'Chào mừng các bạn đến với trò chơi! 8 câu hỏi ôn tập', 'FaPuzzlePiece', SEC.prac);
+  s.addNotes('Hoạt động 3 – Luyện tập dưới dạng trò chơi “Hỏi xoay đáp xoáy”: 8 câu hỏi, HS chọn đáp án đúng.');
+
+  // ---------- LUẬT CHƠI HỎI XOAY ĐÁP XOÁY ----------
+  s = newSlide('CONTENT', SEC.prac);
+  bubbles(s);
+  kicker(s, 'TRÒ CHƠI · HỎI XOAY ĐÁP XOÁY');
+  title(s, 'Luật chơi');
+  const rules2 = [
+    ['FaListOl', '8 câu hỏi', 'Ôn tập toàn bộ kiến thức về lipid và chất béo.', C.text2],
+    ['FaStopwatch', '15 giây', 'Mỗi câu có 15 giây suy nghĩ – bấm “Bắt đầu” để tính giờ.', C.accent2],
+    ['FaCheck', 'Chọn đáp án', 'Bấm vào phương án: đúng sẽ sáng xanh, sai sẽ rung lắc.', C.accent3],
+    ['FaTrophy', 'Ghi điểm', 'Mỗi câu trả lời đúng được cộng điểm cho đội!', C.accent1],
+  ];
+  const r2N = rules2.map((r, i) => {
+    const x = 0.6 + i * 3.075, y = 1.85;
+    return [box(s, x, y, 2.85, 4.75, { fill: r[3], shadow: 'soft', r: 0.2 }), icon(s, r[0], HEX.white, x + 0.3, y + 0.4, 0.9),
+      tx(s, r[1], x + 0.3, y + 1.55, 2.45, 0.8, { size: i === 2 ? 27 : 32, bold: true, font: 'Cambria', color: i === 3 ? C.text2 : C.background1, margin: 0 }),
+      tx(s, r[2], x + 0.3, y + 2.5, 2.3, 2.0, { size: 17, color: i === 3 ? C.text2 : C.background1, margin: 0 })];
   });
-  const can = tx(s, '**EM CÓ THỂ:** biết cách lựa chọn, sử dụng chất béo phù hợp trong ăn uống để có lợi cho sức khoẻ.', 0.6, 5.75, 12.1, 0.95, { size: 19, color: C.text2, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.accent1, r: 0.2, margin: 0.3 });
-  smN.forEach((g, i) => anim(s, i ? 'after' : 'click', g, 'float', { dur: 500 }));
-  click(s, can, 'zoom');
-  s.addNotes('Tổng kết bài học theo mục “Em đã học” và “Em có thể” (SGK trang 130).');
+  r2N.forEach((g, i) => anim(s, i ? 'after' : 'click', g, 'float', { dur: 500 }));
+  s.addNotes('Luật chơi “Hỏi xoay đáp xoáy”: 8 câu hỏi, mỗi câu 15 giây, chọn đáp án đúng.');
+
+  // ---------- 41–45. MCQ ----------
+  const mcq = [
+    ['Công thức chung của chất béo là', ['RCOOH', 'C3H5(OH)3', '(RCOO)3C3H5', 'RCOONa'], 2],
+    ['Trường hợp nào sau đây chứa thành phần chính là chất béo?', ['Trứng gà', 'Tóc', 'Dầu ô liu', 'Dầu hoả'], 2],
+    ['Thuỷ phân chất béo trong môi trường kiềm thu được', ['glycerol và muối của một acid béo', 'glycerol và acid béo', 'glycerol và xà phòng', 'glycerol và muối của các acid béo'], 3],
+    ['Phản ứng thuỷ phân chất béo trong môi trường kiềm còn gọi là phản ứng', ['thuỷ phân hoá', 'xà phòng hoá', 'ester hoá', 'hydrogen hoá'], 1],
+    ['Chất nào sau đây không phải là chất béo?', ['(C17H35COO)3C3H5', '(C15H31COO)3C3H5', '(C17H33COO)3C3H5', '(CH3COO)3C3H5'], 3],
+  ];
+  const mcqSlide = (q, qi) => {
+    const s = newSlide('CONTENT', SEC.prac);
+    bubbles(s);
+    kicker(s, 'HỎI XOAY ĐÁP XOÁY · CÂU ' + (qi + 1) + '/8');
+    title(s, 'Câu hỏi ' + (qi + 1));
+    const qc = tx(s, q[0] + (/[?.”:]$/.test(q[0]) ? '' : '…'), 0.6, 1.65, 12.1, 1.25, { size: 24, bold: true, color: C.background1, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.text2, r: 0.18, margin: 0.3, font: 'Cambria', name: '!!qcard' });
+    const LET = ['A', 'B', 'C', 'D'];
+    q[1].forEach((opt, i) => {
+      const x = 0.6 + (i % 2) * 6.2, y = 3.15 + Math.floor(i / 2) * 1.6;
+      const oc = s.addText([{ text: LET[i] + '.   ', options: { bold: true, color: C.accent2 } }, ...runs(opt)], { x, y, w: 5.9, h: 1.3, objectName: 'opt' + i, shape: SH.ROUNDED_RECTANGLE, rectRadius: 0.18, fill: { color: C.background1 }, line: { color: C.accent2, width: 1.25 }, shadow: L.shadow('soft'), fontFace: 'Calibri', fontSize: q[3] || 22, color: C.text1, valign: 'middle', margin: 22 });
+      if (i === q[2]) {
+        const hl = box(s, x - 0.05, y - 0.05, 6.0, 1.4, { fill: { color: C.accent2, transparency: 80 }, line: { color: C.accent2, width: 4 }, r: 0.2, name: 'okhl' });
+        const bd = tx(s, '✓  Chính xác!', x + 3.75, y - 0.3, 2.05, 0.5, { size: 16, bold: true, color: C.background1, align: 'center', valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.accent2, r: 0.25, margin: 0, name: 'okbadge', nosub: true });
+        trig(s, 'opt' + i, [{ names: hl, eff: 'zoom', dur: 400 }, { names: bd, eff: 'zoom', start: 'after', dur: 350 }]);
+      } else {
+        trig(s, 'opt' + i, [{ names: 'opt' + i, eff: 'teeter', dur: 1000 }]);
+      }
+    });
+    timer(s, 0.6, 6.33, 12.1, 15, '15 giây');
+    s.addNotes('Đáp án: ' + LET[q[2]] + '. Bấm vào từng phương án để kiểm tra (đúng: sáng xanh + “Chính xác!”, sai: rung lắc).');
+    return s;
+  };
+  mcq.forEach(mcqSlide);
+
+  // ---------- CÂU 6 (chọn đáp án) ----------
+  mcqSlide(['Chọn từ điền vào chỗ trống: “Dầu ăn là hỗn hợp nhiều …(1)… của …(2)… và các acid béo.”', ['(1) ester – (2) glycerol', '(1) acid – (2) glycerol', '(1) ester – (2) ethanol', '(1) muối – (2) glycerol'], 0], 5);
+
+  // ---------- 47. CÂU 7 ----------
+  s = newSlide('CONTENT', SEC.prac);
+  bubbles(s);
+  kicker(s, 'HỎI XOAY ĐÁP XOÁY · CÂU 7/8 · CHỌN NHIỀU ĐÁP ÁN');
+  title(s, 'Câu hỏi 7');
+  tx(s, 'Chọn những phương pháp có thể làm sạch vết dầu ăn dính vào quần áo và giải thích.', 0.6, 1.65, 12.1, 1.0, { size: 22, bold: true, color: C.background1, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.text2, r: 0.18, margin: 0.3, font: 'Cambria', name: '!!qcard' });
+  const c7 = [['A', 'Giặt bằng nước', false, 'Nước không hoà tan được dầu ăn'], ['B', 'Giặt bằng xà phòng', true, 'Xà phòng hoà tan được dầu ăn'], ['C', 'Tẩy bằng cồn 90°', true, 'Cồn hoà tan được dầu ăn'], ['D', 'Tẩy bằng giấm', false, 'Giấm hoà tan được dầu ăn nhưng làm hỏng quần áo'], ['E', 'Tẩy bằng xăng', true, 'Xăng hoà tan được dầu ăn']];
+  c7.forEach((c, i) => {
+    const y = 2.85 + i * 0.8;
+    s.addText([{ text: c[0] + '.   ', options: { bold: true, color: C.accent2 } }, { text: c[1], options: {} }], { x: 0.6, y, w: 4.9, h: 0.65, objectName: 'opt' + i, shape: SH.ROUNDED_RECTANGLE, rectRadius: 0.16, fill: { color: C.background1 }, line: { color: C.accent2, width: 1.25 }, shadow: L.shadow(), fontFace: 'Calibri', fontSize: 20, color: C.text1, valign: 'middle', margin: 18 });
+    const fbk = tx(s, (c[2] ? '✓  ' : '✗  ') + c[3], 5.75, y, 6.95, 0.65, { size: 18, bold: true, color: c[2] ? C.background1 : C.text2, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: c[2] ? C.accent2 : { color: C.accent4, transparency: 75 }, r: 0.16, margin: 0.25, nosub: true });
+    const steps = [{ names: fbk, eff: c[2] ? 'zoom' : 'wipeL', dur: 400 }];
+    if (!c[2]) steps.push({ names: 'opt' + i, eff: 'teeter', start: 'with', dur: 1000 });
+    trig(s, 'opt' + i, steps);
+  });
+  s.addNotes('Đáp án: B, C, E vì xà phòng, cồn 90°, xăng hoà tan được dầu ăn. Nước không hoà tan được dầu ăn; giấm hoà tan được dầu ăn nhưng làm hỏng quần áo. Bấm từng phương án để hiện giải thích.');
+
+  // ---------- 48. CÂU 8 ----------
+  mcqSlide(['Vì sao cần đảm bảo đủ lượng lipid cho cơ thể?', ['Lipid chỉ giúp cơ thể tăng cân', 'Lipid tham gia cấu tạo màng tế bào, cung cấp năng lượng, ổn định thân nhiệt, giúp hấp thụ vitamin A, D, E…', 'Lipid chỉ tạo mùi vị cho món ăn', 'Lipid giúp cơ thể không cần ăn tinh bột'], 1, 18], 7);
+  s = newSlide('CONTENT', SEC.prac);
+  bubbles(s);
+  kicker(s, 'GIẢI THÍCH · CÂU 8/8');
+  title(s, 'Vai trò của lipid đối với cơ thể');
+  tx(s, 'Vì sao cần đảm bảo đủ lượng lipid cho cơ thể?', 0.6, 1.65, 12.1, 1.0, { size: 24, bold: true, color: C.background1, valign: 'middle', shape: SH.ROUNDED_RECTANGLE, fill: C.text2, r: 0.18, margin: 0.3, font: 'Cambria', name: '!!qcard' });
+  const r8 = [['FaShieldAlt', 'Tham gia cấu tạo màng tế bào'], ['FaBolt', 'Cung cấp năng lượng'], ['FaThermometerHalf', 'Giúp ổn định thân nhiệt'], ['FaBrain', 'Tăng hoạt động trí não'], ['FaTint', 'Hoà tan vitamin A, D, E… giúp cơ thể hấp thụ']];
+  const r8N = r8.map((r, i) => {
+    const x = 0.6 + i * 2.46;
+    const cd = box(s, x, 3.0, 2.26, 3.1, { fill: C.background1, shadow: 'soft' });
+    const [d1, d2] = iconDot(s, r[0], HEX.green, x + 0.58, 3.3, 1.1, { tr: 80 });
+    const t = tx(s, r[1], x + 0.15, 4.6, 1.96, 1.4, { size: 17, bold: true, align: 'center', margin: 0, color: C.text2 });
+    return [cd, d1, d2, t];
+  });
+  const r8c = tx(s, '→ Cần đảm bảo đủ lượng lipid cho cơ thể.', 0.6, 6.3, 12.1, 0.5, { size: 18, bold: true, italic: true, color: C.accent2, align: 'center', margin: 0 });
+  r8N.forEach((g, i) => anim(s, i ? 'after' : 'click', g, 'float', { dur: 400 }));
+  click(s, r8c, 'fade');
+  s.addNotes('Lipid giữ vai trò quan trọng: tham gia cấu tạo màng tế bào, cung cấp năng lượng, ổn định thân nhiệt, tăng hoạt động trí não; hoà tan vitamin A, D, E… giúp cơ thể hấp thụ.');
 
   // ---------- 55. HƯỚNG DẪN VỀ NHÀ ----------
+  pres.addSection({ title: SEC.end });
   s = newSlide('CONTENT', SEC.end);
   bubbles(s);
   kicker(s, 'HOẠT ĐỘNG 5');
@@ -1086,6 +1229,18 @@ async function main() {
   });
   hwN.forEach((g, i) => anim(s, i ? 'after' : 'click', g, 'float', { dur: 450 }));
   s.addNotes('Dặn dò: ôn bài, làm bài tập vận dụng, đọc trước Bài 29 – Glucose và Saccharose.');
+
+  // ---------- NGUỒN ẢNH ----------
+  s = newSlide('CONTENT', SEC.end);
+  bubbles(s);
+  kicker(s, 'TÀI LIỆU THAM KHẢO');
+  title(s, 'Nguồn nội dung & hình ảnh');
+  tx(s, '**Nội dung:** SGK Khoa học tự nhiên 9 (Kết nối tri thức với cuộc sống), Bài 28 – Lipid; kế hoạch bài dạy của nhóm 26SKT2.\n**Hình ảnh:** SGK, kế hoạch bài dạy, file mẫu của nhóm và Wikimedia Commons (giấy phép mở, ghi bên dưới).', 0.6, 1.6, 12.1, 1.05, { size: 15, margin: 0, psa: 4, nosub: true });
+  const cr = ['Quả bơ – Ivar Leidus, CC BY-SA 4.0', 'Lá cọ – PpYukShing, CC BY-SA 3.0', 'Dầu hướng dương – torange.biz, CC BY 4.0', 'Dầu cá – Oddman47, CC0', 'Dầu lạc – Adam Engelhart, CC BY-SA 2.0', 'Dầu đậu nành – United Soybean Board, CC BY 2.0', 'Hạt lạc – Ivar Leidus, CC BY-SA 4.0', 'Óc chó – Ivar Leidus, CC BY-SA 4.0',
+    'Hạnh nhân, các loại hạt – piviso.com, CC0', 'Kem dưỡng da – Pixabay, CC0', 'Xà phòng – Malene Thyssen (HLHJ), CC BY 2.5', 'Trụ bơm diesel sinh học – Robert Couse-Baker, CC BY 2.0', 'Gà rán – Evan-Amos, CC0'];
+  tx(s, cr.slice(0, 7).map(c => '• ' + c).join('\n'), 0.6, 2.8, 6.0, 3.9, { size: 14, margin: 0, psa: 4, nosub: true });
+  tx(s, cr.slice(7).map(c => '• ' + c).join('\n'), 6.7, 2.8, 6.0, 3.9, { size: 14, margin: 0, psa: 4, nosub: true });
+  s.addNotes('Nguồn hình ảnh bổ sung từ Wikimedia Commons, kèm tác giả và giấy phép.');
 
   // ---------- 56. CẢM ƠN ----------
   s = newSlide('COVER', SEC.end);

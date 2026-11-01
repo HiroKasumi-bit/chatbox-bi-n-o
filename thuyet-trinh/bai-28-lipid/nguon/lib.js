@@ -165,7 +165,7 @@ function line(s, x1, y1, x2, y2, o = {}) {
 }
 function img(s, file, x, y, w, h, o = {}) {
   const name = o.name || nm('img');
-  s.addImage({ path: __dirname + '/img/' + file, x, y, w, h, objectName: name, altText: o.alt || '', rotate: o.rotate, transparency: o.transparency });
+  s.addImage({ path: __dirname + '/img/' + file, x, y, w, h, objectName: name, altText: o.alt || 'Hình trang trí', rotate: o.rotate, transparency: o.transparency });
   return name;
 }
 
@@ -186,7 +186,7 @@ function icon(s, n, col, x, y, sz, o = {}) {
   const key = n + col;
   if (!iconCache[key]) throw new Error('icon not prepared ' + key);
   const name = o.name || nm('ic');
-  s.addImage({ data: iconCache[key], x, y, w: sz, h: sz, objectName: name, altText: o.alt || '' });
+  s.addImage({ data: iconCache[key], x, y, w: sz, h: sz, objectName: name, altText: o.alt || 'Biểu tượng' });
   return name;
 }
 // icon inside a tinted circle; returns [circleName, iconName]
