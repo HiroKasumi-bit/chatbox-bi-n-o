@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Sea God Returns</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Yeseva+One&family=Caveat:wght@600;700&display=swap">
+<style>
+/* A 1920×1080 puppet theatre scaled to the window. One dark red-and-black stage by design (a projector show). */
+:root { --red: #b3162a; --deep: #140608; --paper: #f4e9d2; --ink: #3a2418; --gold: #d9a63a; --navy: #1f2d4f; --orange: #f28c28;
+  --hand: "Patrick Hand", "Comic Sans MS", cursive; --title: "Yeseva One", Georgia, serif; --script: "Caveat", "Patrick Hand", cursive; color-scheme: dark; }
+html, body { height: 100%; margin: 0; background: #050203; overflow: hidden; font-family: var(--hand); color: var(--ink); }
+#viewport { position: fixed; inset: 0; background: #050203; }
+#stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; background: var(--deep); }
+.abs { position: absolute; left: 0; top: 0; }
+#world { position: absolute; inset: 0; transition: filter .7s ease; }
+#world.dim { filter: blur(9px) brightness(.32) saturate(.55); }
+/* backdrop */
+#bg { position: absolute; left: 150px; top: 80px; width: 1620px; height: 880px; border-radius: 6px; transition: background 1.2s ease; overflow: hidden;
+  background: linear-gradient(#5d7d7a, #3e5654); }
+#bg::after { content: ""; position: absolute; inset: 0; opacity: .32; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .04' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .45  0 0 0 0 .4  0 0 0 0 .35  0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); }
+#bg.legend { background: radial-gradient(ellipse at 50% 30%, #8fb1a6, #4e6d68 70%, #34494a); }
+#bg.storm { background: radial-gradient(ellipse at 50% 20%, #59606e, #2f3440 70%, #1c1f27); }
+#bg.night { background: radial-gradient(ellipse at 50% 20%, #26325a, #141a33 70%, #0b0e1d); }
+#bg.dawn { background: radial-gradient(ellipse at 50% 85%, #ffd28a, #f39a7a 45%, #8d6a9a 85%); }
+#bg.day { background: radial-gradient(ellipse at 50% 30%, #bfe6f2, #86c3d8 60%, #5e9fb8); }
+#bg.dark { background: #1a0a0c; }
+#bgStars { position: absolute; inset: 0; opacity: 0; transition: opacity 1s; background-image: radial-gradient(2px 2px at 10% 20%, #fff8, transparent), radial-gradient(2px 2px at 30% 12%, #fff8, transparent), radial-gradient(2px 2px at 55% 25%, #fff8, transparent), radial-gradient(2px 2px at 75% 10%, #fff8, transparent), radial-gradient(2px 2px at 88% 30%, #fff8, transparent), radial-gradient(2px 2px at 42% 8%, #fff8, transparent); }
+#bg.night #bgStars { opacity: 1; }
+.layer { position: absolute; left: 0; top: 0; will-change: transform, opacity; }
+#props, #curtains, #pups, #fx { width: 1920px; height: 1080px; pointer-events: none; }
+.spin { animation: spin 2.4s linear infinite; transform-box: fill-box; transform-origin: 50% 50%; }
+.spinSlow { animation: spin 40s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.waveA { animation: sway 6s ease-in-out infinite; } .waveB { animation: sway 4.6s ease-in-out infinite reverse; } .waveC { animation: sway 5.3s ease-in-out infinite; }
+@keyframes sway { 0%,100% { transform: translateX(-60px) translateY(0); } 50% { transform: translateX(40px) translateY(10px); } }
+.rough .waveA { animation-duration: 2.2s; } .rough .waveB { animation-duration: 1.7s; } .rough .waveC { animation-duration: 2s; }
+/* puppets */
+.pw { position: absolute; left: 0; top: 0; width: 280px; height: 600px; will-change: transform; }
+.pw .flip { width: 100%; height: 100%; }
+.pw .bob { width: 100%; height: 100%; transform-origin: 140px 560px; animation: bob 2.6s ease-in-out infinite; }
+.pw.talk .bob { animation: talk .5s ease-in-out infinite; }
+@keyframes bob { 0%,100% { transform: translateY(0) rotate(-1.2deg); } 50% { transform: translateY(-8px) rotate(1.2deg); } }
+@keyframes talk { 0%,100% { transform: translateY(0) rotate(-2.5deg); } 50% { transform: translateY(-16px) rotate(2.5deg); } }
+.pup { display: block; overflow: visible; }
+.beacon { animation: none; }
+.alarmOn .beacon { animation: blink .35s steps(1) infinite; }
+@keyframes blink { 50% { opacity: .15; } }
+/* city */
+#city .lit { transition: fill .4s; }
+#city.dark .lit { fill: #3b3530; }
+#city.alarm .sensors circle { animation: blink .4s steps(1) infinite; }
+#city .sensors { opacity: 0; transition: opacity .4s; } #city.alarm .sensors, #city.sense .sensors { opacity: 1; }
+#city .mud { opacity: 0; } #city .ug { opacity: 1; }
+#city .lanterns circle { fill: #6a3a2a; transition: fill .5s; } #city.lantern .lanterns circle { fill: #ffb347; filter: drop-shadow(0 0 6px #ff8a3a); }
+#city .ugPeople { opacity: 0; transition: opacity .6s; } #city.inside .ugPeople { opacity: 1; }
+/* floor */
+#floor { position: absolute; left: 0; top: 890px; width: 1920px; height: 190px; pointer-events: none; }
+/* props */
+.prop { position: absolute; opacity: 0; will-change: transform, opacity; }
+.card { background: var(--paper); border: 4px solid var(--ink); border-radius: 14px; box-shadow: 0 0 0 7px #efe2c6, 8px 12px 18px rgba(0,0,0,.55); padding: 16px 22px; }
+.card b { font-family: var(--title); font-weight: 400; }
+#placard { left: 580px; top: -40px; width: 760px; height: 200px; z-index: 60; }
+#placard .txt { position: absolute; left: 60px; right: 60px; top: 70px; height: 104px; display: grid; place-items: center; text-align: center; }
+#placard .k { font-size: 24px; letter-spacing: .25em; text-transform: uppercase; color: #8a5a2b; }
+#placard .t { font-family: var(--title); font-size: 46px; line-height: 1; color: #3a2418; margin-top: 2px; }
+#title { left: 210px; top: 200px; text-align: center; z-index: 70; color: var(--paper); width: 1500px; }
+#title .k { font-size: 30px; letter-spacing: .3em; color: #ffd98a; text-transform: uppercase; }
+#title .t { font-family: var(--title); font-size: 150px; line-height: 1.02; margin: 16px 0 6px; color: #fff3df; text-shadow: 0 6px 0 #5a0710, 0 14px 30px rgba(0,0,0,.6); }
+#title .s { font-family: var(--script); font-size: 62px; color: #ffe6b5; }
+#title .g { font-size: 26px; letter-spacing: .18em; color: #f2cfa0; margin-top: 46px; text-transform: uppercase; }
+#title .logos { display: flex; gap: 26px; justify-content: center; margin-top: 26px; }
+#title .logos img { width: 92px; height: 92px; border-radius: 50%; box-shadow: 0 0 0 6px #efe2c6; }
+.chipcard { position: absolute; width: 330px; text-align: center; }
+.chipcard .ic { font-size: 64px; line-height: 1; }
+.chipcard .h { font-family: var(--title); font-size: 33px; line-height: 1.05; margin-top: 6px; }
+.chipcard .d { font-size: 24px; line-height: 1.15; margin-top: 4px; color: #5a3b25; }
+#news { width: 470px; transform: rotate(-3deg); background: #ece4d4; }
+#news .m { font-family: var(--title); font-size: 18px; letter-spacing: .2em; border-bottom: 3px double var(--ink); padding-bottom: 6px; text-transform: uppercase; }
+#news .h { font-family: var(--title); font-size: 40px; line-height: 1.02; margin-top: 10px; }
+#news .d { font-size: 25px; margin-top: 8px; line-height: 1.2; }
+.plate { position: absolute; top: 950px; width: 176px; margin-left: -88px; text-align: center; padding: 6px 6px 8px; font-size: 21px; line-height: 1.05; opacity: 0; z-index: 80; }
+.plate b { display: block; font-family: var(--title); font-weight: 400; font-size: 28px; }
+#qrCard { width: 380px; text-align: center; }
+#qrCard img { width: 300px; height: 300px; display: block; margin: 8px auto 0; image-rendering: pixelated; }
+#qrCard .h { font-family: var(--title); font-size: 34px; } #qrCard .d { font-size: 24px; }
+#counter { left: 0; top: 0; width: 1180px; text-align: center; z-index: 75; font-family: var(--title); font-size: 300px; color: #ffe08a; text-shadow: 0 8px 0 #5a0710, 0 0 40px rgba(255,200,80,.6); }
+#scroll { width: 560px; z-index: 72; }
+#scroll .h { font-family: var(--title); font-size: 44px; text-align: center; }
+#scroll ul { margin: 12px 0 0; padding: 0 0 0 10px; list-style: none; font-size: 30px; line-height: 1.25; }
+#scroll li { padding-left: 42px; position: relative; margin: 8px 0; }
+#scroll li::before { position: absolute; left: 0; top: 0; font-size: 30px; }
+#scroll.cons li::before { content: "✗"; color: #c0283a; } #scroll.pros li::before { content: "✓"; color: #2f8a4a; }
+#stem { width: 680px; height: 310px; z-index: 74; }
+#slogan { left: 210px; top: 150px; width: 1500px; z-index: 76; text-align: center; }
+#slogan .r { display: inline-block; padding: 26px 70px 30px; background: #c81d2c; color: #fff3df; font-family: var(--title); font-size: 58px; line-height: 1.12; border: 5px solid #3a0006;
+  box-shadow: 0 0 0 8px #efe2c6, 10px 14px 24px rgba(0,0,0,.6); border-radius: 10px; }
+#vs { left: 860px; top: 330px; width: 200px; height: 200px; z-index: 70; }
+#qa { left: 260px; top: 190px; width: 1400px; z-index: 90; text-align: center; color: #fff3df; }
+#qa .t { font-family: var(--title); font-size: 110px; text-shadow: 0 6px 0 #5a0710, 0 14px 30px rgba(0,0,0,.6); }
+#qa .s { font-family: var(--script); font-size: 54px; color: #ffe6b5; }
+#qa .row { display: flex; gap: 60px; justify-content: center; margin-top: 50px; }
+#qa .card { width: 330px; color: var(--ink); } #qa .card img { width: 250px; height: 250px; display: block; margin: 4px auto 6px; image-rendering: pixelated; }
+#qa .card b { font-size: 32px; } #qa .card span { display: block; font-size: 24px; }
+canvas.fill { position: absolute; inset: 0; width: 1920px; height: 1080px; pointer-events: none; }
+#flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 200; }
+#alarm { position: absolute; inset: 0; pointer-events: none; z-index: 150; opacity: 0; }
+#alarm::before { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 16px rgba(255,30,60,.95), inset 0 0 220px 60px rgba(255,20,50,.55); animation: alarmPulse .5s ease-in-out infinite; }
+@keyframes alarmPulse { 50% { opacity: .25; } }
+/* expert overlay */
+#ov { position: absolute; inset: 0; z-index: 120; pointer-events: none; visibility: hidden; }
+#ovSpot { position: absolute; left: -120px; top: 80px; width: 860px; height: 1100px; opacity: 0;
+  background: radial-gradient(ellipse 50% 46% at 50% 55%, rgba(255,226,160,.38), rgba(255,226,160,.1) 60%, transparent 72%); }
+#ovPup { position: absolute; left: 70px; top: 150px; width: 504px; height: 1080px; transform-origin: 50% 100%; }
+#ovPup .pup { width: 504px; height: 1080px; }
+#ovName { position: absolute; left: 60px; top: 870px; width: 520px; text-align: center; padding: 12px 16px 16px; }
+#ovName b { display: block; font-family: var(--title); font-size: 44px; line-height: 1; }
+#ovName span { font-size: 28px; color: #6a4a30; }
+#board { position: absolute; left: 640px; top: 70px; width: 1210px; height: 930px; background: var(--paper); border: 5px solid var(--ink); border-radius: 18px;
+  box-shadow: 0 0 0 9px #efe2c6, 14px 18px 30px rgba(0,0,0,.6); }
+#board::before, #board::after { content: ""; position: absolute; top: -26px; width: 150px; height: 46px; background: rgba(255,236,170,.75); border: 2px solid rgba(160,120,60,.4); }
+#board::before { left: 60px; transform: rotate(-6deg); } #board::after { right: 60px; transform: rotate(5deg); }
+#bHead { position: absolute; left: 44px; right: 40px; top: 26px; }
+#bHead .k { font-size: 26px; letter-spacing: .22em; text-transform: uppercase; color: #a5551f; }
+#bHead h2 { margin: 2px 0 0; font-family: var(--title); font-weight: 400; font-size: 54px; white-space: nowrap; line-height: 1.02; color: var(--ink); }
+#bImg { position: absolute; left: 44px; top: 150px; width: 1120px; height: 560px; overflow: hidden; border-radius: 12px; border: 4px solid var(--ink); background: #1b1f27; }
+#bImg .pan { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+#bImg .pan img { display: block; max-width: none; max-height: none; width: auto; height: auto; }
+#bImg .inset { max-width: none; }
+#bImg svg.marks { position: absolute; inset: 0; width: 1120px; height: 560px; overflow: visible; }
+#bImg .tag { position: absolute; transform: translate(-50%, -100%); white-space: nowrap; padding: 8px 16px 10px; border-radius: 12px; background: #fff7e2; border: 3px solid var(--ink);
+  box-shadow: 5px 6px 0 rgba(0,0,0,.35); font-size: 27px; line-height: 1; color: var(--ink); opacity: 0; }
+#bImg .tag i { font-style: normal; display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--orange); color: #fff; font-family: var(--title); font-size: 20px; margin-right: 10px; border: 2px solid var(--ink); vertical-align: -4px; }
+#bImg .tag.bad { background: #ffe0e3; } #bImg .tag.bad i { background: #d0283a; }
+#bImg .inset { position: absolute; border: 4px solid var(--ink); border-radius: 10px; box-shadow: 0 0 0 6px #efe2c6, 6px 8px 0 rgba(0,0,0,.4); opacity: 0; object-fit: cover; }
+#bImg .diag { position: absolute; inset: 0; }
+#chips { position: absolute; left: 44px; right: 44px; top: 732px; display: flex; gap: 18px; }
+.chip { flex: 1; min-width: 0; padding: 12px 18px 14px; border-radius: 16px; background: #fff7e2; border: 4px solid var(--ink); box-shadow: 6px 7px 0 rgba(0,0,0,.28); opacity: 0; }
+.chip .n { font-family: var(--title); font-size: 50px; line-height: 1; color: #b3162a; white-space: nowrap; }
+.chip .l { font-size: 26px; line-height: 1.1; margin-top: 6px; color: var(--ink); }
+.chip.wide .n { font-size: 40px; }
+#goBelow { position: absolute; left: 760px; top: 560px; z-index: 160; padding: 14px 40px 18px; font-family: var(--title); font-size: 96px; color: #fff; background: #c0102a; border: 6px solid #fff; border-radius: 18px;
+  transform: rotate(-6deg); box-shadow: 0 0 0 8px #3a0006, 0 0 80px rgba(255,40,60,.8); opacity: 0; letter-spacing: .04em; }
+/* start, notes, dots */
+#start { position: absolute; inset: 0; z-index: 300; display: grid; place-items: center; text-align: center; background: radial-gradient(ellipse at 50% 40%, #3a0a10, #0a0204 70%); color: #fff3df; cursor: pointer; }
+#start .t { font-family: var(--title); font-size: 120px; }
+#start .s { font-size: 34px; letter-spacing: .3em; color: #ffd98a; margin-top: 18px; animation: blink 1.4s steps(1) infinite; }
+#start .h { font-size: 26px; color: #c9a98a; margin-top: 50px; line-height: 1.6; }
+#notes { position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); width: 1500px; padding: 22px 30px; z-index: 310; background: rgba(10,4,6,.94); border: 2px solid #8a5a2b; border-radius: 16px;
+  color: #f4e9d2; font-size: 30px; line-height: 1.4; display: none; }
+#notes.show { display: block; } #notes b { color: #ffd98a; }
+#dots { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 8px; z-index: 305; opacity: .35; }
+#dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.35); } #dots i.on { background: #ffd98a; width: 26px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { .pw .bob, .waveA, .waveB, .waveC, .spin, .spinSlow { animation: none !important; } }
+</style></head>
+<body>
+<div id="viewport"><div id="stage">
+  <div id="world">
+    <div id="bg"><div id="bgStars"></div></div>
+    <div class="layer" id="sun" style="opacity:0"></div>
+    <div class="layer" id="moon" style="opacity:0"></div>
+    <div class="layer" id="legend" style="opacity:0"></div>
+    <div class="layer" id="clouds"></div>
+    <div class="layer" id="city" style="opacity:0"></div>
+    <div class="layer" id="seaBack"></div>
+    <canvas class="fill" id="energy" width="1920" height="1080" style="opacity:0"></canvas>
+    <div class="layer" id="fx"></div>
+    <div class="layer" id="pups"></div>
+    <div class="layer" id="seaFront"></div>
+    <canvas class="fill" id="rain" width="1920" height="1080"></canvas>
+    <div id="floor"></div>
+    <div class="layer" id="props"></div>
+    <div class="layer" id="curtains"></div>
+  </div>
+  <div id="alarm"></div>
+  <div id="ov">
+    <div id="ovSpot"></div>
+    <div id="ovPup"></div>
+    <div id="ovName" class="card"><b></b><span></span></div>
+    <div id="board"><div id="bHead"><div class="k"></div><h2></h2></div><div id="bImg"></div><div id="chips"></div></div>
+  </div>
+  <div id="goBelow">GO BELOW!</div>
+  <canvas class="fill" id="confetti" width="1920" height="1080" style="z-index:170"></canvas>
+  <div id="flash"></div>
+  <div id="start"><div>
+    <div class="t">The Sea God Returns</div>
+    <div class="s">▸ CLICK TO OPEN THE CURTAIN · SOUND ON</div>
+    <div class="h">→ / SPACE / CLICK next · ← back · F full screen · N who speaks · M sound on/off</div>
+  </div></div>
+  <div id="dots"></div>
+  <div id="notes"></div>
+</div></div>
+<script src="vendor/gsap.min.js"></script>
+<script src="art.js"></script>
+<script src="app.js"></script>
+</body></html>
