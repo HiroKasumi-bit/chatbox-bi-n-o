@@ -27,6 +27,12 @@ Cập nhật: 07/11/2026. Mọi thứ nằm trên nhánh `ccr-32dbab14-4ki8g2` c
 - Mã nguồn: `art.js` (vẽ SVG nhân vật, rèm, thành phố), `app.js` (danh sách nhịp `BEATS`, bảng kỹ sư `OV`, âm thanh tổng hợp WebAudio), `deck.html` (bản offline), `sea_god_returns.html` (bản đăng online: không có thẻ html/head/body, GSAP từ cdnjs).
 - Toạ độ khoanh trong `OV` là tỉ lệ (0–1) trên ảnh `img/cutaway.jpg` (2048×1530).
 
+## 3. "Tôi có một ước mơ" (Văn bản 2, Ngữ văn) · slide HTML kiểu bảo tàng
+- Link: https://claude.ai/artifact/9Z4d3uc4UKNNHKEPVncbz6 · thư mục `thuyet-trinh/toi-co-mot-uoc-mo/` (zip offline, PDF 14 trang, `nguon/`).
+- Nội dung = 4 trang vở viết tay của người dùng (Câu 1–3), **giữ y nguyên từng chữ**; chỗ chưa đọc chắc hiện ô vàng có dấu "?" (class `unk` trong `deck.html`).
+- Phong cách học từ video TikTok Neu Web Studio (Figma Smart Animate, "history museum"): xanh rêu tối + cẩm thạch, lớp tán lá phía trước, cột Đài Lincoln, tượng Lincoln, ảnh MLK 1963 (tách nền bằng rembg), chuyển sang bình minh ở phần "giấc mơ".
+- 14 nhịp; camera mỗi nhịp khai báo trong mảng `B` của `app.js`.
+
 ## Bài học kỹ thuật (để không lặp lỗi)
 - Trang đăng online tự thêm `img{max-width:100%}` → ảnh trong khung phóng to bị méo. Phải đặt `max-width:none` cho ảnh đó, và khi chạy thử thì chèn quy tắc này vào trang để kiểm tra giống bản online.
 - GSAP: bật `gsap.ticker.lagSmoothing(0)` để hiệu ứng kết thúc đúng giờ trên máy yếu.

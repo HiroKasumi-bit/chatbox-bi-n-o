@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tôi có một ước mơ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap">
+<style>
+/* "Museum of a dream": a 1920×1080 stage scaled to the window. One dark moss-and-marble world by design (a projector show),
+   warming to dawn for the dream. Layers move between beats like Figma Smart Animate. */
+:root { --moss: #121a11; --moss2: #233020; --marble: #efe9dd; --ink: #f4efe4; --muted: #b9c2ad; --gold: #d2ae68; --dawn: #e8875a; --unk: #ffcf4a;
+  --display: "Playfair Display", Georgia, "Times New Roman", serif; --body: "Be Vietnam Pro", "Segoe UI", Arial, sans-serif; color-scheme: dark; }
+html, body { height: 100%; margin: 0; background: #050705; overflow: hidden; color: var(--ink); font-family: var(--body); }
+#viewport { position: fixed; inset: 0; background: #050705; }
+#stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; background: var(--moss); }
+.L { position: absolute; left: 0; top: 0; will-change: transform, opacity, filter; transform-origin: 50% 50%; }
+.L img { display: block; max-width: none; }
+#bg { width: 1920px; height: 1080px; }
+#bg img { width: 1920px; height: 1080px; object-fit: cover; }
+#tint { position: absolute; inset: 0; pointer-events: none; transition: background 1.6s ease; background: linear-gradient(180deg, rgba(10,18,10,.55), rgba(10,18,10,.85)); }
+#tint.night { background: linear-gradient(180deg, rgba(8,14,9,.62), rgba(8,14,9,.9)); }
+#tint.moss { background: radial-gradient(ellipse at 70% 40%, rgba(40,58,34,.55), rgba(10,16,10,.92) 70%); }
+#tint.dusk { background: linear-gradient(180deg, rgba(36,24,30,.6), rgba(12,10,14,.9)); }
+#tint.dawn { background: linear-gradient(180deg, rgba(232,135,90,.35), rgba(70,40,30,.55) 55%, rgba(18,14,10,.88)); }
+#sun { width: 900px; height: 900px; border-radius: 50%; background: radial-gradient(circle, rgba(255,214,150,.75), rgba(255,170,110,.25) 40%, transparent 68%); opacity: 0; }
+#grain { position: absolute; inset: -50%; pointer-events: none; opacity: .06; mix-blend-mode: overlay; z-index: 40;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1s steps(6) infinite; }
+@keyframes grain { 33% { transform: translate(-4%,3%); } 66% { transform: translate(3%,-5%); } }
+#scrim { position: absolute; inset: 0; pointer-events: none; z-index: 13; opacity: 0; background: linear-gradient(90deg, rgba(5,9,5,.82) 0%, rgba(5,9,5,.55) 42%, rgba(5,9,5,0) 68%); }
+.P { text-shadow: 0 2px 20px rgba(0,0,0,.65); }
+#vignette { position: absolute; inset: 0; pointer-events: none; z-index: 39; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%); }
+canvas#dust { position: absolute; inset: 0; width: 1920px; height: 1080px; pointer-events: none; z-index: 12; }
+.duo { filter: grayscale(1) sepia(.35) brightness(.95) contrast(1.05); }
+/* nav like a museum website */
+#nav { position: absolute; left: 0; right: 0; top: 0; height: 96px; z-index: 30; display: flex; align-items: center; padding: 0 90px; gap: 50px; pointer-events: none; }
+#nav .brand { display: flex; align-items: center; gap: 18px; font-family: var(--display); font-size: 26px; letter-spacing: .02em; }
+#nav .brand i { width: 34px; height: 40px; display: block; border: 2px solid var(--marble); border-top-width: 6px; position: relative; }
+#nav .brand i::before, #nav .brand i::after { content: ""; position: absolute; top: 6px; bottom: 4px; width: 3px; background: var(--marble); }
+#nav .brand i::before { left: 8px; } #nav .brand i::after { right: 8px; }
+#nav .links { margin-left: auto; display: flex; gap: 46px; font-size: 20px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+#nav .links span { position: relative; padding-bottom: 8px; transition: color .5s; }
+#nav .links span::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform .6s cubic-bezier(.7,0,.2,1); }
+#nav .links span.on { color: var(--ink); } #nav .links span.on::after { transform: scaleX(1); }
+#nav .pill { padding: 10px 22px; border: 1.5px solid rgba(239,233,221,.5); border-radius: 30px; font-size: 18px; letter-spacing: .12em; text-transform: uppercase; }
+/* text panels */
+.P { position: absolute; z-index: 20; visibility: hidden; }
+.P.on { visibility: visible; }
+.kick { font-size: 22px; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 18px; }
+.kick::before { content: ""; width: 54px; height: 1.5px; background: var(--gold); }
+.h { font-family: var(--display); font-weight: 700; font-size: 104px; line-height: .98; margin: 18px 0 0; text-wrap: balance; }
+.h.sm { font-size: 72px; }
+.t { font-size: 36px; line-height: 1.5; font-weight: 400; color: var(--ink); margin: 26px 0 0; text-wrap: pretty; }
+.t.md { font-size: 32px; } .t.sm { font-size: 29px; line-height: 1.48; }
+.lead { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 40px; line-height: 1.32; color: var(--marble); margin: 22px 0 0; }
+q, .q { font-family: var(--display); font-style: italic; font-weight: 600; color: var(--gold); quotes: "“" "”" "‘" "’"; }
+.unk { display: inline-block; padding: 0 12px; margin: 0 2px; border: 2px dashed var(--unk); border-radius: 10px; color: var(--unk); font-weight: 600; font-style: normal; line-height: 1.25; }
+.tag { display: inline-block; font-size: 22px; letter-spacing: .2em; text-transform: uppercase; padding: 9px 20px; border: 1.5px solid currentColor; border-radius: 40px; color: var(--marble); }
+.glass { background: rgba(18,26,16,.62); border: 1px solid rgba(239,233,221,.18); border-radius: 26px; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+.card { padding: 34px 40px 36px; }
+.card .lab { font-size: 22px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.arrow { color: var(--gold); font-family: var(--display); margin-right: 10px; }
+.sign { display: inline-block; padding: 26px 46px 30px; background: #f1e9d6; color: #1c1c1c; border: 8px double #1c1c1c; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,.6), inset 0 0 40px rgba(120,90,40,.35); transform: rotate(-3deg); font-family: var(--display); font-weight: 800; font-size: 48px; line-height: 1.12; text-align: center; letter-spacing: .01em; }
+.sign small { display: block; font-family: var(--body); font-weight: 600; font-size: 20px; letter-spacing: .3em; text-transform: uppercase; margin-bottom: 8px; color: #6b3a1c; }
+.echo { position: absolute; font-family: var(--display); font-style: italic; color: var(--gold); white-space: nowrap; pointer-events: none; }
+.w { display: inline-block; white-space: pre; }
+/* start, notes, dots */
+#start { position: absolute; inset: 0; z-index: 90; display: grid; place-items: center; text-align: center; background: radial-gradient(ellipse at 50% 40%, #1e2a1b, #050705 70%); cursor: pointer; }
+#start .t1 { font-family: var(--display); font-weight: 700; font-size: 120px; }
+#start .s { font-size: 26px; letter-spacing: .4em; color: var(--gold); margin-top: 26px; animation: blink 1.4s steps(1) infinite; }
+#start .h2 { font-size: 22px; color: #8d977f; margin-top: 50px; letter-spacing: .06em; }
+@keyframes blink { 50% { opacity: .2; } }
+#dots { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); display: flex; gap: 9px; z-index: 35; opacity: .5; }
+#dots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(239,233,221,.35); transition: all .5s; } #dots i.on { background: var(--gold); width: 26px; border-radius: 6px; }
+#count { position: absolute; right: 90px; bottom: 26px; z-index: 35; font-size: 20px; letter-spacing: .2em; color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { #grain { animation: none; } }
+</style></head>
+<body>
+<div id="viewport"><div id="stage">
+  <div class="L" id="bg"><img src="img/memorial.jpg" alt="Đài tưởng niệm Lincoln về đêm"></div>
+  <div class="L" id="sun"></div>
+  <div id="tint" class="night"></div>
+  <div class="L" id="proc"><img src="img/proclamation.jpg" width="430" alt="Bản Tuyên ngôn giải phóng nô lệ"></div>
+  <div class="L" id="cols"><img src="img/columns.png" width="700" alt=""></div>
+  <div class="L" id="march"><img class="duo" src="img/march.png" width="1250" alt="Martin Luther King giữa đoàn tuần hành năm 1963"></div>
+  <div class="L" id="mlk"><img class="duo" src="img/mlk.png" width="1000" alt="Martin Luther King phát biểu"></div>
+  <div class="L" id="statue"><img src="img/statue.png" width="820" alt="Tượng Abraham Lincoln"></div>
+  <canvas id="dust" width="1920" height="1080"></canvas>
+  <div class="L" id="leavesB"><img src="img/leaves_bottom.png" width="2400" alt=""></div>
+  <div class="L" id="leavesF"><img src="img/leaves_front.png" width="2400" alt=""></div>
+  <div id="scrim"></div>
+  <div id="vignette"></div>
+  <div id="nav"><div class="brand"><i></i>Tôi có 1 ước mơ</div>
+    <div class="links"><span data-s="0">Văn bản 2</span><span data-s="1">Câu 1</span><span data-s="2">Câu 2</span><span data-s="3">Câu 3</span></div><div class="pill">Ngữ văn</div></div>
+
+  <!-- 0 · cover -->
+  <section class="P" id="p0" style="left:0;top:330px;width:1920px;text-align:center">
+    <div class="kick" style="justify-content:center">Văn bản 2</div>
+    <div class="h" style="font-size:150px;margin-top:22px">Tôi có 1 ước mơ</div>
+  </section>
+
+  <!-- 1 · Câu 1 -->
+  <section class="P" id="p1" style="left:120px;top:230px;width:980px">
+    <div class="kick">Câu 1</div>
+    <p class="lead">Vấn đề trọng tâm được đề cập ở văn bản <q>Tôi có một ước mơ</q> là nạn phân biệt chủng tộc da màu diễn ra gay gắt tại khắp nước Mỹ thời bấy giờ.</p>
+  </section>
+  <section class="P" id="p2" style="left:120px;top:210px;width:940px">
+    <div class="kick">Câu 1</div>
+    <p class="t" style="margin-top:22px;color:var(--gold);font-size:30px;letter-spacing:.02em">Điều này được thể hiện qua:</p>
+    <p class="t">Cách tác giả đề cập đến <q>Tuyên ngôn giải phóng nô lệ</q> ở đoạn hai và nhấn mạnh dù đã mở ra đường lối ánh sáng cho công cuộc chống nạn phân biệt, người da đen vẫn bị áp bức đến trăm năm sau.</p>
+  </section>
+  <section class="P" id="p3" style="left:120px;top:190px;width:1680px">
+    <div class="kick">Câu 1</div>
+    <p class="t" style="max-width:1300px">Nạn phân biệt chủng tộc kinh khủng thể hiện qua các bằng chứng tác giả nêu:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:34px;margin-top:40px;align-items:start">
+      <div class="glass card ex"><div class="t md" style="margin:0"><q>không thuê được phòng nghỉ ngơi trên xa lộ cao tốc hay khách sạn trên thành phố</q></div></div>
+      <div class="glass card ex"><div class="t md" style="margin:0"><q>chưa được tự do di chuyển</q></div></div>
+      <div class="ex" style="padding-top:6px"><div class="t md" style="margin:0 0 22px"><q>tấm bảng ghi:</q></div><div class="sign">“Chỉ dành cho<br>người da trắng”</div></div>
+    </div>
+  </section>
+
+  <!-- 2 · Câu 2 -->
+  <section class="P" id="p4" style="left:120px;top:210px;width:1000px">
+    <div class="kick">Câu 2</div>
+    <p class="t" style="color:var(--muted)">Các luận điểm được tác giả nêu ra trong văn bản là:</p>
+    <div class="glass card ex" style="margin-top:30px">
+      <p class="t md" style="margin:0">Đoạn 1 (từ đầu đến <q>công lí chiếu rọi</q>), sự cấp bách, không thể trì hoãn của việc đứng lên đòi lại công bằng cho người da đen trước tình cảnh hiện tại</p></div>
+  </section>
+  <section class="P" id="p5" style="left:120px;top:190px;width:1120px">
+    <div class="kick">Câu 2 · Đoạn 1</div>
+    <p class="t md" style="margin-top:20px"><span class="arrow">→</span>Bằng chứng thể hiện luận điểm 1:</p>
+    <p class="lead" style="font-size:36px"><q>Chúng ta cũng đến nơi thiêng liêng này để nhắc nhở nước Mỹ về tính cấp bách của thời khắc Ngay bây giờ không còn là lúc để <span class="unk">l?n</span> tránh trong sự xoa dịu xa xỉ hay trong những liều thuốc an thần rằng mọi việc sẽ từ từ thay đổi.</q></p>
+    <p class="t md">Cụm từ lặp lại <q>đây là lúc</q>,...</p>
+  </section>
+  <section class="P" id="p6" style="left:120px;top:230px;width:1000px">
+    <div class="kick">Câu 2</div>
+    <div class="glass card ex" style="margin-top:30px">
+      <p class="t md" style="margin:0">Đoạn 2 (từ <q>Và có một điều</q> đến hết): việc đấu tranh đòi lại nhân quyền phải được diễn ra phi bạo lực và niềm tin vào công lí.</p></div>
+  </section>
+  <section class="P" id="p7" style="left:120px;top:180px;width:1680px">
+    <div class="kick">Câu 2 · Đoạn 2</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:34px">
+      <div class="glass card ex"><div class="lab"><span class="arrow">→</span>BC</div><p class="t md" style="margin:0"><q>Đừng thỏa mãn cơn khát tự do bằng những chén hận thù cay đắng</q></p></div>
+      <div class="glass card ex"><div class="lab"><span class="arrow">→</span>BC</div><p class="t md" style="margin:0"><q>không được phép để cuộc phản kháng của chúng ta nhuốm màu bạo lực</q>,...</p></div>
+    </div>
+    <div class="ex" style="margin-top:40px;max-width:1500px"><div class="lab" style="font-size:22px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)"><span class="arrow">→</span>Nhận xét</div>
+      <p class="t" style="margin-top:10px">tác giả đề cao sự quan trọng của việc đấu tranh cho tự do bằng chính lí lẽ và chính trực. Không được vì hận thù mà làm mất đi ý nghĩa của cuộc đấu tranh nhân quyền thiêng liêng.</p></div>
+  </section>
+  <section class="P" id="p8" style="left:120px;top:220px;width:1100px">
+    <div class="kick">Câu 2 · Đoạn 2</div>
+    <p class="lead" style="font-size:54px;margin-top:24px"><span class="arrow" style="font-style:normal">→</span>BC: <q>Tôi mơ rằng một ngày kia</q>... đến hết.</p>
+    <p class="t"><span class="arrow">→</span>Tác giả khẳng định niềm tin vào tương lai tươi sáng nơi những viễn cảnh tươi đẹp về <span class="unk">?</span> màu da chung sống hòa thuận. Khẳng định rằng tương lai bình đẳng của xã hội Mỹ.</p>
+  </section>
+
+  <!-- 3 · Câu 3 -->
+  <section class="P" id="p9" style="left:0;top:300px;width:1920px;text-align:center">
+    <div class="kick" style="justify-content:center">Câu 3</div>
+    <p class="lead" style="font-size:58px;max-width:1300px;margin:30px auto 0">Lí lẽ và bằng chứng được sử dụng 1 cách chặt chẽ, logic và góp phần làm sáng tỏ luận điểm.</p>
+  </section>
+  <section class="P" id="p10" style="left:120px;top:180px;width:1680px">
+    <div class="kick">Câu 3 · Luận điểm 1</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:34px">
+      <div class="glass card ex"><div class="lab">Lí lẽ</div><p class="t sm" style="margin:0">Người da đen sẽ vẫn bị chìm trong vũng lầy của sự bất công và đàn áp nếu không đứng lên đấu tranh ngay bây giờ. Sẽ vĩnh viễn không có bình yên nếu như người da đen chưa được công nhận quyền công dân.</p></div>
+      <div class="glass card ex"><div class="lab">Bằng chứng</div><p class="t sm" style="margin:0">Dù tổng thống Abraham Lincoln đã đứng lên đấu tranh cho quyền tự do của người da đen và kí sắc lệnh <q>Tuyên ngôn giải phóng nô lệ</q>, 1 trăm năm sau, người da đen vẫn phải chịu sự đàn áp.</p></div>
+    </div>
+  </section>
+  <section class="P" id="p11" style="left:120px;top:220px;width:1180px">
+    <div class="kick">Câu 3 · Luận điểm 1</div>
+    <p class="t" style="margin-top:30px"><span class="arrow">⇒</span>Qua cách nêu bằng chứng, tác giả nhấn mạnh sứ mệnh thiên niên kỉ kéo dài giành lại quyền bình đẳng cho người da màu. Tác giả nêu lên sự cấp bách của việc đứng lên đấu tranh <span class="unk">một / mới?</span> lần nữa và khơi gợi <span class="unk">một / mọi?</span> cuộc cải cách toàn diện của nước Mỹ, nơi sẽ không có yên bình khi chưa có công bằng.</p>
+  </section>
+  <section class="P" id="p12" style="left:120px;top:180px;width:1680px">
+    <div class="kick">Câu 3 · Luận điểm 2</div>
+    <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:34px;margin-top:34px">
+      <div class="glass card ex"><div class="lab">Lí lẽ</div><p class="t sm" style="margin:0">Người da đen phải đấu tranh với lòng tự trọng và trái tim chính trực, không có bạo lực. Người da màu không được để <span class="unk">mầm mống?</span> ác cảm gợi lên với toàn bộ xã hội da trắng mà phải xây dựng vững chắc mối liên hệ cộng sinh giữa hai tập thể trong xã hội.</p></div>
+      <div class="glass card ex"><div class="lab">BC</div><p class="t sm" style="margin:0">Thực trạng đói khổ, bất công của ng da màu từ <q>Chúng ta làm sao có thể...</q> đến <q>không cảm thấy có lí do gì để bầu</q>.</p></div>
+    </div>
+  </section>
+
+  <!-- end -->
+  <section class="P" id="p13" style="left:0;top:340px;width:1920px;text-align:center">
+    <div class="kick" style="justify-content:center">Văn bản 2</div>
+    <div class="h" style="font-size:140px;margin-top:22px">Tôi có 1 ước mơ</div>
+    <p class="t" style="color:var(--marble);font-family:var(--display);font-style:italic;font-size:40px;margin-top:30px">Cảm ơn thầy cô và các bạn đã lắng nghe</p>
+  </section>
+
+  <div id="grain"></div>
+  <div id="dots"></div><div id="count"></div>
+  <div id="start"><div><div class="t1">Tôi có 1 ước mơ</div><div class="s">▸ BẤM ĐỂ BẮT ĐẦU</div><div class="h2">→ / dấu cách / chuột: tiếp · ←: lùi · F: toàn màn hình</div></div></div>
+</div></div>
+<script src="vendor/gsap.min.js"></script>
+<script src="app.js"></script>
+</body></html>
