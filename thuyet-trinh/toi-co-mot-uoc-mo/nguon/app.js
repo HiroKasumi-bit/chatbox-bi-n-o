@@ -8,26 +8,28 @@
 
   const cols2 = $('#cols').cloneNode(true); cols2.id = 'cols2'; $('#cols').after(cols2);
   gsap.set('#cols2 img', { scaleX: -1 });
-  const LAY = ['bg', 'sun', 'proc', 'cols', 'cols2', 'march', 'mlk', 'statue', 'leavesB'];
+  const LAY = ['bg', 'sun', 'proc', 'cols', 'cols2', 'march', 'mlk', 'statue', 'portrait', 'phWide', 'phFountain', 'phVote', 'phLeaders', 'leavesB'];
   const BASE = {
     bg: { x: 0, y: 0, s: 1.15, o: 1, r: 0 }, sun: { x: 510, y: 1100, s: 1.1, o: 0, r: 0 }, proc: { x: 1000, y: 200, s: .8, o: 0, r: -6 },
     cols: { x: 1500, y: 40, s: 1, o: 0, r: 0 }, cols2: { x: -400, y: 40, s: 1, o: 0, r: 0 },
     march: { x: 1100, y: 260, s: 1, o: 0, r: 0 }, mlk: { x: 1100, y: 330, s: 1, o: 0, r: 0 }, statue: { x: 1100, y: 330, s: 1, o: 0, r: 0 },
     leavesB: { x: -240, y: 800, s: 1, o: 1, r: 0 },
+    portrait: { x: 1300, y: 240, s: 1, o: 0, r: 0 }, phWide: { x: 1420, y: 260, s: 1, o: 0, r: 6 }, phFountain: { x: 1260, y: 380, s: 1, o: 0, r: 4 },
+    phVote: { x: 1420, y: 260, s: 1, o: 0, r: 8 }, phLeaders: { x: 1240, y: 400, s: 1, o: 0, r: 4 },
   };
   // leaf curtain: 0 = closed, 1 = framing the edges, 2 = gone
   const LEAF = [{ x: 0, s: 1.3 }, { x: 430, s: 1.06 }, { x: 1400, s: 1.2 }];
   const B = [
     { p: '0', nav: 0, tint: 'night', leaf: 1, rays: .55, scrim: 0, cam: { bg: { s: 1.2 }, leavesB: { y: 620 }, cols: { x: 1600, y: 30, o: .3, s: 1.05 }, cols2: { x: -370, y: 30, o: .3, s: 1.05 } } },
-    { p: 'A', nav: 1, tint: 'dusk', leaf: 2, cam: { bg: { s: 1.3, x: -260 }, mlk: { x: 1000, y: 300, s: 1.08, o: 1 }, leavesB: { y: 800 } } },
-    { p: 'B', nav: 2, tint: 'moss', leaf: 2, src: 1, cam: { bg: { s: 1.02, x: 20, y: -10 }, leavesB: { y: 860 } } },
-    { p: '1', nav: 3, tint: 'moss', leaf: 2, cam: { bg: { s: 1.05, x: -40 }, leavesB: { y: 780 }, march: { x: 960, y: 230, o: .95 } } },
+    { p: 'A', nav: 1, tint: 'dusk', leaf: 2, cam: { bg: { s: 1.3, x: -260 }, portrait: { x: 1180, y: 190, o: 1 }, leavesB: { y: 800 } } },
+    { p: 'B', nav: 2, tint: 'moss', leaf: 2, src: 1, cam: { bg: { s: 1.02, x: 20, y: -10 }, phWide: { x: 1300, y: 190, o: 1, r: 2.5 }, leavesB: { y: 860 } } },
+    { p: '1', nav: 3, tint: 'moss', leaf: 2, cam: { bg: { s: 1.05, x: -40 }, leavesB: { y: 780 }, phFountain: { x: 1140, y: 300, o: 1, r: -2 } } },
     { p: '2', nav: 3, tint: 'moss', leaf: 2, cam: { bg: { s: 1.12, x: -120 }, statue: { x: 1080, y: 300, o: 1 }, cols: { x: 1440, y: -60, s: 1.1, o: .9 }, proc: { x: 1240, y: 150, o: .45, s: .7, r: -7 }, leavesB: { y: 760 } } },
     { p: '3', nav: 3, tint: 'night', leaf: 2, cam: { bg: { s: 1.3, x: -260, y: -60 }, statue: { x: 1440, y: 620, s: .5, o: .28 }, cols: { x: 1660, y: 120, s: .8, o: .3 }, leavesB: { y: 820 } } },
-    { p: '4', nav: 4, tint: 'dusk', leaf: 2, cam: { bg: { s: 1.25, x: -200 }, mlk: { x: 960, y: 320, o: 1 }, leavesB: { y: 780 } } },
+    { p: '4', nav: 4, tint: 'dusk', leaf: 2, cam: { bg: { s: 1.25, x: -200 }, phVote: { x: 1290, y: 170, o: 1, r: 3 }, leavesB: { y: 780 } } },
     { p: '5', nav: 4, tint: 'dusk', leaf: 2, cam: { bg: { s: 1.35, x: -300 }, mlk: { x: 1180, y: 250, s: 1.3, o: .45 }, leavesB: { y: 840 } }, fx: echo },
-    { p: '6', nav: 4, tint: 'dusk', leaf: 2, cam: { bg: { s: 1.2, x: -100 }, march: { x: 1000, y: 260, o: 1 }, leavesB: { y: 780 } } },
-    { p: '7', nav: 4, tint: 'night', leaf: 2, cam: { bg: { s: 1.3, x: -220 }, march: { x: 1340, y: 600, s: .62, o: .3 }, leavesB: { y: 840 } } },
+    { p: '6', nav: 4, tint: 'dusk', leaf: 2, cam: { bg: { s: 1.2, x: -100 }, phLeaders: { x: 1130, y: 330, o: 1, r: -2 }, leavesB: { y: 780 } } },
+    { p: '7', nav: 4, tint: 'night', leaf: 2, cam: { bg: { s: 1.3, x: -220 }, cols: { x: 1500, y: 60, s: 1, o: .35 }, cols2: { x: -260, y: 60, s: 1, o: .35 }, leavesB: { y: 840 } } },
     { p: '8', nav: 4, tint: 'dawn', warm: true, leaf: 2, rays: .35, cam: { bg: { s: 1.08 }, sun: { x: 1120, y: 40, o: 1 }, march: { x: 1020, y: 290, o: 1 }, leavesB: { y: 640 } } },
     { p: 'E', nav: 0, tint: 'dawn', warm: true, leaf: 1, rays: 1, scrim: 0, cam: { bg: { s: 1.16 }, sun: { x: 510, y: 60, s: 1.25, o: 1 }, leavesB: { y: 600 }, cols: { x: 1600, y: 30, o: .55, s: 1.05 }, cols2: { x: -370, y: 30, o: .55, s: 1.05 } } },
   ];
@@ -94,15 +96,16 @@
   const clearEcho = () => { echoes.forEach(e => { gsap.killTweensOf(e); e.remove(); }); echoes = []; };
 
   // letter cascade for the opening and ending titles
-  let loops = [];
+  let loops = [], titleTls = [];
   function titleIn(p, delay, ending) {
-    const kick = $$('.kick .ch', p), big = $$('.big .ch', p), sub = $$('.auth .ch, .thanks .ch', p), sweep = $('.sweep', p);
+    const kick = $$('.kick .ch, .vb .ch', p), big = $$('.big .ch', p), sub = $$('.auth .ch, .thanks .ch', p), sweep = $('.sweep', p);
     const tl = gsap.timeline({ delay });
     tl.fromTo(kick, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .5, stagger: .025, ease: 'power2.out' }, 0)
       .fromTo(big, { opacity: 0, y: 140, rotationX: -95, filter: 'blur(14px)', transformOrigin: '50% 100% -40px' },
         { opacity: 1, y: 0, rotationX: 0, filter: 'blur(0px)', duration: 1.3, stagger: .055, ease: 'expo.out' }, .2)
       .fromTo(sub, { opacity: 0, y: ending ? 24 : 0, x: ending ? 0 : 30, filter: 'blur(6px)' }, { opacity: 1, y: 0, x: 0, filter: 'blur(0px)', duration: .8, stagger: ending ? .03 : .04, ease: 'power3.out' }, 1.3)
       .fromTo(sweep, { backgroundPosition: '120% 0' }, { backgroundPosition: '-20% 0', duration: 1.6, ease: 'power2.inOut' }, 1.4);
+    titleTls.push(tl);
     loops.push(gsap.to(sweep, { backgroundPosition: '-20% 0', startAt: { backgroundPosition: '120% 0' }, duration: 1.8, ease: 'power2.inOut', repeat: -1, repeatDelay: 3.2, delay: delay + 4 }));
     return tl;
   }
@@ -128,7 +131,7 @@
     gsap.to('#src', { opacity: b.src ? 1 : 0, duration: .8 * D });
     gsap.to('#pinB', { opacity: b.p === 'B' ? 1 : 0, x: b.p === 'B' ? 0 : 40, duration: .9 * D, delay: b.p === 'B' ? 1.6 * D : 0 });
     $('#nav').classList.toggle('hide', !b.nav);
-    gsap.to('#march img, #mlk img', { filter: b.warm ? 'grayscale(.2) sepia(.45) saturate(1.3) brightness(1.05)' : 'grayscale(1) sepia(.35) brightness(.95) contrast(1.05)', duration: 1.4 * D });
+    gsap.to('#march img, #mlk img, #portrait img, .frame img', { filter: b.warm ? 'grayscale(.2) sepia(.45) saturate(1.3) brightness(1.05)' : 'grayscale(1) sepia(.35) brightness(.95) contrast(1.05)', duration: 1.4 * D });
     gsap.to('#leavesB img, .leafHalf img', { filter: b.warm ? 'sepia(.6) saturate(1.4) brightness(1.25) hue-rotate(-15deg)' : 'none', duration: 1.4 * D });
     gsap.to('#bg img', { filter: b.p === 'E' ? 'brightness(1.12) saturate(1.15)' : 'none', duration: 2 * D });
 
@@ -148,7 +151,7 @@
     $$('#nav .links span').forEach(s => s.classList.toggle('on', +s.dataset.s === b.nav));
     [...dots.children].forEach((d, i) => d.classList.toggle('on', i === n));
     $('#count').textContent = String(n + 1).padStart(2, '0') + ' / ' + String(B.length).padStart(2, '0');
-    cur = n; try { history.replaceState(null, '', '#b' + (n + 1)); } catch (_) { }
+    cur = n;
   }
 
   // opening: black → date → through the leaves into the memorial
@@ -172,18 +175,19 @@
       .add(() => titleIn($('#p0'), 0, false), 4.3);
   }
 
-  stage.addEventListener('click', () => go(cur + 1));
+  // while the opening is still playing, a click only finishes it (stays on the cover)
+  const next = () => {
+    if (introTl) { introTl.progress(1); titleTls.forEach(t => t.progress(1)); return; }
+    go(cur + 1);
+  };
+  stage.addEventListener('click', next);
   addEventListener('keydown', e => {
-    if ([' ', 'ArrowRight', 'PageDown', 'Enter'].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+    if ([' ', 'ArrowRight', 'PageDown', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
     else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
     else if (e.key === 'f' || e.key === 'F') { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (_) { } }
     else if (e.key === 'Home') go(0);
   });
-  const m = location.hash.match(/^#b(\d+)/);
   const ready = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
-  ready.then(() => {
-    if (m && +m[1] > 1) { $('#intro').style.display = 'none'; go(Math.min(B.length, +m[1]) - 1, true); }
-    else intro();
-  });
+  ready.then(intro);
   window.__deck = { go, n: B.length, get cur() { return cur; } };
 })();

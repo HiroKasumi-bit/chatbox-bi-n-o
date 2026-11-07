@@ -37,6 +37,10 @@ canvas#rays { position: absolute; inset: 0; width: 1920px; height: 1080px; point
 .fact .v { font-family: var(--display); font-weight: 600; font-size: 34px; line-height: 1.2; margin-top: 8px; }
 .fact .d { font-size: 22px; color: var(--muted); margin-top: 6px; line-height: 1.35; }
 .src { font-size: 17px; color: #8f9a83; letter-spacing: .02em; }
+.frame { width: min-content; margin: 0; padding: 14px 14px 0; background: #e9e3d6; box-shadow: 0 34px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.4); }
+.frame img { display: block; max-width: none; }
+.frame figcaption { font-size: 18px; line-height: 1.35; color: #3b3a33; padding: 10px 4px 12px; max-width: 100%; }
+.vb { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 44px; color: var(--marble); margin-top: 26px; }
 .pin { position: absolute; display: flex; align-items: center; gap: 14px; font-size: 22px; color: var(--marble); z-index: 21; white-space: nowrap; }
 .pin i { width: 16px; height: 16px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 6px rgba(210,174,104,.25), 0 0 24px var(--gold); }
 .pin b { font-weight: 600; } .pin span { color: var(--muted); }
@@ -59,6 +63,11 @@ html = f"""<!doctype html>
   <div class="L" id="march"><img class="duo" src="img/march.png" width="1250" alt="Mác-tin Lu-thơ Kinh giữa đoàn tuần hành ngày 28/8/1963"></div>
   <div class="L" id="mlk"><img class="duo" src="img/mlk.png" width="1000" alt="Mác-tin Lu-thơ Kinh đọc diễn văn ngày 28/8/1963"></div>
   <div class="L" id="statue"><img src="img/statue.png" width="820" alt="Tượng Abraham Lincoln trong Đài Tưởng niệm Lincoln"></div>
+  <div class="L" id="portrait"><img class="duo" src="img/portrait.png" width="640" alt="Chân dung Mác-tin Lu-thơ Kinh"></div>
+  <figure class="L frame" id="phWide"><img class="duo" src="img/ph_wide.jpg" width="560" alt="Đám đông dọc hồ phản chiếu ngày 28/8/1963"><figcaption>Người tuần hành dọc hồ phản chiếu, phía xa là Đài tưởng niệm Washington · 28/8/1963</figcaption></figure>
+  <figure class="L frame" id="phFountain"><img class="duo" src="img/ph_fountain.jpg" width="720" alt="Bình nước ghi “Colored” ở Oklahoma City, 1939"><figcaption>Bình nước uống ghi “Colored” (dành cho người da màu) · Oklahoma City, 1939</figcaption></figure>
+  <figure class="L frame" id="phVote"><img class="duo" src="img/ph_vote.jpg" width="430" alt="Người tuần hành cầm biển đòi quyền bầu cử, 1963"><figcaption>“Chúng tôi đòi quyền bầu cử ngay bây giờ” · 28/8/1963</figcaption></figure>
+  <figure class="L frame" id="phLeaders"><img class="duo" src="img/ph_leaders.jpg" width="740" alt="Các nhà lãnh đạo tuần hành ngày 28/8/1963"><figcaption>Các nhà lãnh đạo tuần hành từ Đài tưởng niệm Washington đến Đài Tưởng niệm Lincoln · 28/8/1963</figcaption></figure>
   <canvas id="dust" width="1920" height="1080"></canvas>
   <div class="L" id="leavesB"><img src="img/leaves_bottom.png" width="2400" alt=""></div>
   <div class="marq" id="marq">I HAVE A DREAM · I HAVE A DREAM · I HAVE A DREAM ·</div>
@@ -70,9 +79,10 @@ html = f"""<!doctype html>
   <div id="nav"><div class="links"><span data-s="1">Tác giả</span><span data-s="2">Tác phẩm</span><span data-s="3">Câu 1</span><span data-s="4">Câu 2</span></div></div>
 
   <!-- opening -->
-  <section class="P" id="p0" style="left:0;top:300px;width:1920px;text-align:center">
-    <div class="kick split" style="justify-content:center">Ngữ văn 11 · Văn bản 2</div>
-    <div class="h mega" style="font-size:168px;margin-top:26px"><span class="split big">Tôi có một ước mơ</span><span class="sweep"></span></div>
+  <section class="P" id="p0" style="left:0;top:250px;width:1920px;text-align:center">
+    <div class="kick split" style="justify-content:center">Ngữ văn 11 · Bài 3: Cấu trúc của văn bản nghị luận</div>
+    <div class="vb split">Văn bản 2</div>
+    <div class="h mega" style="font-size:168px;margin-top:10px"><span class="split big">Tôi có một ước mơ</span><span class="sweep"></span></div>
     <p class="split auth" style="margin:34px 0 0;font-size:30px;letter-spacing:.3em;text-transform:uppercase;color:var(--marble)">Mác-tin Lu-thơ Kinh</p>
   </section>
 
@@ -105,7 +115,7 @@ html = f"""<!doctype html>
     <p class="t sm" style="margin-top:26px">Năm 1999, một cuộc khảo sát các học giả về nghệ thuật diễn thuyết xếp bài này đứng đầu các bài diễn văn của nước Mỹ thế kỉ XX.</p>
     <p class="t sm" style="margin-top:6px;color:var(--muted)">SGK Ngữ văn 11, tập 1 · Bài 3: Cấu trúc của văn bản nghị luận</p>
   </section>
-  <div class="pin" id="pinB" style="left:1420px;top:770px;opacity:0"><i></i><div><b>Đài Tưởng niệm Lincoln</b><br><span>nơi bài diễn văn được đọc</span></div></div>
+  <div class="pin" id="pinB" style="left:1300px;top:790px;opacity:0"><i></i><div><b>Đài Tưởng niệm Lincoln</b><br><span>nơi bài diễn văn được đọc</span></div></div>
 
 {panels}
   <!-- ending -->
