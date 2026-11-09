@@ -1,0 +1,53 @@
+  <!-- 1 · Câu 1 -->
+  <section class="P" id="p1" style="left:120px;top:230px;width:980px">
+    <div class="kick">Câu 1</div>
+    <p class="lead">Vấn đề trọng tâm được đề cập ở văn bản <q>Tôi có một ước mơ</q> là khẳng định quyền bình đẳng của người da đen và kêu gọi sự đấu tranh giành quyền bình đẳng cho người da đen.</p>
+  </section>
+  <section class="P" id="p2" style="left:120px;top:210px;width:940px">
+    <div class="kick">Câu 1</div>
+    <p class="t" style="margin-top:22px;color:var(--gold);font-size:30px;letter-spacing:.02em">Điều này được thể hiện qua:</p>
+    <p class="t">Cách tác giả đề cập đến <q>Tuyên ngôn giải phóng nô lệ</q> ở đoạn hai và nhấn mạnh dù đã mở ra đường lối ánh sáng cho công cuộc chống nạn phân biệt, người da đen vẫn bị áp bức đến trăm năm sau.</p>
+  </section>
+  <section class="P" id="p3" style="left:120px;top:190px;width:1680px">
+    <div class="kick">Câu 1</div>
+    <p class="t" style="max-width:1300px">Nạn phân biệt chủng tộc kinh khủng thể hiện qua các bằng chứng tác giả nêu:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:34px;margin-top:40px;align-items:start">
+      <div class="glass card ex"><div class="t md" style="margin:0"><q>không thuê được phòng nghỉ ngơi trên xa lộ cao tốc hay khách sạn trên thành phố</q></div></div>
+      <div class="glass card ex"><div class="t md" style="margin:0"><q>chưa được tự do di chuyển</q></div></div>
+      <div class="ex" style="padding-top:6px"><div class="t md" style="margin:0 0 22px"><q>tấm bảng ghi:</q></div><div class="sign">“Chỉ dành cho<br>người da trắng”</div></div>
+    </div>
+  </section>
+
+  <!-- 2 · Câu 2 -->
+  <section class="P" id="p4" style="left:120px;top:210px;width:1000px">
+    <div class="kick">Câu 2</div>
+    <p class="t" style="color:var(--muted)">Các luận điểm được tác giả nêu ra trong văn bản là:</p>
+    <div class="glass card ex" style="margin-top:30px">
+      <p class="t md" style="margin:0">Đoạn 1 (từ đầu đến <q>công lí chiếu rọi</q>), sự cấp bách, không thể trì hoãn của việc đứng lên đòi lại công bằng cho người da đen trước tình cảnh hiện tại</p></div>
+  </section>
+  <section class="P" id="p5" style="left:120px;top:190px;width:1120px">
+    <div class="kick">Câu 2 · Đoạn 1</div>
+    <p class="t md" style="margin-top:20px"><span class="arrow">→</span>Bằng chứng thể hiện luận điểm 1:</p>
+    <p class="lead" style="font-size:36px"><q>Chúng ta cũng đến nơi thiêng liêng này để nhắc nhở nước Mỹ về tính cấp bách của thời khắc Ngay bây giờ không còn là lúc để lẩn tránh trong sự xoa dịu xa xỉ hay trong những liều thuốc an thần rằng mọi việc sẽ từ từ thay đổi.</q></p>
+    <p class="t md">Cụm từ lặp lại <q>đây là lúc</q>,...</p>
+  </section>
+  <section class="P" id="p6" style="left:120px;top:230px;width:1000px">
+    <div class="kick">Câu 2</div>
+    <div class="glass card ex" style="margin-top:30px">
+      <p class="t md" style="margin:0">Đoạn 2 (từ <q>Và có một điều</q> đến hết): việc đấu tranh đòi lại nhân quyền phải được diễn ra phi bạo lực và niềm tin vào công lí.</p></div>
+  </section>
+  <section class="P" id="p7" style="left:120px;top:180px;width:1680px">
+    <div class="kick">Câu 2 · Đoạn 2</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:34px">
+      <div class="glass card ex"><div class="lab"><span class="arrow">→</span>BC</div><p class="t md" style="margin:0"><q>Đừng thỏa mãn cơn khát tự do bằng những chén hận thù cay đắng</q></p></div>
+      <div class="glass card ex"><div class="lab"><span class="arrow">→</span>BC</div><p class="t md" style="margin:0"><q>không được phép để cuộc phản kháng của chúng ta nhuốm màu bạo lực</q>,...</p></div>
+    </div>
+    <div class="ex" style="margin-top:40px;max-width:1500px"><div class="lab" style="font-size:22px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)"><span class="arrow">→</span>Nhận xét</div>
+      <p class="t" style="margin-top:10px">tác giả đề cao sự quan trọng của việc đấu tranh cho tự do bằng chính lí lẽ và chính trực. Không được vì hận thù mà làm mất đi ý nghĩa của cuộc đấu tranh nhân quyền thiêng liêng.</p></div>
+  </section>
+  <section class="P" id="p8" style="left:120px;top:220px;width:1100px">
+    <div class="kick">Câu 2 · Đoạn 2</div>
+    <p class="lead" style="font-size:54px;margin-top:24px"><span class="arrow" style="font-style:normal">→</span>BC: <q>Tôi mơ rằng một ngày kia</q>... đến hết.</p>
+    <p class="t"><span class="arrow">→</span>Tác giả khẳng định niềm tin vào tương lai tươi sáng nơi những viễn cảnh tươi đẹp về màu da chung sống hòa thuận. Khẳng định rằng tương lai bình đẳng của xã hội Mỹ.</p>
+  </section>
+
