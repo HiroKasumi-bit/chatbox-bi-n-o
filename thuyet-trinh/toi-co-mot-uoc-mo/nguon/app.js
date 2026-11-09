@@ -24,7 +24,6 @@
     { p: 'A', nav: 1, tint: 'dusk', leaf: 2, cam: { bg: { s: 1.3, x: -260 }, portrait: { x: 1180, y: 190, o: 1 }, leavesB: { y: 800 } } },
     { p: 'A2', nav: 1, tint: 'night', leaf: 2, src: 1, cam: { bg: { s: 1.18, x: -60 }, cols: { x: 1560, y: 60, s: 1, o: .3 }, cols2: { x: -330, y: 60, s: 1, o: .3 }, leavesB: { y: 820 } } },
     { p: 'B', nav: 2, tint: 'moss', leaf: 2, cam: { bg: { s: 1.02, x: 20, y: -10 }, phWide: { x: 1300, y: 190, o: 1, r: 2.5 }, leavesB: { y: 860 } } },
-    { p: 'B2', nav: 2, tint: 'night', leaf: 2, cam: { bg: { s: 1.25, x: -180, y: -40 }, statue: { x: 1460, y: 640, s: .45, o: .25 }, leavesB: { y: 840 } } },
     { p: 'B3', nav: 2, tint: 'dusk', leaf: 2, src: 1, cam: { bg: { s: 1.1, x: -60 }, cols: { x: 1520, y: 40, s: 1.05, o: .4 }, cols2: { x: -300, y: 40, s: 1.05, o: .4 }, leavesB: { y: 820 } } },
     { p: '1', nav: 3, tint: 'moss', leaf: 2, cam: { bg: { s: 1.05, x: -40 }, leavesB: { y: 780 }, phFountain: { x: 1140, y: 300, o: 1, r: -2 } } },
     { p: '2', nav: 3, tint: 'moss', leaf: 2, cam: { bg: { s: 1.12, x: -120 }, statue: { x: 1080, y: 300, o: 1 }, cols: { x: 1440, y: -60, s: 1.1, o: .9 }, proc: { x: 1240, y: 150, o: .45, s: .7, r: -7 }, leavesB: { y: 760 } } },
