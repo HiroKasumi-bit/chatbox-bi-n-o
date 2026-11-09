@@ -22,7 +22,10 @@
   const B = [
     { p: '0', nav: 0, tint: 'night', leaf: 1, rays: .55, scrim: 0, cam: { bg: { s: 1.2 }, leavesB: { y: 620 }, cols: { x: 1600, y: 30, o: .3, s: 1.05 }, cols2: { x: -370, y: 30, o: .3, s: 1.05 } } },
     { p: 'A', nav: 1, tint: 'dusk', leaf: 2, cam: { bg: { s: 1.3, x: -260 }, portrait: { x: 1180, y: 190, o: 1 }, leavesB: { y: 800 } } },
-    { p: 'B', nav: 2, tint: 'moss', leaf: 2, src: 1, cam: { bg: { s: 1.02, x: 20, y: -10 }, phWide: { x: 1300, y: 190, o: 1, r: 2.5 }, leavesB: { y: 860 } } },
+    { p: 'A2', nav: 1, tint: 'night', leaf: 2, src: 1, cam: { bg: { s: 1.18, x: -60 }, cols: { x: 1560, y: 60, s: 1, o: .3 }, cols2: { x: -330, y: 60, s: 1, o: .3 }, leavesB: { y: 820 } } },
+    { p: 'B', nav: 2, tint: 'moss', leaf: 2, cam: { bg: { s: 1.02, x: 20, y: -10 }, phWide: { x: 1300, y: 190, o: 1, r: 2.5 }, leavesB: { y: 860 } } },
+    { p: 'B2', nav: 2, tint: 'night', leaf: 2, cam: { bg: { s: 1.25, x: -180, y: -40 }, statue: { x: 1460, y: 640, s: .45, o: .25 }, leavesB: { y: 840 } } },
+    { p: 'B3', nav: 2, tint: 'dusk', leaf: 2, src: 1, cam: { bg: { s: 1.1, x: -60 }, cols: { x: 1520, y: 40, s: 1.05, o: .4 }, cols2: { x: -300, y: 40, s: 1.05, o: .4 }, leavesB: { y: 820 } } },
     { p: '1', nav: 3, tint: 'moss', leaf: 2, cam: { bg: { s: 1.05, x: -40 }, leavesB: { y: 780 }, phFountain: { x: 1140, y: 300, o: 1, r: -2 } } },
     { p: '2', nav: 3, tint: 'moss', leaf: 2, cam: { bg: { s: 1.12, x: -120 }, statue: { x: 1080, y: 300, o: 1 }, cols: { x: 1440, y: -60, s: 1.1, o: .9 }, proc: { x: 1240, y: 150, o: .45, s: .7, r: -7 }, leavesB: { y: 760 } } },
     { p: '3', nav: 3, tint: 'night', leaf: 2, cam: { bg: { s: 1.3, x: -260, y: -60 }, statue: { x: 1440, y: 620, s: .5, o: .28 }, cols: { x: 1660, y: 120, s: .8, o: .3 }, leavesB: { y: 820 } } },
@@ -141,10 +144,11 @@
       else titleIn(p, b.p === 'E' ? 1.1 : .5, b.p === 'E');
       if (b.p === 'E' && !instant) { gsap.delayedCall(2.4, goldBurst); gsap.fromTo('#flash', { opacity: .35 }, { opacity: 0, duration: 1.2, delay: 2.3 }); }
     } else {
-      const words = $$('.w', p), cards = $$('.ex, .sign, .row, .fact', p), line = $('.tl .line', p);
+      const words = $$('.w', p), cards = $$('.ex, .sign, .row, .fact', p), line = $('.tl .line, .hline', p);
+      if (line && line.classList.contains('hline')) gsap.fromTo(line, { scaleX: 0 }, { scaleX: 1, duration: 1.6 * D, ease: 'power2.inOut', delay: .7 * D });
       gsap.fromTo(words, { opacity: 0, y: 34, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .7 * D, ease: 'power3.out', delay: .55 * D, stagger: Math.min(.025, 1.6 / Math.max(words.length, 1)) * D });
       if (cards.length) gsap.fromTo(cards, { opacity: 0, y: 40, scale: .97 }, { opacity: 1, y: 0, scale: 1, duration: .9 * D, ease: 'expo.out', delay: .8 * D, stagger: .16 * D });
-      if (line) gsap.fromTo(line, { scaleY: 0 }, { scaleY: 1, duration: 1.4 * D, ease: 'power2.inOut', delay: .8 * D });
+      if (line && !line.classList.contains('hline')) gsap.fromTo(line, { scaleY: 0 }, { scaleY: 1, duration: 1.4 * D, ease: 'power2.inOut', delay: .8 * D });
       const sg = $('.sign', p); if (sg && !instant) gsap.fromTo(sg, { rotation: -18, scale: .6 }, { rotation: -3, scale: 1, duration: 1.1, ease: 'back.out(1.8)', delay: 1.1 });
       if (b.fx && !instant) b.fx();
     }

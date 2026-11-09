@@ -41,6 +41,22 @@ canvas#rays { position: absolute; inset: 0; width: 1920px; height: 1080px; point
 .frame img { display: block; max-width: none; }
 .frame figcaption { font-size: 18px; line-height: 1.35; color: #3b3a33; padding: 10px 4px 12px; max-width: 100%; }
 .vb { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 44px; color: var(--marble); margin-top: 26px; }
+.bl { display: grid; gap: 18px; margin-top: 34px; }
+.li { display: grid; grid-template-columns: 34px 1fr; align-items: baseline; }
+.li i { width: 22px; height: 2px; background: var(--gold); transform: translateY(-10px); }
+.li p { margin: 0; font-size: 32px; line-height: 1.42; }
+.htl { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); gap: 26px; margin-top: 80px; }
+.hline { position: absolute; left: 0; right: 0; top: 11px; height: 2px; background: linear-gradient(90deg, var(--gold), rgba(210,174,104,.2)); transform-origin: left; }
+.hn i { display: block; width: 24px; height: 24px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 8px rgba(210,174,104,.18), 0 0 26px var(--gold); }
+.hn .yr { font-family: var(--display); font-weight: 800; font-size: 76px; color: var(--marble); margin-top: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
+.hn .tx { font-size: 27px; line-height: 1.4; margin-top: 16px; color: var(--ink); }
+.parts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 60px; }
+.part { padding: 34px 36px 40px; position: relative; overflow: hidden; }
+.part .no { position: absolute; right: 18px; top: -26px; font-family: var(--display); font-weight: 800; font-size: 200px; color: rgba(210,174,104,.14); line-height: 1; }
+.part .k { font-size: 22px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
+.part .v { font-family: var(--display); font-weight: 600; font-size: 42px; line-height: 1.18; margin-top: 14px; position: relative; }
+.vals { display: grid; grid-template-columns: 1.15fr 1fr; gap: 30px; margin-top: 34px; }
+.vals .lab { font-size: 24px; }
 .pin { position: absolute; display: flex; align-items: center; gap: 14px; font-size: 22px; color: var(--marble); z-index: 21; white-space: nowrap; }
 .pin i { width: 16px; height: 16px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 6px rgba(210,174,104,.25), 0 0 24px var(--gold); }
 .pin b { font-weight: 600; } .pin span { color: var(--muted); }
@@ -86,36 +102,66 @@ html = f"""<!doctype html>
     <p class="split auth" style="margin:34px 0 0;font-size:30px;letter-spacing:.3em;text-transform:uppercase;color:var(--marble)">Mác-tin Lu-thơ Kinh</p>
   </section>
 
-  <!-- author -->
-  <section class="P" id="pA" style="left:120px;top:170px;width:1060px">
+  <!-- author 1 -->
+  <section class="P" id="pA" style="left:120px;top:190px;width:1040px">
     <div class="kick">Tác giả</div>
     <div class="h sm" style="margin-top:16px">Mác-tin Lu-thơ Kinh</div>
     <p class="t md" style="margin-top:10px;color:var(--muted)">(Martin Luther King Jr., 1929 – 1968)</p>
-    <p class="t md" style="margin-top:14px">Mục sư Báp-tít, nhà hoạt động nhân quyền người Mỹ gốc Phi, lãnh tụ Phong trào Dân quyền Mỹ, đấu tranh bằng con đường bất bạo động.</p>
-    <div class="tl"><div class="line"></div>
-      <div class="row"><i class="dot"></i><div class="yr">1929</div><div class="tx">Sinh ngày 15/1 tại Atlanta, bang Georgia, Hoa Kỳ</div></div>
-      <div class="row"><i class="dot"></i><div class="yr">1955</div><div class="tx">Lãnh đạo cuộc tẩy chay xe buýt ở Montgomery</div></div>
-      <div class="row"><i class="dot"></i><div class="yr">1963</div><div class="tx">Đọc diễn văn “Tôi có một ước mơ”</div></div>
-      <div class="row"><i class="dot"></i><div class="yr">1964</div><div class="tx">Nhận giải Nobel Hòa bình</div></div>
-      <div class="row"><i class="dot"></i><div class="yr">1968</div><div class="tx">Bị ám sát ngày 4/4 tại Memphis, bang Tennessee</div></div>
+    <div class="bl">
+      <div class="li ex"><i></i><p>Mục sư, nhà hoạt động nhân quyền người Mĩ gốc Phi.</p></div>
+      <div class="li ex"><i></i><p>Một trong những nhà lãnh đạo có ảnh hưởng lớn nhất nước Mĩ; lãnh tụ Phong trào Dân quyền Mĩ, đấu tranh bằng con đường bất bạo động.</p></div>
+      <div class="li ex"><i></i><p>Nổi tiếng với các bài diễn thuyết về những vấn đề lớn của thế giới, xã hội và con người.</p></div>
+      <div class="li ex"><i></i><p>Bài diễn văn nổi tiếng nhất: <q>Tôi có một ước mơ</q>.</p></div>
     </div>
   </section>
 
-  <!-- work -->
-  <section class="P" id="pB" style="left:120px;top:160px;width:1180px">
+  <!-- author 2: life -->
+  <section class="P" id="pA2" style="left:120px;top:200px;width:1680px">
+    <div class="kick">Tác giả · Cuộc đời</div>
+    <div class="h sm" style="margin-top:16px">Những dấu mốc</div>
+    <div class="htl"><div class="hline"></div>
+      <div class="hn ex"><i></i><div class="yr">1929</div><div class="tx">Sinh ngày 15/1 tại Atlanta, bang Georgia, Hoa Kỳ</div></div>
+      <div class="hn ex"><i></i><div class="yr">1955</div><div class="tx">Lãnh đạo cuộc tẩy chay xe buýt ở Montgomery</div></div>
+      <div class="hn ex"><i></i><div class="yr">1963</div><div class="tx">Đọc diễn văn <q>Tôi có một ước mơ</q> (28/8)</div></div>
+      <div class="hn ex"><i></i><div class="yr">1964</div><div class="tx">Được trao giải Nobel Hòa bình</div></div>
+      <div class="hn ex"><i></i><div class="yr">1968</div><div class="tx">Bị ám sát ngày 4/4 tại Memphis, bang Tennessee</div></div>
+    </div>
+  </section>
+
+  <!-- work 1 -->
+  <section class="P" id="pB" style="left:120px;top:170px;width:1120px">
     <div class="kick">Tác phẩm</div>
     <div class="h sm" style="margin-top:16px">Tôi có một ước mơ</div>
     <p class="lead" style="margin-top:8px;font-size:34px;color:var(--muted)">I Have a Dream</p>
     <div class="facts">
-      <div class="glass fact ex"><div class="k">Thể loại</div><div class="v">Văn bản nghị luận</div><div class="d">Bài diễn văn</div></div>
-      <div class="glass fact ex"><div class="k">Thời gian</div><div class="v">28/8/1963</div></div>
-      <div class="glass fact ex"><div class="k">Địa điểm</div><div class="v">Bậc thềm Đài Tưởng niệm Lincoln</div><div class="d">Washington, D.C., Hoa Kỳ</div></div>
-      <div class="glass fact ex"><div class="k">Sự kiện</div><div class="v">Cuộc tuần hành đến Washington vì Việc làm và Tự do</div><div class="d">Khoảng 250.000 người tham dự</div></div>
+      <div class="glass fact ex"><div class="k">Thể loại</div><div class="v">Văn nghị luận</div><div class="d">Bài diễn văn</div></div>
+      <div class="glass fact ex"><div class="k">Phương thức biểu đạt</div><div class="v">Nghị luận</div></div>
+      <div class="glass fact ex" style="grid-column:1 / -1"><div class="k">Xuất xứ, hoàn cảnh ra đời</div><div class="v" style="font-size:30px">Đọc ngày 28/8/1963 trên bậc thềm Đài Tưởng niệm Lincoln (Washington, D.C.), trong cuộc tuần hành kêu gọi thông qua đạo luật dân quyền, bình đẳng cho người da đen</div><div class="d">Cuộc tuần hành đến Washington vì Việc làm và Tự do · khoảng 250.000 người tham dự</div></div>
     </div>
-    <p class="t sm" style="margin-top:26px">Năm 1999, một cuộc khảo sát các học giả về nghệ thuật diễn thuyết xếp bài này đứng đầu các bài diễn văn của nước Mỹ thế kỉ XX.</p>
-    <p class="t sm" style="margin-top:6px;color:var(--muted)">SGK Ngữ văn 11, tập 1 · Bài 3: Cấu trúc của văn bản nghị luận</p>
   </section>
   <div class="pin" id="pinB" style="left:1300px;top:790px;opacity:0"><i></i><div><b>Đài Tưởng niệm Lincoln</b><br><span>nơi bài diễn văn được đọc</span></div></div>
+
+  <!-- work 2: structure -->
+  <section class="P" id="pB2" style="left:120px;top:200px;width:1680px">
+    <div class="kick">Tác phẩm · Bố cục</div>
+    <div class="h sm" style="margin-top:16px">Văn bản gồm 3 phần</div>
+    <div class="parts">
+      <div class="glass part ex"><div class="no">1</div><div class="k">Phần 1</div><div class="v">Thực trạng cuộc sống của người da đen</div></div>
+      <div class="glass part ex"><div class="no">2</div><div class="k">Phần 2</div><div class="v">Cuộc đấu tranh của người da đen</div></div>
+      <div class="glass part ex"><div class="no">3</div><div class="k">Phần 3</div><div class="v">Giấc mơ về một nước Mĩ bình đẳng</div></div>
+    </div>
+  </section>
+
+  <!-- work 3: values -->
+  <section class="P" id="pB3" style="left:120px;top:180px;width:1680px">
+    <div class="kick">Tác phẩm · Giá trị</div>
+    <div class="vals">
+      <div class="glass card ex"><div class="lab">Giá trị nội dung</div><p class="t md" style="margin:6px 0 0">Khẳng định quyền bình đẳng của người da đen và kêu gọi người da đen đấu tranh giành quyền bình đẳng.</p></div>
+      <div class="glass card ex"><div class="lab">Giá trị nghệ thuật</div><p class="t md" style="margin:6px 0 0">Hình ảnh, câu văn giàu sức truyền cảm.</p><p class="t md" style="margin:8px 0 0">Lập luận chặt chẽ, thuyết phục.</p></div>
+    </div>
+    <p class="t sm" style="margin-top:34px">Năm 1999, một cuộc khảo sát các học giả về nghệ thuật diễn thuyết xếp bài này đứng đầu các bài diễn văn của nước Mĩ thế kỉ XX.</p>
+    <p class="t sm" style="margin-top:6px;color:var(--muted)">SGK Ngữ văn 11, tập 1 · Bài 3: Cấu trúc của văn bản nghị luận</p>
+  </section>
 
 {panels}
   <!-- ending -->
@@ -126,7 +172,7 @@ html = f"""<!doctype html>
   </section>
 
   <div id="intro"><div><div class="date split">28 · 8 · 1963</div><div class="bar"></div><div class="place">Washington, D.C.</div></div></div>
-  <div class="src" id="src" style="position:absolute;left:120px;bottom:30px;z-index:35;opacity:0">Nguồn: Wikipedia tiếng Việt và tiếng Anh; Cục Lưu trữ Quốc gia Hoa Kỳ (archives.gov); Cục Công viên Quốc gia Hoa Kỳ (nps.gov)</div>
+  <div class="src" id="src" style="position:absolute;left:120px;bottom:30px;z-index:35;opacity:0">Nguồn: VietJack, VnDoc (bài soạn Ngữ văn 11 Kết nối tri thức); Wikipedia tiếng Việt và tiếng Anh; Cục Lưu trữ Quốc gia Hoa Kỳ; Cục Công viên Quốc gia Hoa Kỳ</div>
   <div id="flash" style="position:absolute;inset:0;background:#fff3d6;opacity:0;pointer-events:none;z-index:70"></div>
   <div id="grain"></div>
   <div id="dots"></div><div id="count"></div>

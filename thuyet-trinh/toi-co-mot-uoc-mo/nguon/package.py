@@ -20,7 +20,7 @@ o = o.replace('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?fa
 assert 'fonts/fonts.css' in o
 open(f'{off}/index.html', 'w').write(o)
 
-fs = sorted(glob.glob('qa5/b*.png'))
+fs = sorted(glob.glob('qa6/b*.png'))
 ims = [Image.open(f).convert('RGB') for f in fs]
 ims[0].save('Toi_co_mot_uoc_mo_slides.pdf', save_all=True, append_images=ims[1:], resolution=144, quality=88)
 shutil.copy('Toi_co_mot_uoc_mo_slides.pdf', off)
