@@ -33,6 +33,13 @@ Cập nhật: 07/11/2026. Mọi thứ nằm trên nhánh `ccr-32dbab14-4ki8g2` c
 - Phong cách học từ video TikTok Neu Web Studio (Figma Smart Animate, "history museum"): xanh rêu tối + cẩm thạch, lớp tán lá phía trước, cột Đài Lincoln, tượng Lincoln, ảnh MLK 1963 (tách nền bằng rembg), chuyển sang bình minh ở phần "giấc mơ".
 - 14 nhịp; camera mỗi nhịp khai báo trong mảng `B` của `app.js`.
 
+## 4. Kinh tế và môi trường TP.HCM (Giáo dục địa phương, Nhóm 7) · slide HTML điện ảnh
+- Link: (xem tin nhắn bàn giao) · thư mục `thuyet-trinh/kinh-te-moi-truong-tphcm/` (zip offline, PDF 19 trang, `nguon/`).
+- Nội dung = Google Doc của nhóm (7 phần), giữ nguyên chữ. Tên bài: "Tác động của các hoạt động kinh tế đến môi trường tự nhiên ở Thành phố Hồ Chí Minh".
+- Phong cách học từ video TikTok "Figma final boss" (Neu Web Studio): bay xuyên đường hầm nhiều lớp, dải chéo quét ngang + chữ khổng lồ sau vật thể tách nền, phóng qua "cửa sổ", lật khối 3D, tán lá mở, các thẻ lắp ghép isometric.
+- Toàn bộ slide sinh từ mảng `HTML` trong `nguon/app.js`; chuyển cảnh khai báo bằng `data-tr` (tunnel, bands, window, flip, leaves, flash).
+- Ảnh: Wikimedia Commons (ghi nguồn ở slide cuối, chi tiết trong `nguon/credits.json`) + ảnh trong Doc của nhóm.
+
 ## Bài học kỹ thuật (để không lặp lỗi)
 - Trang đăng online tự thêm `img{max-width:100%}` → ảnh trong khung phóng to bị méo. Phải đặt `max-width:none` cho ảnh đó, và khi chạy thử thì chèn quy tắc này vào trang để kiểm tra giống bản online.
 - GSAP: bật `gsap.ticker.lagSmoothing(0)` để hiệu ứng kết thúc đúng giờ trên máy yếu.
