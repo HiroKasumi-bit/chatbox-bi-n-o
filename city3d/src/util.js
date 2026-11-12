@@ -81,6 +81,12 @@ export class Batch {
   add(key, geometry, m) {
     const g = normalise(geometry.clone());
     if (m) g.applyMatrix4(m);
+    if (globalThis.__AH_GAME) {
+      // the game needs to know which pieces hang overhead (pipes, beams, roofs): each vertex carries its piece's lowest point
+      const pos = g.attributes.position; let lo = Infinity;
+      for (let i = 0; i < pos.count; i++) lo = Math.min(lo, pos.getY(i));
+      g.setAttribute('pmin', new THREE.BufferAttribute(new Float32Array(pos.count).fill(lo), 1));
+    }
     if (!this.parts.has(key)) this.parts.set(key, []);
     this.parts.get(key).push(g);
     return this;

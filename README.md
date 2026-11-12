@@ -21,7 +21,8 @@ Sau đó, các ảnh render được làm thành ảnh như chụp thật bằng
 - Đi bộ trong chính thành phố 3D của tạp chí (góc nhìn thứ ba): **W A S D** đi, **Shift** chạy, **Space** nhảy, **chuột** xoay góc nhìn, **E** tương tác, **M** bản đồ, **T** đổi ngày (mặt trời nửa đêm) / đêm vùng cực có cực quang, **G** đồ họa cao / nhanh, **L** đổi ngôn ngữ, **Esc** nhả chuột.
 - Chơi được bằng **tay cầm PS5** (cắm dây hoặc Bluetooth, rồi nhấn 1 nút): cần trái đi, R2 chạy, cần phải xoay, ✕ tương tác hoặc nhảy, □ nhảy, △ bản đồ, L1 ngày / đêm, R1 đồ họa, Create đổi ngôn ngữ; trong bảng câu đố dùng D-pad chọn, ✕ xác nhận, ○ đóng.
 - AURA nói thành tiếng (tiếng Anh hoặc tiếng Việt theo ngôn ngữ đã chọn). Xe chạy trên đường, người đi bộ trên vỉa hè, tuyết rơi thật, ban đêm có cực quang.
-- Đi vào được bên trong núi Aurora qua cổng North Portal (hang hồ khoáng ở tầng 1 khu spa); một thẻ của nhiệm vụ núi nằm trong hang.
+- Khu spa nằm hẳn bên trong núi Aurora, giống sơ đồ mặt cắt trong tạp chí: đi vào qua cổng North Portal, thang máy kính lên được 4 tầng (1 sảnh đón và hồ khoáng, 2 các bậc hồ bùn ấm, 3 phòng xông hơi muối và trị liệu, 4 Summit Sanctuary với hồ nổi dưới mái kính Aurora Eye trên đỉnh núi). Trong game, các tầng spa nhô ra ngoài sườn núi được bỏ đi; ảnh trong tạp chí giữ nguyên.
+- Đi được bên dưới đường ống, xà, mái hiên (phần treo cao trên 2,2 m không còn chắn đường).
 - 6 nhiệm vụ do AURA giao: Liberty Mall, nhà máy nhiệt hạch, nhà máy thực phẩm từ tuyết, nhà kính và tái chế, khu năng lượng phía bắc, núi Aurora (leo lên tận đỉnh). Mỗi nhiệm vụ có 3 thẻ dữ liệu và 1 câu đố; cuối game là buổi diễn tập bão tuyết, chạy về hầm trú ẩn trong 90 giây.
 - Sau nhiệm vụ đầu, tàu điện ngầm mở: đứng trong nhà ga phát sáng và nhấn E để đi nhanh giữa 5 ga.
 - Đi ngang 35 địa điểm của tạp chí thì địa điểm được đánh dấu "đã khám phá".

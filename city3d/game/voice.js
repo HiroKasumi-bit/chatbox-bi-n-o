@@ -100,14 +100,14 @@ export const VOICE = {
    "dur": 9.2
   }
  },
- "Breakthrough three: warm pools and saunas inside a snow peak. One card waits by the lagoon, one inside the mountain: walk in through the North Portal. The last one is on the summit. Climb!": {
+ "Breakthrough three: warm pools and saunas inside a snow peak. One card waits by the lagoon. Then walk into the mountain through the North Portal, find a card on Level 1, and take the glass lift up to Level 4, under the Aurora Eye.": {
   "en": {
    "src": "game/voice/mountain_intro_en.mp3",
-   "dur": 14.97
+   "dur": 17.24
   },
   "vi": {
    "src": "game/voice/mountain_intro_vi.mp3",
-   "dur": 16.33
+   "dur": 16.93
   }
  },
  "Correct. You have seen all three breakthroughs. But wait…": {

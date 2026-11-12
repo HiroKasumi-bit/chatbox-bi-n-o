@@ -24,7 +24,7 @@ const { chromium } = require('playwright'); const path = require('path'); const 
   await shot('fusion_road', 3000);
   await ev(`(() => { const g = window.__game; g.teleport(0, 30); g.C.yaw = Math.PI; g.C.pitch = -0.2; g.C.dist = 6; g.toggleTime(); })()`);
   await shot('aurora_a', 4000); await shot('aurora_b', 1500);
-  await ev('window.__game.goInside(true)'); await shot('inside', 4000);
+  await ev('window.__game.goRoom('L1')'); await shot('inside', 4000);
   await ev(`(() => { const g = window.__game; g.C.yaw = Math.PI; g.C.pitch = 0.4; })()`); await shot('inside_back', 1500);
   console.log('errors', errs.slice(0, 10)); await b.close();
 })();

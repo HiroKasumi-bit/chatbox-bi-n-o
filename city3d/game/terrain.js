@@ -36,17 +36,41 @@ export function buildHeightMap(renderer, scene) {
   const restore = hideFor(scene, skip);
   const fog = scene.fog, bg = scene.background; scene.fog = null; scene.background = null; scene.overrideMaterial = mat;
   const clear = renderer.getClearColor(new THREE.Color()), alpha = renderer.getClearAlpha();
-  renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, topCamera()); renderer.setRenderTarget(null);
+  const cam = topCamera(); renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, cam); renderer.setRenderTarget(null);
   renderer.setClearColor(clear, alpha); scene.overrideMaterial = null; scene.fog = fog; scene.background = bg; restore();
-  const px = new Float32Array(W * H * 4); renderer.readRenderTargetPixels(rt, 0, 0, W, H, px); rt.dispose();
+  const px = new Float32Array(W * H * 4); renderer.readRenderTargetPixels(rt, 0, 0, W, H, px);
   const h = new Float32Array(W * H); for (let i = 0; i < W * H; i++) h[i] = px[i * 4];
+  // What the player walks on: the same view, but leaving out every piece that hangs above head height
+  // (pipes, beams, canopies, roofs, lamp heads). Walls are vertical, so from straight above they have no area;
+  // a second, wireframe pass draws their outlines so buildings stay solid.
+  const walkMat = new THREE.ShaderMaterial({
+    side: THREE.DoubleSide,
+    vertexShader: `attribute float pmin; varying float vY; varying float vLo; void main(){ vec4 p = vec4(position, 1.0);
+      #ifdef USE_INSTANCING
+        p = instanceMatrix * p;
+      #endif
+      vec4 w = modelMatrix * p; vY = w.y; vLo = pmin; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: 'varying float vY; varying float vLo; void main(){ if (vLo > 2.2) discard; gl_FragColor = vec4(vY, 0.0, 0.0, 1.0); }',
+  });
+  const restore2 = hideFor(scene, skip); scene.fog = null; scene.background = null;
+  renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(rt); renderer.clear();
+  scene.overrideMaterial = walkMat; renderer.render(scene, cam);
+  walkMat.wireframe = true; renderer.render(scene, cam);
+  renderer.setRenderTarget(null); renderer.setClearColor(clear, alpha); scene.overrideMaterial = null; scene.fog = fog; scene.background = bg; restore2();
+  renderer.readRenderTargetPixels(rt, 0, 0, W, H, px); rt.dispose();
+  const wk = new Float32Array(W * H); for (let i = 0; i < W * H; i++) wk[i] = Math.min(h[i], px[i * 4]);
   // row 0 of the read-back is the south edge
   const at = (x, z) => {
     const c = Math.floor((x - RECT[0]) / RES), r = Math.floor((RECT[3] - z) / RES);
     if (c < 0 || r < 0 || c >= W || r >= H) return 999;
     return h[r * W + c];
   };
-  return { at, W, H, data: h };
+  const walk = (x, z) => {
+    const c = Math.floor((x - RECT[0]) / RES), r = Math.floor((RECT[3] - z) / RES);
+    if (c < 0 || r < 0 || c >= W || r >= H) return 999;
+    return wk[r * W + c];
+  };
+  return { at, walk, W, H, data: h, walkData: wk };
 }
 
 // A flat-coloured plan of the city, north up, 2 px per metre, shaded by height.

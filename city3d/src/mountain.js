@@ -35,6 +35,15 @@ function heightAt(lx, lz, n) {
   // Rocky facets, stronger higher up, with finer ribs and flutings on the steep faces.
   h += (fbm(n, lx / 7, lz / 7, 3) - 0.5) * 4.0 * Math.min(1, h / 10);
   h += (fbm(n, lx / 2.2 + 30, lz / 2.2, 2) - 0.5) * 1.2 * Math.min(1, h / 14);
+  // In the game the spa is wholly inside the peak (as in the magazine's section): only a flat forecourt in front
+  // of the North Portal, and the summit cut flat for the Aurora Eye dome (game/spa.js builds it).
+  if (globalThis.__AH_GAME) {
+    if (Math.abs(lx) < 16 && lz < -30) h = 0;
+    const rs = Math.hypot(lx, lz - 10);
+    if (rs < 7) h = Math.min(h, 30 + Math.max(0, rs - 5.2) * 1.5);
+    if (lx > 20 && lx < 48 && lz > -58 && lz < -32) h = 0;
+    return Math.max(0, h);
+  }
   // A notch in the north face where the spa terraces step out (see the levels below).
   if (Math.abs(lx) < 16 && lz < -14) {
     const steps = [[-30, 0], [-26.6, 4.75], [-23.2, 9.25], [-19.8, 13.75], [-16.4, 18.25]];
@@ -109,7 +118,7 @@ export function mountAurora(b) {
     [9, 18, 11],
     [13.5, 12, 10],
   ];
-  levels.forEach(([y, w, d], i) => {
+  if (!globalThis.__AH_GAME) levels.forEach(([y, w, d], i) => {
     const fz = face + i * 3.4;
     b.add('stone', new THREE.BoxGeometry(w, 4.5, d), matrix(X, y + 2.25, fz + d / 2));
     // Glazed front: tall panes in dark frames, a transom, larch fins at the ends.
@@ -133,20 +142,22 @@ export function mountAurora(b) {
     addPool('spill', X, fz - 0.3, w - 2, 7, Math.PI, 0xffbf80, y + 0.06);
   });
   // Guests on the terraces.
-  for (const [px, py, pz] of [[-6, 5, face + 1.4], [-4.8, 5, face + 1.6], [5, 9.5, face + 4.7], [-2, 14, face + 8.2], [2.6, 14, face + 8.0]]) {
+  for (const [px, py, pz] of globalThis.__AH_GAME ? [] : [[-6, 5, face + 1.4], [-4.8, 5, face + 1.6], [5, 9.5, face + 4.7], [-2, 14, face + 8.2], [2.6, 14, face + 8.0]]) {
     person(b, X + px, pz, Math.PI + (R() - 0.5), { y: py, still: true });
   }
   // The Aurora Eye: a heated glass dome crowning the Summit Sanctuary (level 4), so the stepped
   // spa ends in one lit lantern. A ribbed steel frame over warm-lit glass, on a stone ring.
-  const top = levels[3];
-  const eye = [X, top[0] + 5.0, face + 3 * 3.4 + top[2] / 2];
-  const er = 3.4;
-  b.add('stone', new THREE.CylinderGeometry(er + 0.35, er + 0.5, 0.5, 32), matrix(eye[0], eye[1] - 0.25, eye[2]));
-  b.add('glassWarm', new THREE.SphereGeometry(er - 0.25, 28, 12, 0, Math.PI * 2, 0, Math.PI / 2), matrix(...eye));
-  b.add('eyeGlass', new THREE.SphereGeometry(er, 32, 14, 0, Math.PI * 2, 0, Math.PI / 2), matrix(...eye));
-  for (let k = 0; k < 6; k++) b.add('metalDark', new THREE.TorusGeometry(er + 0.02, 0.06, 4, 32, Math.PI), matrix(...eye, (k / 6) * Math.PI));
-  b.add('metalDark', new THREE.TorusGeometry(er * 0.72, 0.05, 4, 32), matrix(eye[0], eye[1] + er * 0.69, eye[2], 0, 1, 1, 1, Math.PI / 2));
-  b.add('metalDark', new THREE.TorusGeometry(er + 0.05, 0.09, 4, 40), matrix(eye[0], eye[1] + 0.05, eye[2], 0, 1, 1, 1, Math.PI / 2));
+  if (!globalThis.__AH_GAME) { // in the game the dome sits on the summit instead (game/spa.js)
+    const top = levels[3];
+    const eye = [X, top[0] + 5.0, face + 3 * 3.4 + top[2] / 2];
+    const er = 3.4;
+    b.add('stone', new THREE.CylinderGeometry(er + 0.35, er + 0.5, 0.5, 32), matrix(eye[0], eye[1] - 0.25, eye[2]));
+    b.add('glassWarm', new THREE.SphereGeometry(er - 0.25, 28, 12, 0, Math.PI * 2, 0, Math.PI / 2), matrix(...eye));
+    b.add('eyeGlass', new THREE.SphereGeometry(er, 32, 14, 0, Math.PI * 2, 0, Math.PI / 2), matrix(...eye));
+    for (let k = 0; k < 6; k++) b.add('metalDark', new THREE.TorusGeometry(er + 0.02, 0.06, 4, 32, Math.PI), matrix(...eye, (k / 6) * Math.PI));
+    b.add('metalDark', new THREE.TorusGeometry(er * 0.72, 0.05, 4, 32), matrix(eye[0], eye[1] + er * 0.69, eye[2], 0, 1, 1, 1, Math.PI / 2));
+    b.add('metalDark', new THREE.TorusGeometry(er + 0.05, 0.09, 4, 40), matrix(eye[0], eye[1] + 0.05, eye[2], 0, 1, 1, 1, Math.PI / 2));
+  }
 
   // North Portal: a timber entrance grotto, a heated forecourt and a drop-off loop.
   b.add('timber', new THREE.BoxGeometry(10, 6, 5), matrix(X, 3, face - 2.5));

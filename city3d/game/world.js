@@ -229,14 +229,24 @@ export function createWorld(canvas, onStep = () => {}) {
   }
   // inside Mount Aurora: the Mineral Lake Grotto set, with its own lights
   let outsideLook = 'sun';
-  function enterInside() {
-    outsideLook = look === 'inside' ? outsideLook : look; look = 'inside';
+  // def: a room from game/spa.js (null for Level 1, the grotto set); outdoors rooms keep the sky
+  function enterRoom(name, def) {
+    if (look !== 'inside') outsideLook = look;
+    if (def && def.outdoors) {
+      setLook(outsideLook === 'sun' ? 'dusk' : outsideLook); look = 'inside'; lampAt = null; snowfall.visible = false; // no snow under the glass
+      lampLights.forEach((pl, i) => { const l = def.lights[i]; if (!l) { pl.intensity = 0; return; } pl.position.set(def.origin.x + l[0], def.origin.y + l[1], def.origin.z + l[2]); pl.color.set(l[3]); pl.intensity = l[4]; pl.distance = l[5]; });
+      captureEnvironment([def.origin.x, def.origin.y + 2, def.origin.z]); return;
+    }
+    look = 'inside';
     sky.visible = false; dome.visible = false; snowfall.visible = false; setPoolStrength(0); setMode('dusk', 0.6);
-    sets.grotto.look({ exposure: 1.35, hemi: 0.6, lampScale: 1.3 }, { scene, hemi, sun, renderer, lampLights });
     bloom.strength = 0.35; bloom.threshold = 0.85;
-    const O = sets.grotto.origin; captureEnvironment([O.x, O.y + 2, O.z]);
+    if (!def) { sets.grotto.look({ exposure: 1.35, hemi: 0.6, lampScale: 1.3 }, { scene, hemi, sun, renderer, lampLights }); const O = sets.grotto.origin; captureEnvironment([O.x, O.y + 2, O.z]); return; }
+    sun.intensity = 0; hemi.color.set(def.hemi[0]); hemi.groundColor.set(def.hemi[1]); hemi.intensity = def.hemi[2];
+    scene.background = new THREE.Color(def.bg); scene.fog = new THREE.Fog(def.fog[0], def.fog[1], def.fog[2]); renderer.toneMappingExposure = def.exposure;
+    lampLights.forEach((pl, i) => { const l = def.lights[i]; if (!l) { pl.intensity = 0; return; } pl.position.set(def.origin.x + l[0], def.origin.y + l[1], def.origin.z + l[2]); pl.color.set(l[3]); pl.intensity = l[4]; pl.distance = l[5]; });
+    captureEnvironment([def.origin.x, def.origin.y + 2, def.origin.z]);
   }
-  function exitInside(at) { setLook(outsideLook); captureEnvironment(at); }
+  function exitRoom(at) { setLook(outsideLook); captureEnvironment(at); }
   // snow and northern lights move with time; the snow box follows the camera
   function tick(dt) {
     snowU.uT.value += dt; domeU.time.value += dt; snowU.uC.value.copy(camera.position);
@@ -251,5 +261,5 @@ export function createWorld(canvas, onStep = () => {}) {
     setLook('sun'); follow(new THREE.Vector3(0, 0, 30)); captureEnvironment([0, 25, 20]);
   }
 
-  return { renderer, scene, camera, sky, dome, snowfall, sun, build, enterInside, exitInside, tick, get sets() { return sets; }, setLook, follow, captureEnvironment, resize, render, setQuality, get look() { return look; } };
+  return { renderer, scene, camera, sky, dome, snowfall, sun, build, enterRoom, exitRoom, tick, get sets() { return sets; }, setLook, follow, captureEnvironment, resize, render, setQuality, get look() { return look; } };
 }

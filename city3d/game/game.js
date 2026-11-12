@@ -6,6 +6,7 @@ import { createWorld } from './world.js';
 import { createAgents } from './agents.js';
 import { VOICE } from './voice.js';
 import { SPA_FACE_Z } from '../src/mountain.js';
+import { buildSpa } from './spa.js';
 import { buildHeightMap, buildPlan, RECT } from './terrain.js';
 import { MISSIONS, FINALE, STATIONS, UI, SPAWN } from './missions.js';
 import { PLACES } from '../src/layout.js';
@@ -15,8 +16,8 @@ const $ = (s) => document.querySelector(s);
 const QS = new URLSearchParams(location.search);
 const savedLang = (() => { try { return localStorage.getItem('ah_lang'); } catch (e) { return null; } })();
 const G = { lang: savedLang || 'en', ready: false, playing: false, modal: null, mi: 0, phase: 'cards', got: new Set(), score: 0, t: 0,
-  places: new Set(), metro: false, tries: 0, finaleT: 0, done: false, free: false, quality: true, inside: false, seenInside: false };
-let agents = null;
+  places: new Set(), metro: false, tries: 0, finaleT: 0, done: false, free: false, quality: true, room: null, seenInside: false };
+let agents = null, SPA = null;
 const L = (o) => (o == null ? '' : typeof o === 'string' ? o : o[G.lang] ?? o.en);
 
 // ───────────────────────── world ─────────────────────────
@@ -156,16 +157,28 @@ function pollPad(dt) {
 function jump() { if (P.ground) { P.vy = 5.2; P.ground = false; sfx.jump(); } }
 
 // ───────────────────────── collision ─────────────────────────
-const STEP = 0.65, RAD = 0.42;
+const STEP = 0.8, RAD = 0.42; // a step this high takes snow banks and kerbs; hm.walk leaves out what hangs overhead
 const RING = Array.from({ length: 8 }, (_, i) => [Math.cos(i * Math.PI / 4) * RAD, Math.sin(i * Math.PI / 4) * RAD]);
 const onMountain = (x, z) => Math.hypot(x, z - 258) < 70 && Math.abs(x) < 70; // Mount Aurora: you can scramble up the snow
 function blocked(x, z, y) {
+  if (Math.hypot(x, z - 260) < 5.4 && y > 24) return true;                    // the Aurora Eye's glass, from outside
   const st = onMountain(x, z) ? 1.35 : STEP;
-  if (hm.at(x, z) > y + st) return true;
-  for (const [dx, dz] of RING) if (hm.at(x + dx, z + dz) > y + st) return true;
+  if (hm.walk(x, z) > y + st) return true;
+  for (const [dx, dz] of RING) if (hm.walk(x + dx, z + dz) > y + st) return true;
   return false;
 }
-function groundAt(x, z) { let g = hm.at(x, z); for (const [dx, dz] of RING) g = Math.max(g, hm.at(x + dx * 0.5, z + dz * 0.5)); return g; }
+function groundAt(x, z) { let g = hm.walk(x, z); for (const [dx, dz] of RING) g = Math.max(g, hm.walk(x + dx * 0.5, z + dz * 0.5)); return g; }
+// the spa levels: L1 is the grotto set, L2–L4 come from spa.js. Positions in a room are relative to its origin.
+const LEVELS = ['L1', 'L2', 'L3', 'L4'];
+function roomOrigin(r) { return r === 'L1' ? world.sets.grotto.origin : SPA[r].origin; }
+function roomGround(r, x, z) { // absolute ground height, or null where you cannot stand
+  if (r === 'L1') return caveAt(x, z);
+  const O = SPA[r].origin, g = SPA[r].ground(x - O.x, z - O.z); return g === null ? null : O.y + g;
+}
+function roomCamOK(r, q) {
+  if (r === 'L1') { const O = world.sets.grotto.origin; return ((q.x - O.x) / 8.8) ** 2 + ((q.z - O.z - 1) / 12.8) ** 2 <= 1 && q.y <= O.y + 5.5; }
+  const O = SPA[r].origin; return SPA[r].cam(q.x - O.x, q.y - O.y, q.z - O.z);
+}
 function caveAt(x, z) { // ground height inside the grotto, or null where you cannot stand
   const O = world.sets.grotto.origin, lx = x - O.x, lz = z - O.z;
   if ((lx / 9.4) ** 2 + ((lz - 1) / 13.4) ** 2 > 1 || lz > 8.7 || (lx - 7.6) ** 2 + (lz + 3.5) ** 2 < 3.6) return null;
@@ -196,7 +209,7 @@ const beamMat = (color) => new THREE.ShaderMaterial({
   fragmentShader: 'uniform vec3 col; uniform float a; varying vec2 vUv; void main(){ float f = pow(1.0 - vUv.y, 1.6) * (0.35 + 0.65 * pow(abs(sin(vUv.x * 3.14159)), 2.0)); gl_FragColor = vec4(col * f * a, 1.0); }',
 });
 const glowMat = (color, k = 2.2) => new THREE.MeshStandardMaterial({ color: 0x0b1020, emissive: color, emissiveIntensity: k, roughness: 0.4, metalness: 0.2 });
-const COLORS = { card: 0x3fe0ff, terminal: 0xffc857, station: 0x5aa0ff, shelter: 0xff4d5e, portal: 0xb48cff, exit: 0xb48cff };
+const COLORS = { card: 0x3fe0ff, terminal: 0xffc857, station: 0x5aa0ff, shelter: 0xff4d5e, portal: 0xb48cff, exit: 0xb48cff, lift: 0xffd29a };
 function beam(color, h = 60, r = 0.7) { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 20, 1, true).translate(0, h / 2, 0), beamMat(color)); m.renderOrder = 5; return m; }
 function groundRing(color, r = 1.6) { const m = new THREE.Mesh(new THREE.RingGeometry(r * 0.78, r, 48).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.85, depthWrite: false, fog: false })); m.position.y = 0.08; return m; }
 
@@ -241,10 +254,9 @@ function makePortal() { // a soft violet ring on the floor in front of a door
 // every interactive thing: { kind, pos, obj, ... }
 const things = [];
 function addThing(kind, spot, extra = {}) {
-  const O = world.sets.grotto.origin;
-  const p = extra.inside ? new THREE.Vector3(O.x + spot.x, O.y, O.z + spot.z) : extra.raw ? new THREE.Vector3(spot.x, hm.at(spot.x, spot.z), spot.z) : findOpen(spot.x, spot.z, kind === 'station' ? 3.5 : 3, 60);
-  const obj = kind === 'card' ? makeCard() : kind === 'terminal' ? makeTerminal() : kind === 'station' ? makeStation() : kind === 'portal' || kind === 'exit' ? makePortal() : (() => { const g = new THREE.Group(); g.add(beam(COLORS.shelter, 120, 2.2), groundRing(COLORS.shelter, 5)); return g; })();
-  if (extra.inside) obj.traverse((o) => { if (o.material?.type === 'ShaderMaterial') o.scale.y = 0.12; }); // a short beam under the cave roof
+  const p = extra.room ? (() => { const O = roomOrigin(extra.room); return new THREE.Vector3(O.x + spot.x, O.y, O.z + spot.z); })() : extra.raw ? new THREE.Vector3(spot.x, hm.at(spot.x, spot.z), spot.z) : findOpen(spot.x, spot.z, kind === 'station' ? 3.5 : 3, 60);
+  const obj = kind === 'card' ? makeCard() : kind === 'terminal' ? makeTerminal() : kind === 'station' ? makeStation() : kind === 'portal' || kind === 'exit' || kind === 'lift' ? makePortal() : (() => { const g = new THREE.Group(); g.add(beam(COLORS.shelter, 120, 2.2), groundRing(COLORS.shelter, 5)); return g; })();
+  if (extra.room) obj.traverse((o) => { if (o.material?.type === 'ShaderMaterial') o.scale.y = 0.12; }); // a short beam under the cave roof
   obj.position.copy(p); obj.visible = false; scene.add(obj);
   const t = { kind, pos: p, obj, ...extra }; things.push(t); return t;
 }
@@ -310,7 +322,7 @@ function showMission() {
     else if (t.kind === 'terminal') t.obj.visible = !G.done && t.mi === G.mi && G.phase !== 'finale';
     else if (t.kind === 'station') t.obj.visible = G.metro;
     else if (t.kind === 'shelter') t.obj.visible = G.phase === 'finale';
-    else if (t.kind === 'portal' || t.kind === 'exit') t.obj.visible = true;
+    else if (t.kind === 'portal' || t.kind === 'exit' || t.kind === 'lift') t.obj.visible = true;
   }
   objective(); stats();
 }
@@ -320,8 +332,10 @@ function startMission(i) {
 }
 function target() {
   const t = target0(); if (!t) return t;
-  if (!!t.inside !== G.inside) return things.find((x) => x.kind === (G.inside ? 'exit' : 'portal'));
-  return t;
+  const tr = t.room || null; if (tr === G.room) return t;
+  if (!G.room) return things.find((x) => x.kind === 'portal');                       // outside: go in through the North Portal
+  if (!tr && G.room === 'L1') return things.find((x) => x.kind === 'exit');           // in the grotto: the way out
+  return things.find((x) => x.kind === 'lift' && x.room === G.room);                  // elsewhere: the lift
 }
 function target0() {
   if (G.phase === 'finale') return things.find((t) => t.kind === 'shelter');
@@ -337,7 +351,7 @@ function nearThing() {
   let best = null, bd = 1e9;
   for (const t of things) {
     if (!t.obj.visible || t.kind === 'shelter') continue;
-    if (!!t.inside !== G.inside) continue;
+    if ((t.room || null) !== G.room) continue;
     const r = t.kind === 'station' ? 3.2 : 2.6; const dx = t.pos.x - P.pos.x, dz = t.pos.z - P.pos.z, d = Math.hypot(dx, dz);
     if (d < r && Math.abs(t.pos.y - P.pos.y) < 3 && d < bd) { bd = d; best = t; }
   }
@@ -348,19 +362,29 @@ function interact() {
   if (t.kind === 'card') openCard(t);
   else if (t.kind === 'terminal') { if (G.got.size < MISSIONS[G.mi].cards.length) { toast(L(UI.needCards)); sfx.buzz(); } else openQuiz(); }
   else if (t.kind === 'station') openMetro(t);
-  else if (t.kind === 'portal') goInside(true);
-  else if (t.kind === 'exit') goInside(false);
+  else if (t.kind === 'portal') goRoom('L1');
+  else if (t.kind === 'exit') goRoom(null);
+  else if (t.kind === 'lift') openLift();
 }
-// walking into and out of Mount Aurora (the Mineral Lake Grotto on Level 1 of the spa)
-function goInside(on) {
-  sfx.metro(); $('#fade').classList.add('on'); $('#fade span').textContent = L(on ? UI.inside : UI.exitMountain);
+function openLift() {
+  const html = `<div class="tag blue">⇅ ${L(UI.liftTitle)}</div><div class="opts">${LEVELS.map((r, i) => `<button data-act="${i}" ${r === G.room ? 'disabled' : ''}><kbd>${i + 1}</kbd>${L(UI.levels[i])}${r === G.room ? ` <em>· ${L(UI.here)}</em>` : ''}</button>`).join('')}</div>
+    <div class="btns"><button data-act="x" class="ghost">${L(UI.cancel)} <kbd>Esc</kbd></button></div>`;
+  const go = (a) => { if (a === 'x') return closeModal(); const r = LEVELS[+a]; if (!r || r === G.room) return; closeModal(true); goRoom(r); };
+  openModal(html, { cls: 'metro', act: go, key: (k) => { if (k === 'escape') closeModal(); else if (/^[1-4]$/.test(k)) go(+k - 1); } });
+}
+// walking into Mount Aurora, riding its lift between the four levels, and back out
+function goRoom(r) {
+  const label = r ? L(UI.levels[LEVELS.indexOf(r)]) : L(UI.exitMountain);
+  sfx.metro(); $('#fade').classList.add('on'); $('#fade span').textContent = label;
   setTimeout(() => {
-    G.inside = on;
-    if (on) { const O = world.sets.grotto.origin; P.pos.set(O.x - 1.5, O.y, O.z - 8.5); P.yaw = 0; C.yaw = 0; C.dist = Math.min(C.dist, 4.5); C.pitch = 0.25; world.enterInside(); }
-    else { const t = things.find((x) => x.kind === 'portal'); P.pos.set(t.pos.x, t.pos.y, t.pos.z - 3); P.yaw = Math.PI; C.yaw = Math.PI; world.exitInside([P.pos.x, 20, P.pos.z]); }
-    P.vy = 0; C.pos.set(P.pos.x, P.pos.y + 3, P.pos.z + (on ? -4 : 4)); world.follow(P.pos);
+    G.room = r;
+    if (r === 'L1' ) { const O = world.sets.grotto.origin; P.pos.set(O.x - 1.5, O.y, O.z - 8.5); P.yaw = 0; world.enterRoom('L1', null); }
+    else if (r) { const d = SPA[r], O = d.origin; P.pos.set(O.x + d.arrive.x, O.y, O.z + d.arrive.z); P.yaw = d.arrive.yaw; world.enterRoom(r, d); }
+    else { const t = things.find((x) => x.kind === 'portal'); P.pos.set(t.pos.x, t.pos.y, t.pos.z - 3); P.yaw = Math.PI; world.exitRoom([P.pos.x, 20, P.pos.z]); }
+    C.yaw = P.yaw; if (r) { C.dist = Math.min(C.dist, 4.5); C.pitch = 0.25; }
+    P.vy = 0; C.pos.set(P.pos.x - Math.sin(P.yaw) * 3, P.pos.y + 2, P.pos.z - Math.cos(P.yaw) * 3); world.follow(P.pos);
   }, 650);
-  setTimeout(() => { $('#fade').classList.remove('on'); if (G.playing) cv.requestPointerLock?.(); if (on && !G.seenInside) { G.seenInside = true; say(UI.welcomeInside); } }, 1500);
+  setTimeout(() => { $('#fade').classList.remove('on'); if (G.playing) cv.requestPointerLock?.(); if (r === 'L1' && !G.seenInside) { G.seenInside = true; say(UI.welcomeInside); } }, 1500);
 }
 function openCard(t) {
   const c = MISSIONS[t.mi].cards[t.ci];
@@ -437,7 +461,7 @@ const mini = $('#mini'), mg = mini.getContext('2d'), MW = mini.width, MH = mini.
 const toPlan = (x, z) => [(x - RECT[0]) * 2, (z - RECT[1]) * 2]; // plan canvas is 2 px per metre
 function markers() {
   const out = [];
-  for (const t of things) if (t.obj.visible && !t.inside) out.push({ x: t.pos.x, z: t.pos.z, kind: t.kind });
+  for (const t of things) if (t.obj.visible && !t.room) out.push({ x: t.pos.x, z: t.pos.z, kind: t.kind });
   return out;
 }
 function drawMarker(g, x, y, kind, s = 1) {
@@ -453,15 +477,14 @@ function drawPlayer(g, x, y, s = 1) {
   g.fillStyle = '#ff6a2a'; g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, -10 * s); g.lineTo(7 * s, 8 * s); g.lineTo(0, 4 * s); g.lineTo(-7 * s, 8 * s); g.closePath(); g.fill(); g.stroke(); g.restore();
 }
 function drawMini() {
-  if (G.inside) {
-    mg.clearRect(0, 0, MW, MH); mg.save(); mg.beginPath(); mg.arc(MW / 2, MH / 2, MW / 2 - 2, 0, Math.PI * 2); mg.fillStyle = '#1a1712'; mg.fill();
-    const O = world.sets.grotto.origin, k = MW / 30, X = (x) => MW / 2 + (x - O.x) * k, Z = (z) => MH / 2 + (z - O.z - 1) * k;
-    mg.fillStyle = '#3b352d'; mg.beginPath(); mg.ellipse(MW / 2, MH / 2, 9.4 * k, 13.4 * k, 0, 0, Math.PI * 2); mg.fill();
-    mg.fillStyle = '#45d6dc'; mg.fillRect(X(O.x - 3.5), Z(O.z - 4.5), 7 * k, 13 * k); mg.fillStyle = '#b58a5a'; mg.fillRect(X(O.x - 4), Z(O.z + 0.5), 8 * k, 1.4 * k);
-    for (const t of things) if (t.inside && t.obj.visible) drawMarker(mg, X(t.pos.x), Z(t.pos.z), t.kind, 0.85);
+  if (G.room) {
+    mg.clearRect(0, 0, MW, MH); mg.save(); mg.beginPath(); mg.arc(MW / 2, MH / 2, MW / 2 - 2, 0, Math.PI * 2); mg.fillStyle = '#1a1712'; mg.fill(); mg.clip();
+    const O = roomOrigin(G.room), k = MW / 28, X = (x) => MW / 2 + (x - O.x) * k, Z = (z) => MH / 2 + (z - O.z) * k;
+    mg.fillStyle = '#4a4238'; for (let gx = -14; gx < 14; gx += 0.5) for (let gz = -14; gz < 14; gz += 0.5) if (roomGround(G.room, O.x + gx, O.z + gz) !== null) mg.fillRect(X(O.x + gx), Z(O.z + gz), k * 0.5 + 0.5, k * 0.5 + 0.5);
+    for (const t of things) if (t.room === G.room && t.obj.visible) drawMarker(mg, X(t.pos.x), Z(t.pos.z), t.kind, 0.85);
     mg.save(); mg.translate(X(P.pos.x), Z(P.pos.z)); mg.rotate(Math.PI - P.yaw); mg.fillStyle = '#ff6a2a'; mg.strokeStyle = '#fff'; mg.lineWidth = 2; mg.beginPath(); mg.moveTo(0, -9); mg.lineTo(6, 7); mg.lineTo(0, 3); mg.lineTo(-6, 7); mg.closePath(); mg.fill(); mg.stroke(); mg.restore();
     mg.restore(); mg.strokeStyle = 'rgba(255,255,255,.9)'; mg.lineWidth = 3; mg.beginPath(); mg.arc(MW / 2, MH / 2, MW / 2 - 2, 0, Math.PI * 2); mg.stroke();
-    mg.fillStyle = '#fff'; mg.font = 'bold 12px sans-serif'; mg.textAlign = 'center'; mg.fillText(G.lang === 'vi' ? 'TRONG NÚI' : 'INSIDE', MW / 2, MH - 14);
+    mg.fillStyle = '#fff'; mg.font = 'bold 12px sans-serif'; mg.textAlign = 'center'; mg.fillText((G.lang === 'vi' ? 'TẦNG ' : 'LEVEL ') + G.room.slice(1), MW / 2, MH - 14);
     return;
   }
   const span = 260; // metres across
@@ -484,7 +507,7 @@ function drawMini() {
   mg.fillStyle = '#12355b'; mg.font = 'bold 13px sans-serif'; mg.textAlign = 'center'; mg.fillText('N', MW / 2, 16);
 }
 function toggleMap() {
-  if (G.modal || G.inside) return;
+  if (G.modal || G.room) return;
   const W = Math.min(innerWidth * 0.86, (innerHeight * 0.78) * (planCanvas.width / planCanvas.height)), H = W * planCanvas.height / planCanvas.width;
   openModal(`<div class="tag">${L(UI.map)} · <kbd>M</kbd></div><canvas id="bigmap" width="${Math.round(W)}" height="${Math.round(H)}"></canvas>`, { cls: 'mapbox', key: (k) => { if (k === 'm' || k === 'escape' || k === 'tab') closeModal(); } });
   const c = $('#bigmap'), g = c.getContext('2d'), s = c.width / planCanvas.width;
@@ -525,7 +548,7 @@ const qualityText = () => (G.lang === 'vi' ? (G.quality ? 'Đồ họa: cao' : '
 // ───────────────────────── language, time of day ─────────────────────────
 function setLang(l) { G.lang = l; try { localStorage.setItem('ah_lang', l); } catch (e) {} document.querySelectorAll('[data-en]').forEach((el) => { el.innerHTML = el.dataset[l] || el.dataset.en; }); document.querySelectorAll('.lang button').forEach((b) => b.classList.toggle('on', b.dataset.l === l)); objective(); stats(); }
 function toggleTime() {
-  if (G.phase === 'finale' || G.inside) return;
+  if (G.phase === 'finale' || G.room) return;
   world.setLook(world.look === 'sun' ? 'dusk' : 'sun'); world.captureEnvironment([P.pos.x, 20, P.pos.z]);
   toast(world.look === 'sun' ? (G.lang === 'vi' ? 'Mặt trời nửa đêm' : 'Midnight sun') : (G.lang === 'vi' ? 'Đêm vùng cực · cực quang' : 'Polar night · northern lights'));
 }
@@ -551,14 +574,14 @@ function update(dt) {
       const targetYaw = Math.atan2(dir.x, dir.z); let d = targetYaw - P.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); P.yaw += d * Math.min(1, dt * 12);
       const climb = onMountain(P.pos.x, P.pos.z) && groundAt(P.pos.x + dir.x * 0.6, P.pos.z + dir.z * 0.6) > P.pos.y + 0.25 ? 0.45 : 1;
       const step = P.speed * dt * climb, nx = P.pos.x + dir.x * step, nz = P.pos.z + dir.z * step;
-      if (G.inside) {
-        const ok = (x, z) => { const h = caveAt(x, z); return h !== null && h < P.pos.y + 0.8; };
+      if (G.room) {
+        const ok = (x, z) => { const h = roomGround(G.room, x, z); return h !== null && h < P.pos.y + 0.8; };
         if (ok(nx, nz)) { P.pos.x = nx; P.pos.z = nz; } else if (ok(nx, P.pos.z)) P.pos.x = nx; else if (ok(P.pos.x, nz)) P.pos.z = nz;
       } else if (!blocked(nx, nz, P.pos.y)) { P.pos.x = nx; P.pos.z = nz; }
       else { if (!blocked(nx, P.pos.z, P.pos.y)) P.pos.x = nx; else if (!blocked(P.pos.x, nz, P.pos.y)) P.pos.z = nz; else P.speed *= 0.5; }
     }
-    if (!G.inside) { P.pos.x = THREE.MathUtils.clamp(P.pos.x, RECT[0] + 5, RECT[2] - 5); P.pos.z = THREE.MathUtils.clamp(P.pos.z, RECT[1] + 5, RECT[3] - 5); agents && agents.pushPlayer(P.pos); }
-    const gnd = G.inside ? (caveAt(P.pos.x, P.pos.z) ?? P.pos.y) : groundAt(P.pos.x, P.pos.z);
+    if (!G.room) { P.pos.x = THREE.MathUtils.clamp(P.pos.x, RECT[0] + 5, RECT[2] - 5); P.pos.z = THREE.MathUtils.clamp(P.pos.z, RECT[1] + 5, RECT[3] - 5); agents && agents.pushPlayer(P.pos); }
+    const gnd = G.room ? (roomGround(G.room, P.pos.x, P.pos.z) ?? P.pos.y) : groundAt(P.pos.x, P.pos.z);
     P.vy -= 16 * dt; P.pos.y += P.vy * dt;
     if (P.pos.y <= gnd) { if (!P.ground && P.vy < -6) sfx.step(); P.pos.y = P.pos.y < gnd - 0.01 && gnd - P.pos.y < 1.5 ? THREE.MathUtils.lerp(P.pos.y, gnd, Math.min(1, dt * 18)) : gnd; P.vy = 0; P.ground = true; if (gnd - P.pos.y < 0.02) P.pos.y = gnd; }
     else P.ground = P.pos.y - gnd < 0.05;
@@ -571,7 +594,7 @@ function update(dt) {
     if (P.ground && P.speed > 1) { P.stepT -= dt * (1.4 + P.speed * 0.22); if (P.stepT <= 0) { P.stepT = 1; sfx.step(); } }
     // places of the magazine
     for (const p of PLACES) {
-      if (G.inside || G.places.has(p.n)) continue;
+      if (G.room || G.places.has(p.n)) continue;
       const s = p.spot; if (Math.hypot(s.x - P.pos.x, s.z - P.pos.z) < 14) { G.places.add(p.n); addScore(10); sfx.place(); toast(`<b>${L(UI.discovered)} ${p.n}/35</b> ${p.name}`, 'place'); stats(); }
     }
     // the blizzard drill
@@ -587,11 +610,10 @@ function update(dt) {
   const tgt = new THREE.Vector3(P.pos.x, P.pos.y + 1.6, P.pos.z), f = fwd(C.yaw);
   const want = new THREE.Vector3(tgt.x - f.x * C.dist * Math.cos(C.pitch), tgt.y + C.dist * Math.sin(C.pitch), tgt.z - f.z * C.dist * Math.cos(C.pitch));
   let dist = 1;
-  if (G.inside) {
-    const O = world.sets.grotto.origin;
-    for (let s = 0.08; s <= 1.001; s += 0.04) { const q = tgt.clone().lerp(want, s); if (((q.x - O.x) / 8.8) ** 2 + ((q.z - O.z - 1) / 12.8) ** 2 > 1 || q.y > O.y + 5.5) { dist = Math.max(0.12, s - 0.08); break; } }
+  if (G.room) {
+    for (let s = 0.08; s <= 1.001; s += 0.04) { const q = tgt.clone().lerp(want, s); if (!roomCamOK(G.room, q)) { dist = Math.max(0.12, s - 0.08); break; } }
   } else for (let s = 0.08; s <= 1.001; s += 0.04) { const q = tgt.clone().lerp(want, s); if (hm.at(q.x, q.z) > q.y - 0.35) { dist = Math.max(0.12, s - 0.08); break; } }
-  const camPos = tgt.clone().lerp(want, dist); if (!G.inside) camPos.y = Math.max(camPos.y, hm.at(camPos.x, camPos.z) + 0.4);
+  const camPos = tgt.clone().lerp(want, dist); if (!G.room) camPos.y = Math.max(camPos.y, hm.at(camPos.x, camPos.z) + 0.4);
   C.pos.lerp(camPos, G.playing ? Math.min(1, dt * 14) : 1);
   camera.position.copy(C.pos); camera.lookAt(tgt);
   // markers spin and bob
@@ -600,11 +622,11 @@ function update(dt) {
   // prompt
   const nt = G.playing && !G.modal ? nearThing() : null;
   const pr = $('#prompt');
-  if (nt) { pr.innerHTML = `<kbd>E</kbd> ${nt.kind === 'card' ? L(UI.readCard) : nt.kind === 'terminal' ? L(UI.talk) : nt.kind === 'portal' ? L(UI.enterMountain) : nt.kind === 'exit' ? L(UI.exitMountain) : L(UI.ride) + ' · ' + L(nt.name)}`; pr.classList.add('on'); } else pr.classList.remove('on');
+  if (nt) { pr.innerHTML = `<kbd>E</kbd> ${nt.kind === 'card' ? L(UI.readCard) : nt.kind === 'terminal' ? L(UI.talk) : nt.kind === 'portal' ? L(UI.enterMountain) : nt.kind === 'exit' ? L(UI.exitMountain) : nt.kind === 'lift' ? L(UI.liftTitle) : L(UI.ride) + ' · ' + L(nt.name)}`; pr.classList.add('on'); } else pr.classList.remove('on');
   if (sayTimer > 0) { sayTimer -= dt; if (sayTimer <= 0) nextSay(); }
   world.follow(P.pos);
   world.tick(dt);
-  if (agents && G.playing) agents.update(dt, P.pos, G.inside);
+  if (agents && G.playing) agents.update(dt, P.pos, !!G.room);
 }
 
 let last = performance.now(), miniT = 0, fpsN = 0, fpsT = 0, fpsLast = performance.now();
@@ -631,6 +653,7 @@ async function init() {
   await world.build();
   $('#loadtxt').textContent = '…';
   await new Promise((r) => setTimeout(r, 30));
+  SPA = buildSpa(scene);
   hm = buildHeightMap(world.renderer, scene);
   planCanvas = buildPlan(world.renderer, scene, hm);
   { // water cells from the plan colours, so nothing is placed in a pool
@@ -641,13 +664,15 @@ async function init() {
   // the places of the magazine, moved onto walkable ground
   for (const p of PLACES) p.spot = findOpen(p.x, p.z, 1, 40);
   MISSIONS.forEach((m, mi) => {
-    m.cards.forEach((c, ci) => addThing('card', c, { mi, ci, raw: !!c.summit, inside: !!c.inside }));
+    m.cards.forEach((c, ci) => addThing('card', c, { mi, ci, raw: !!c.summit, room: c.room || null }));
     addThing('terminal', m.terminal, { mi });
   });
   for (const s of STATIONS) addThing('station', s, { name: s.name, id: s.id });
   addThing('shelter', FINALE.target);
   addThing('portal', { x: 0, z: SPA_FACE_Z - 7.5 }, { raw: true });          // in front of the North Portal doors
-  addThing('exit', { x: 0, z: -11.5 }, { inside: true });                       // the cave's entrance side
+  addThing('exit', { x: 0, z: -11.5 }, { room: 'L1' });                         // the cave's entrance side
+  addThing('lift', { x: 5.6, z: -3.5 }, { room: 'L1' });                         // the grotto's glass lift
+  for (const r of ['L2', 'L3', 'L4']) addThing('lift', SPA[r].lift, { room: r });
   agents = createAgents(scene, hm, isRoad, waterAt);
   const sp = findOpen(SPAWN.x, SPAWN.z); P.pos.copy(sp); P.pos.y = groundAt(sp.x, sp.z);
   G.ready = true; $('#loading').classList.add('done');
@@ -662,7 +687,7 @@ async function init() {
     }
     return { ok: false, timeout: true };
   };
-  window.__game = { G, P, C, hm, things, world, agents: () => agents, goInside, walkTest, teleport: (x, z) => { const p = findOpen(x, z); P.pos.copy(p); P.vy = 0; }, missionDone, startMission, startFinale, finish, toggleTime, openQuiz, interact, nearThing };
+  window.__game = { G, P, C, hm, things, world, agents: () => agents, goRoom, walkTest, teleport: (x, z) => { const p = findOpen(x, z); P.pos.copy(p); P.vy = 0; }, missionDone, startMission, startFinale, finish, toggleTime, openQuiz, interact, nearThing };
   if (QS.has('auto')) start();
 }
 function start() {
