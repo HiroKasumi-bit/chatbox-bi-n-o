@@ -9,7 +9,8 @@ import { materials } from '../src/materials.js';
 
 const $ = (s) => document.querySelector(s);
 const QS = new URLSearchParams(location.search);
-const G = { lang: localStorage.getItem('ah_lang') || 'en', ready: false, playing: false, modal: null, mi: 0, phase: 'cards', got: new Set(), score: 0, t: 0,
+const savedLang = (() => { try { return localStorage.getItem('ah_lang'); } catch (e) { return null; } })();
+const G = { lang: savedLang || 'en', ready: false, playing: false, modal: null, mi: 0, phase: 'cards', got: new Set(), score: 0, t: 0,
   places: new Set(), metro: false, tries: 0, finaleT: 0, done: false, free: false, quality: true };
 const L = (o) => (o == null ? '' : typeof o === 'string' ? o : o[G.lang] ?? o.en);
 
