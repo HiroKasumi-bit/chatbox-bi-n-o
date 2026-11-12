@@ -637,6 +637,7 @@ function update(dt) {
   const camPos = tgt.clone().lerp(want, dist); if (!G.room) camPos.y = Math.max(camPos.y, hm.at(camPos.x, camPos.z) + 0.4);
   C.pos.lerp(camPos, G.playing ? Math.min(1, dt * 14) : 1);
   camera.position.copy(C.pos); camera.lookAt(tgt);
+  if (window.__camOverride) { const o = window.__camOverride; camera.position.set(...o.pos); camera.lookAt(...o.look); } // for screenshots
   // markers spin and bob
   const time = performance.now() / 1000;
   for (const t of things) if (t.obj.visible && t.obj.userData.spin) { t.obj.userData.spin.rotation.y = time * 1.4; t.obj.userData.spin.position.y = (t.kind === 'card' ? 1.5 : 2.0) + Math.sin(time * 2 + t.pos.x) * 0.12; }

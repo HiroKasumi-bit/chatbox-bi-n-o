@@ -75,34 +75,37 @@ function monument(b, x, z) {
   // Figure, facing south towards Mount Aurora: a standing man in a buttoned tunic and
   // trousers, his right hand raised to greet the people. Built as a 1.78 m figure and
   // scaled up 2.25 times; in figure coordinates it faces -z, so its right hand is on +x.
-  const k = 2.25;
-  const y0 = 3.47;
-  const ft = (px, py, pz) => new THREE.Vector3(x - px * k, y0 + py * k, z - pz * k); // figure → world, turned to face south
-  const part = (geo, px, py, pz, sx = 1, sy = 1, sz = 1) => b.add('statue', geo, matrix(...ft(px, py, pz).toArray(), Math.PI, sx * k, sy * k, sz * k));
-  const limb = (a, c, r, r2 = r * 0.85) => {
-    const A = ft(...a);
-    const B = ft(...c);
-    const g = new THREE.CylinderGeometry(r2 * k, r * k, A.distanceTo(B), 12);
-    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), B.clone().sub(A).normalize());
-    b.add('statue', g, new THREE.Matrix4().compose(A.clone().add(B).multiplyScalar(0.5), q, new THREE.Vector3(1, 1, 1)));
-    b.add('statue', new THREE.SphereGeometry(r2 * k, 12, 8), matrix(...B.toArray()));
-  };
-  for (const s of [-1, 1]) {
-    part(new THREE.BoxGeometry(0.11, 0.08, 0.27), s * 0.1, 0.04, -0.03); // shoes
-    limb([s * 0.1, 0.08, 0], [s * 0.095, 0.95, 0], 0.075, 0.095); // trouser legs
+  // In the game (globalThis.__AH_GAME) the figure is the bronze statue of President Ho Chi Minh from game/statue.js.
+  if (!globalThis.__AH_GAME) {
+    const k = 2.25;
+    const y0 = 3.47;
+    const ft = (px, py, pz) => new THREE.Vector3(x - px * k, y0 + py * k, z - pz * k); // figure → world, turned to face south
+    const part = (geo, px, py, pz, sx = 1, sy = 1, sz = 1) => b.add('statue', geo, matrix(...ft(px, py, pz).toArray(), Math.PI, sx * k, sy * k, sz * k));
+    const limb = (a, c, r, r2 = r * 0.85) => {
+      const A = ft(...a);
+      const B = ft(...c);
+      const g = new THREE.CylinderGeometry(r2 * k, r * k, A.distanceTo(B), 12);
+      const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), B.clone().sub(A).normalize());
+      b.add('statue', g, new THREE.Matrix4().compose(A.clone().add(B).multiplyScalar(0.5), q, new THREE.Vector3(1, 1, 1)));
+      b.add('statue', new THREE.SphereGeometry(r2 * k, 12, 8), matrix(...B.toArray()));
+    };
+    for (const s of [-1, 1]) {
+      part(new THREE.BoxGeometry(0.11, 0.08, 0.27), s * 0.1, 0.04, -0.03); // shoes
+      limb([s * 0.1, 0.08, 0], [s * 0.095, 0.95, 0], 0.075, 0.095); // trouser legs
+    }
+    // Tunic and shoulders as one turned shape: hips, waist, chest, sloping shoulders, collar.
+    const torso = new THREE.LatheGeometry([
+      [0.0, 0.84], [0.2, 0.86], [0.19, 1.0], [0.175, 1.12], [0.19, 1.28], [0.205, 1.4], [0.19, 1.46], [0.13, 1.51], [0.07, 1.55], [0.0, 1.56],
+    ].map(([r, yy]) => new THREE.Vector2(r, yy)), 24);
+    part(torso, 0, 0, 0, 1, 1, 0.72);
+    part(new THREE.CylinderGeometry(0.052, 0.06, 0.1, 12), 0, 1.6, 0); // neck
+    part(new THREE.SphereGeometry(0.105, 18, 14), 0, 1.72, -0.01, 0.92, 1.12, 1); // head
+    limb([0.2, 1.43, 0], [0.4, 1.62, -0.05], 0.055, 0.05); // right upper arm, raised
+    limb([0.4, 1.62, -0.05], [0.44, 1.9, -0.09], 0.05, 0.042); // right forearm
+    part(new THREE.SphereGeometry(0.05, 10, 8), 0.445, 1.96, -0.1, 0.8, 1.2, 0.5); // open hand
+    limb([-0.2, 1.43, 0], [-0.24, 1.15, -0.03], 0.055, 0.05); // left arm at the side
+    limb([-0.24, 1.15, -0.03], [-0.25, 0.9, -0.07], 0.05, 0.042);
   }
-  // Tunic and shoulders as one turned shape: hips, waist, chest, sloping shoulders, collar.
-  const torso = new THREE.LatheGeometry([
-    [0.0, 0.84], [0.2, 0.86], [0.19, 1.0], [0.175, 1.12], [0.19, 1.28], [0.205, 1.4], [0.19, 1.46], [0.13, 1.51], [0.07, 1.55], [0.0, 1.56],
-  ].map(([r, yy]) => new THREE.Vector2(r, yy)), 24);
-  part(torso, 0, 0, 0, 1, 1, 0.72);
-  part(new THREE.CylinderGeometry(0.052, 0.06, 0.1, 12), 0, 1.6, 0); // neck
-  part(new THREE.SphereGeometry(0.105, 18, 14), 0, 1.72, -0.01, 0.92, 1.12, 1); // head
-  limb([0.2, 1.43, 0], [0.4, 1.62, -0.05], 0.055, 0.05); // right upper arm, raised
-  limb([0.4, 1.62, -0.05], [0.44, 1.9, -0.09], 0.05, 0.042); // right forearm
-  part(new THREE.SphereGeometry(0.05, 10, 8), 0.445, 1.96, -0.1, 0.8, 1.2, 0.5); // open hand
-  limb([-0.2, 1.43, 0], [-0.24, 1.15, -0.03], 0.055, 0.05); // left arm at the side
-  limb([-0.24, 1.15, -0.03], [-0.25, 0.9, -0.07], 0.05, 0.042);
   for (let i = 0; i < 8; i++) {
     const a = (i / 8) * Math.PI * 2 + Math.PI / 8;
     lamp(b, x + Math.cos(a) * 13.2, z + Math.sin(a) * 13.2, 4.5);

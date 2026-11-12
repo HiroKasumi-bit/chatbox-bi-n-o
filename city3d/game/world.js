@@ -17,6 +17,7 @@ import { fusionStation, foodPlant, renewablePark, energyHub, airport, stadium, g
 import { neighbourhoods } from '../src/neighbourhoods.js';
 import { buildPools, setPoolStrength, LAMPS } from '../src/lights.js';
 import { interiors } from '../src/interiors.js';
+import { hoChiMinhStatue } from './statue.js';
 
 THREE.ShaderChunk.normal_fragment_maps += '\nif ( any( isnan( normal ) ) || any( isinf( normal ) ) ) normal = nonPerturbedNormal;\n';
 // one undefined pixel would spread over the whole picture through the bloom blur, so it falls back to black
@@ -44,7 +45,7 @@ export function createWorld(canvas, onStep = () => {}) {
   ];
   const b = new Batch();
   const towerBatch = new Batch();
-  let sets = null;
+  let sets = null, statue = null;
   steps.push(
     ['streets', () => streets(b)],
     ['downtown', () => downtown(b, towerBatch)],
@@ -54,6 +55,7 @@ export function createWorld(canvas, onStep = () => {}) {
     ['renewable', () => { renewablePark(b); energyHub(b); }],
     ['airport', () => { airport(b); stadium(b); greenhouses(b); }],
     ['homes', () => { airBase(b); ecoHomes(b); neighbourhoods(b); }],
+    ['statue', () => { statue = hoChiMinhStatue(scene, 0, 0); }],
     ['interiors', () => { sets = interiors(scene); sets.greenhouse.setActive(false); }],
     ['merge', () => {
       const city = b.build(materials); city.name = 'city'; scene.add(city);
@@ -169,7 +171,7 @@ export function createWorld(canvas, onStep = () => {}) {
   let look = 'sun';
   function setLook(name) {
     look = name; const L = LOOKS[name];
-    sky.visible = false; dome.visible = false; snowfall.visible = name !== 'sun'; domeU.aur.value = name === 'dusk' ? 1.1 : 0;
+    sky.visible = false; dome.visible = false; snowfall.visible = name !== 'sun'; domeU.aur.value = name === 'dusk' ? 1.1 : 0; if (statue) statue.spot.intensity = name === 'dusk' ? 130 : 0;
     sun.castShadow = Q.shadows;
     setMode(L.mode, L.env ?? (L.mode === 'sun' ? 0.45 : 0.6));
     setPoolStrength(L.mode === 'dusk' ? 1 : 0);
