@@ -9,6 +9,10 @@ let js = r.outputFiles[0].text;
 const wn = 'data:image/jpeg;base64,' + fs.readFileSync(path.join(ROOT, 'textures/waternormals.jpg')).toString('base64');
 if (js.split('textures/waternormals.jpg').length !== 2) throw new Error('water normal path not found once');
 js = js.replace('textures/waternormals.jpg', wn).replace(/<\/script/gi, '<\\/script');
+// AURA's recorded lines go inside the file too
+let nVoice = 0;
+js = js.replace(/game\/voice\/([a-z_]+)\.mp3/g, (m, k) => { nVoice++; return 'data:audio/mpeg;base64,' + fs.readFileSync(path.join(D, 'voice', k + '.mp3')).toString('base64'); });
+if (!nVoice) throw new Error('no voice files found in the bundle');
 let html = fs.readFileSync(path.join(ROOT, 'game.html'), 'utf8');
 const a = html.indexOf('<script type="importmap">'), b = html.indexOf('</script>', html.indexOf('src="./game/game.js"')) + 9;
 if (a < 0 || b < 9) throw new Error('script tags not found');

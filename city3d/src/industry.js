@@ -69,7 +69,7 @@ export function fusionStation(b) {
   pipeRun(b, [[316, 210], [316, 128]], 5, 0.7);
   pipeRun(b, [[300, 205], [300, 214], [262, 214]], 4, 0.6);
   // Internal roads and the fence.
-  road(b, 150, 200, 330, 200, { width: 8, sidewalk: false, lamps: 30 });
+  road(b, 150, 192, 330, 192, { width: 8, sidewalk: false, lamps: 30 }); // north of the tokamak drum (z 200–244)
   road(b, 205, 150, 205, 265, { width: 8, sidewalk: false });
   siteFence(b, DISTRICTS.fusion.rect);
   for (let i = 0; i < 6; i++) truck(b, 160 + i * 6, 262, Math.PI / 2, 'vehicleWhite');

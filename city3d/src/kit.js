@@ -248,7 +248,10 @@ export function lamp(b, x, z, h = 6, cool = false) {
 // Car body pieces, made once: a lower body, the glass cabin and the roof, extruded from side
 // profiles (x along the car, front at +x), then turned so the car points to -z.
 let carGeo = null;
-function carGeometry() {
+// In the game (globalThis.__AH_GAME) cars and walking people move, so their static copies are skipped;
+// the random draws still happen, so the rest of the city is built exactly the same.
+const SKIP = { add() { return this; }, box() { return this; }, cyl() { return this; } };
+export function carGeometry() {
   if (carGeo) return carGeo;
   const ext = (pts, depth, bevel = 0.05) => {
     const s = new THREE.Shape(pts.map(([a, c]) => new THREE.Vector2(a, c)));
@@ -267,6 +270,8 @@ function carGeometry() {
 }
 
 export function car(b, x, z, ry, key) {
+  const game = !!globalThis.__AH_GAME;
+  if (game) b = SKIP;
   const paint = key && key.startsWith('car') ? key : pick(CAR_PAINTS);
   const g = carGeometry();
   const m = matrix(x, 0, z, ry);
@@ -282,7 +287,7 @@ export function car(b, x, z, ry, key) {
   if (R() < 0.3) b.add('snowRoof', new THREE.BoxGeometry(1.25, 0.08, 1.3), at(0, 1.55, 0.4));
   // Headlight beam on the road ahead.
   const p = new THREE.Vector3().setFromMatrixPosition(at(0, 0, -2.2));
-  addPool('beam', p.x, p.z, 4.5, 16, ry + Math.PI, 0xe8efff, 0.2);
+  if (!game) addPool('beam', p.x, p.z, 4.5, 16, ry + Math.PI, 0xe8efff, 0.2);
 }
 
 export function truck(b, x, z, ry, key = 'vehicleRed') {
@@ -310,6 +315,7 @@ const PERSON = {
 
 export function person(b, x, z, ry, o = {}) {
   if (CAMERA_SPOTS.some(([cx, cz]) => (x - cx) ** 2 + (z - cz) ** 2 < 20)) return;
+  if (globalThis.__AH_GAME && !o.still) b = SKIP;
   const s = o.scale ?? (0.92 + R() * 0.14);
   const y = o.y || 0;
   const m = matrix(x, y, z, ry, s, s, s);

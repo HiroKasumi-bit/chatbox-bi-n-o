@@ -18,7 +18,10 @@ Sau đó, các ảnh render được làm thành ảnh như chụp thật bằng
 
 `output/Aurora_Haven_Explorer.html` là game 3D **Aurora Haven Explorer**, chơi trên máy tính: mở file bằng Chrome hoặc Edge (không cần mạng), chọn English hoặc Tiếng Việt, bấm Play.
 
-- Đi bộ trong chính thành phố 3D của tạp chí (góc nhìn thứ ba): **W A S D** đi, **Shift** chạy, **Space** nhảy, **chuột** xoay góc nhìn, **E** tương tác, **M** bản đồ, **T** đổi mặt trời nửa đêm / hoàng hôn vùng cực, **G** đồ họa cao / nhanh, **L** đổi ngôn ngữ, **Esc** nhả chuột.
+- Đi bộ trong chính thành phố 3D của tạp chí (góc nhìn thứ ba): **W A S D** đi, **Shift** chạy, **Space** nhảy, **chuột** xoay góc nhìn, **E** tương tác, **M** bản đồ, **T** đổi ngày (mặt trời nửa đêm) / đêm vùng cực có cực quang, **G** đồ họa cao / nhanh, **L** đổi ngôn ngữ, **Esc** nhả chuột.
+- Chơi được bằng **tay cầm PS5** (cắm dây hoặc Bluetooth, rồi nhấn 1 nút): cần trái đi, R2 chạy, cần phải xoay, ✕ tương tác hoặc nhảy, □ nhảy, △ bản đồ, L1 ngày / đêm, R1 đồ họa, Create đổi ngôn ngữ; trong bảng câu đố dùng D-pad chọn, ✕ xác nhận, ○ đóng.
+- AURA nói thành tiếng (tiếng Anh hoặc tiếng Việt theo ngôn ngữ đã chọn). Xe chạy trên đường, người đi bộ trên vỉa hè, tuyết rơi thật, ban đêm có cực quang.
+- Đi vào được bên trong núi Aurora qua cổng North Portal (hang hồ khoáng ở tầng 1 khu spa); một thẻ của nhiệm vụ núi nằm trong hang.
 - 6 nhiệm vụ do AURA giao: Liberty Mall, nhà máy nhiệt hạch, nhà máy thực phẩm từ tuyết, nhà kính và tái chế, khu năng lượng phía bắc, núi Aurora (leo lên tận đỉnh). Mỗi nhiệm vụ có 3 thẻ dữ liệu và 1 câu đố; cuối game là buổi diễn tập bão tuyết, chạy về hầm trú ẩn trong 90 giây.
 - Sau nhiệm vụ đầu, tàu điện ngầm mở: đứng trong nhà ga phát sáng và nhấn E để đi nhanh giữa 5 ga.
 - Đi ngang 35 địa điểm của tạp chí thì địa điểm được đánh dấu "đã khám phá".

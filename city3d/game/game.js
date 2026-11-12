@@ -1,7 +1,11 @@
 // Aurora Haven Explorer: walk the city of the magazine, collect data cards, answer AURA, ride the metro,
 // climb Mount Aurora and make it to the shelter in a blizzard drill.
 import * as THREE from 'three';
+import './flag.js'; // first: the city builders leave out the static cars and walkers; agents.js moves real ones
 import { createWorld } from './world.js';
+import { createAgents } from './agents.js';
+import { VOICE } from './voice.js';
+import { SPA_FACE_Z } from '../src/mountain.js';
 import { buildHeightMap, buildPlan, RECT } from './terrain.js';
 import { MISSIONS, FINALE, STATIONS, UI, SPAWN } from './missions.js';
 import { PLACES } from '../src/layout.js';
@@ -11,7 +15,8 @@ const $ = (s) => document.querySelector(s);
 const QS = new URLSearchParams(location.search);
 const savedLang = (() => { try { return localStorage.getItem('ah_lang'); } catch (e) { return null; } })();
 const G = { lang: savedLang || 'en', ready: false, playing: false, modal: null, mi: 0, phase: 'cards', got: new Set(), score: 0, t: 0,
-  places: new Set(), metro: false, tries: 0, finaleT: 0, done: false, free: false, quality: true };
+  places: new Set(), metro: false, tries: 0, finaleT: 0, done: false, free: false, quality: true, inside: false, seenInside: false };
+let agents = null;
 const L = (o) => (o == null ? '' : typeof o === 'string' ? o : o[G.lang] ?? o.en);
 
 // ───────────────────────── world ─────────────────────────
@@ -92,7 +97,7 @@ addEventListener('keydown', (e) => {
   else if (k === 't') toggleTime();
   else if (k === 'g') { G.quality = !G.quality; G.autoQ = false; world.setQuality(G.quality); toast(qualityText()); }
   else if (k === 'l') { setLang(G.lang === 'en' ? 'vi' : 'en'); }
-  else if (e.code === 'Space') { e.preventDefault(); if (P.ground) { P.vy = 5.2; P.ground = false; sfx.jump(); } }
+  else if (e.code === 'Space') { e.preventDefault(); jump(); }
 });
 addEventListener('keyup', (e) => keys.delete(e.code));
 addEventListener('blur', () => keys.clear());
@@ -107,6 +112,49 @@ addEventListener('mousemove', (e) => {
 addEventListener('wheel', (e) => { if (G.playing && !G.modal) C.dist = THREE.MathUtils.clamp(C.dist * (e.deltaY > 0 ? 1.1 : 0.9), 3.5, 40); }, { passive: true });
 document.addEventListener('pointerlockchange', () => { $('#hint-lock').style.display = G.playing && !G.modal && document.pointerLockElement !== cv ? 'block' : 'none'; });
 
+// ───────────────────────── PS5 controller ─────────────────────────
+// Standard mapping (Chrome, Edge): 0 Cross, 1 Circle, 2 Square, 3 Triangle, 4 L1, 5 R1, 6 L2, 7 R2, 8 Create, 9 Options,
+// 10 L3, 11 R3, 12–15 D-pad up / down / left / right. Axes: 0, 1 left stick; 2, 3 right stick.
+const PAD = { on: false, prev: [], lx: 0, ly: 0, rx: 0, ry: 0, run: false, focus: 0 };
+const dead = (v) => (Math.abs(v) < 0.14 ? 0 : (v - Math.sign(v) * 0.14) / 0.86);
+addEventListener('gamepadconnected', (e) => { PAD.on = true; toast(G.lang === 'vi' ? '🎮 Đã kết nối tay cầm' : '🎮 Controller connected'); padHints(); });
+addEventListener('gamepaddisconnected', () => { PAD.on = [...(navigator.getGamepads?.() || [])].some(Boolean); padHints(); });
+function padHints() { document.body.classList.toggle('pad', PAD.on); }
+function modalButtons() { return [...document.querySelectorAll('#modal button:not([disabled])')]; }
+function padFocus(d) {
+  const bs = modalButtons(); if (!bs.length) return;
+  PAD.focus = (PAD.focus + d + bs.length) % bs.length; bs.forEach((b, i) => b.classList.toggle('padfocus', i === PAD.focus)); sfx.click();
+}
+function pollPad(dt) {
+  const gp = [...(navigator.getGamepads?.() || [])].find(Boolean); if (!gp) return;
+  if (!PAD.on) { PAD.on = true; padHints(); }
+  const b = gp.buttons.map((x) => x.pressed || x.value > 0.5), hit = (i) => b[i] && !PAD.prev[i];
+  PAD.lx = dead(gp.axes[0] || 0); PAD.ly = dead(gp.axes[1] || 0); PAD.rx = dead(gp.axes[2] || 0); PAD.ry = dead(gp.axes[3] || 0);
+  PAD.run = (gp.buttons[7]?.value || 0) > 0.3 || b[10] || Math.hypot(PAD.lx, PAD.ly) > 0.97 && b[6];
+  if (!G.playing) { if (hit(0) || hit(9)) start(); }
+  else if (G.modal) {
+    // D-pad or left stick picks a button, Cross presses it, Circle closes
+    const stickY = gp.axes[1] || 0; PAD.stick = PAD.stick || 0;
+    if (hit(12) || hit(14) || (stickY < -0.6 && PAD.stick >= -0.6)) padFocus(-1);
+    if (hit(13) || hit(15) || (stickY > 0.6 && PAD.stick <= 0.6)) padFocus(1);
+    PAD.stick = stickY;
+    if (hit(0)) { const bs = modalButtons(); const t = bs[PAD.focus] || bs[0]; if (t) t.click(); else G.modal?.key?.('e', {}); }
+    if (hit(1)) G.modal?.key?.('escape', {});
+    if (hit(3) && document.querySelector('#bigmap')) closeModal();
+  } else {
+    C.yaw -= PAD.rx * dt * 2.6; C.pitch = THREE.MathUtils.clamp(C.pitch + PAD.ry * dt * 1.8, -0.25, 1.25);
+    if (hit(0)) { if (nearThing()) interact(); else jump(); }   // Cross: use what is near, otherwise jump
+    if (hit(2)) jump();                                        // Square: jump
+    if (hit(3)) toggleMap();                                   // Triangle: city map
+    if (hit(4)) toggleTime();                                  // L1: midnight sun / polar night
+    if (hit(5)) { G.quality = !G.quality; G.autoQ = false; world.setQuality(G.quality); toast(qualityText()); } // R1: graphics
+    if (hit(8)) setLang(G.lang === 'en' ? 'vi' : 'en');        // Create: language
+    if (hit(11)) C.dist = C.dist > 10 ? 6 : 14;                // R3: camera near / far
+  }
+  PAD.prev = b;
+}
+function jump() { if (P.ground) { P.vy = 5.2; P.ground = false; sfx.jump(); } }
+
 // ───────────────────────── collision ─────────────────────────
 const STEP = 0.65, RAD = 0.42;
 const RING = Array.from({ length: 8 }, (_, i) => [Math.cos(i * Math.PI / 4) * RAD, Math.sin(i * Math.PI / 4) * RAD]);
@@ -118,8 +166,14 @@ function blocked(x, z, y) {
   return false;
 }
 function groundAt(x, z) { let g = hm.at(x, z); for (const [dx, dz] of RING) g = Math.max(g, hm.at(x + dx * 0.5, z + dz * 0.5)); return g; }
+function caveAt(x, z) { // ground height inside the grotto, or null where you cannot stand
+  const O = world.sets.grotto.origin, lx = x - O.x, lz = z - O.z;
+  if ((lx / 9.4) ** 2 + ((lz - 1) / 13.4) ** 2 > 1 || lz > 8.7 || (lx - 7.6) ** 2 + (lz + 3.5) ** 2 < 3.6) return null;
+  if (Math.abs(lx) < 3.9 && lz > -4.9 && lz < 8.7) { if (Math.abs(lz - 1.2) < 0.7 && Math.abs(lx) < 4.1) return O.y + 0.46 + Math.cos(Math.min(1, Math.abs(lx) / 4.05) * Math.PI / 2) * 0.35; return null; }
+  return O.y;
+}
 // the nearest open, walkable ground to a spot (for placing cards, terminals and stations)
-let waterAt = () => false;
+let waterAt = () => false, isRoad = () => false;
 function findOpen(x, z, clear = 1.4, maxR = 45) {
   const ok = (px, pz) => {
     const h0 = hm.at(px, pz); if (h0 > 1.3 || waterAt(px, pz)) return false;
@@ -142,7 +196,7 @@ const beamMat = (color) => new THREE.ShaderMaterial({
   fragmentShader: 'uniform vec3 col; uniform float a; varying vec2 vUv; void main(){ float f = pow(1.0 - vUv.y, 1.6) * (0.35 + 0.65 * pow(abs(sin(vUv.x * 3.14159)), 2.0)); gl_FragColor = vec4(col * f * a, 1.0); }',
 });
 const glowMat = (color, k = 2.2) => new THREE.MeshStandardMaterial({ color: 0x0b1020, emissive: color, emissiveIntensity: k, roughness: 0.4, metalness: 0.2 });
-const COLORS = { card: 0x3fe0ff, terminal: 0xffc857, station: 0x5aa0ff, shelter: 0xff4d5e };
+const COLORS = { card: 0x3fe0ff, terminal: 0xffc857, station: 0x5aa0ff, shelter: 0xff4d5e, portal: 0xb48cff, exit: 0xb48cff };
 function beam(color, h = 60, r = 0.7) { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 20, 1, true).translate(0, h / 2, 0), beamMat(color)); m.renderOrder = 5; return m; }
 function groundRing(color, r = 1.6) { const m = new THREE.Mesh(new THREE.RingGeometry(r * 0.78, r, 48).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.85, depthWrite: false, fog: false })); m.position.y = 0.08; return m; }
 
@@ -180,11 +234,17 @@ function makeStation() {
   return g;
 }
 
+function makePortal() { // a soft violet ring on the floor in front of a door
+  const g = new THREE.Group(); g.add(groundRing(COLORS.portal, 2.2), groundRing(0xffffff, 1.2));
+  const light = new THREE.PointLight(COLORS.portal, 5, 9, 2); light.position.y = 1.5; g.add(light); return g;
+}
 // every interactive thing: { kind, pos, obj, ... }
 const things = [];
 function addThing(kind, spot, extra = {}) {
-  const p = extra.raw ? new THREE.Vector3(spot.x, hm.at(spot.x, spot.z), spot.z) : findOpen(spot.x, spot.z, kind === 'station' ? 3.5 : 3, 60);
-  const obj = kind === 'card' ? makeCard() : kind === 'terminal' ? makeTerminal() : kind === 'station' ? makeStation() : (() => { const g = new THREE.Group(); g.add(beam(COLORS.shelter, 120, 2.2), groundRing(COLORS.shelter, 5)); return g; })();
+  const O = world.sets.grotto.origin;
+  const p = extra.inside ? new THREE.Vector3(O.x + spot.x, O.y, O.z + spot.z) : extra.raw ? new THREE.Vector3(spot.x, hm.at(spot.x, spot.z), spot.z) : findOpen(spot.x, spot.z, kind === 'station' ? 3.5 : 3, 60);
+  const obj = kind === 'card' ? makeCard() : kind === 'terminal' ? makeTerminal() : kind === 'station' ? makeStation() : kind === 'portal' || kind === 'exit' ? makePortal() : (() => { const g = new THREE.Group(); g.add(beam(COLORS.shelter, 120, 2.2), groundRing(COLORS.shelter, 5)); return g; })();
+  if (extra.inside) obj.traverse((o) => { if (o.material?.type === 'ShaderMaterial') o.scale.y = 0.12; }); // a short beam under the cave roof
   obj.position.copy(p); obj.visible = false; scene.add(obj);
   const t = { kind, pos: p, obj, ...extra }; things.push(t); return t;
 }
@@ -195,14 +255,20 @@ function toast(text, cls = '') {
   setTimeout(() => el.classList.add('out'), 2600); setTimeout(() => el.remove(), 3200);
 }
 let sayTimer = 0, sayQueue = [], typing = null;
-function say(text, after) {
-  sayQueue.push([L(text), after]); if (!typing && sayTimer <= 0) nextSay();
+let voice = null;
+function say(obj, after) {
+  sayQueue.push([obj, after]); if (!typing && sayTimer <= 0) nextSay();
 }
 function nextSay() {
   const item = sayQueue.shift(); if (!item) { $('#aura').classList.remove('on'); return; }
-  const [text, after] = item; const el = $('#aura .txt'); el.textContent = ''; $('#aura').classList.add('on'); sfx.aura();
+  const [obj, after] = item, text = L(obj), rec = VOICE[obj.en]?.[G.lang];
+  const el = $('#aura .txt'); el.textContent = ''; $('#aura').classList.add('on');
+  if (voice) { voice.pause(); voice = null; }
+  if (rec) { voice = new Audio(rec.src); voice.volume = 0.95; voice.play().catch(() => {}); } else sfx.aura();
+  // the words appear in step with the voice
+  const ms = rec ? Math.max(14, (rec.dur * 1000 * 0.86) / text.length) : 22;
   let i = 0; clearInterval(typing);
-  typing = setInterval(() => { i += 2; el.textContent = text.slice(0, i); if (i >= text.length) { clearInterval(typing); typing = null; sayTimer = 2.2 + text.length * 0.035; after && after(); } }, 22);
+  typing = setInterval(() => { i += 1; el.textContent = text.slice(0, i); if (i >= text.length) { clearInterval(typing); typing = null; sayTimer = rec ? rec.dur * 0.14 + 1.6 : 2.2 + text.length * 0.035; after && after(); } }, ms);
 }
 function objective() {
   const m = MISSIONS[G.mi];
@@ -227,7 +293,8 @@ function addScore(n) { G.score += n; stats(); const el = document.createElement(
 function openModal(html, opts = {}) {
   closeModal(true);
   const el = $('#modal'); el.innerHTML = `<div class="box ${opts.cls || ''}">${html}</div>`; el.classList.add('on');
-  G.modal = { key: opts.key, close: opts.onClose }; keys.clear(); dragging = false;
+  G.modal = { key: opts.key, close: opts.onClose }; keys.clear(); dragging = false; PAD.focus = 0;
+  if (PAD.on) { const bs = modalButtons(); bs.forEach((b, i) => b.classList.toggle('padfocus', i === 0)); }
   if (document.pointerLockElement) document.exitPointerLock();
   el.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); opts.act && opts.act(b.dataset.act); }));
 }
@@ -243,6 +310,7 @@ function showMission() {
     else if (t.kind === 'terminal') t.obj.visible = !G.done && t.mi === G.mi && G.phase !== 'finale';
     else if (t.kind === 'station') t.obj.visible = G.metro;
     else if (t.kind === 'shelter') t.obj.visible = G.phase === 'finale';
+    else if (t.kind === 'portal' || t.kind === 'exit') t.obj.visible = true;
   }
   objective(); stats();
 }
@@ -251,6 +319,11 @@ function startMission(i) {
   say(MISSIONS[i].intro);
 }
 function target() {
+  const t = target0(); if (!t) return t;
+  if (!!t.inside !== G.inside) return things.find((x) => x.kind === (G.inside ? 'exit' : 'portal'));
+  return t;
+}
+function target0() {
   if (G.phase === 'finale') return things.find((t) => t.kind === 'shelter');
   if (G.done) return null;
   const m = MISSIONS[G.mi]; if (!m) return null;
@@ -264,6 +337,7 @@ function nearThing() {
   let best = null, bd = 1e9;
   for (const t of things) {
     if (!t.obj.visible || t.kind === 'shelter') continue;
+    if (!!t.inside !== G.inside) continue;
     const r = t.kind === 'station' ? 3.2 : 2.6; const dx = t.pos.x - P.pos.x, dz = t.pos.z - P.pos.z, d = Math.hypot(dx, dz);
     if (d < r && Math.abs(t.pos.y - P.pos.y) < 3 && d < bd) { bd = d; best = t; }
   }
@@ -274,6 +348,19 @@ function interact() {
   if (t.kind === 'card') openCard(t);
   else if (t.kind === 'terminal') { if (G.got.size < MISSIONS[G.mi].cards.length) { toast(L(UI.needCards)); sfx.buzz(); } else openQuiz(); }
   else if (t.kind === 'station') openMetro(t);
+  else if (t.kind === 'portal') goInside(true);
+  else if (t.kind === 'exit') goInside(false);
+}
+// walking into and out of Mount Aurora (the Mineral Lake Grotto on Level 1 of the spa)
+function goInside(on) {
+  sfx.metro(); $('#fade').classList.add('on'); $('#fade span').textContent = L(on ? UI.inside : UI.exitMountain);
+  setTimeout(() => {
+    G.inside = on;
+    if (on) { const O = world.sets.grotto.origin; P.pos.set(O.x - 1.5, O.y, O.z - 8.5); P.yaw = 0; C.yaw = 0; C.dist = Math.min(C.dist, 4.5); C.pitch = 0.25; world.enterInside(); }
+    else { const t = things.find((x) => x.kind === 'portal'); P.pos.set(t.pos.x, t.pos.y, t.pos.z - 3); P.yaw = Math.PI; C.yaw = Math.PI; world.exitInside([P.pos.x, 20, P.pos.z]); }
+    P.vy = 0; C.pos.set(P.pos.x, P.pos.y + 3, P.pos.z + (on ? -4 : 4)); world.follow(P.pos);
+  }, 650);
+  setTimeout(() => { $('#fade').classList.remove('on'); if (G.playing) cv.requestPointerLock?.(); if (on && !G.seenInside) { G.seenInside = true; say(UI.welcomeInside); } }, 1500);
 }
 function openCard(t) {
   const c = MISSIONS[t.mi].cards[t.ci];
@@ -283,7 +370,7 @@ function openCard(t) {
   { cls: 'card', act: () => closeModal(), key: (k) => { if (k === 'e' || k === 'enter' || k === ' ' || k === 'escape') closeModal(); },
     onClose: () => {
       G.got.add(t.ci); t.obj.visible = false; addScore(50); objective();
-      if (G.got.size === MISSIONS[G.mi].cards.length) say({ en: 'All cards collected. Come to the terminal and answer my question.', vi: 'Đã đủ thẻ. Hãy tới trạm và trả lời câu hỏi của tôi.' });
+      if (G.got.size === MISSIONS[G.mi].cards.length) say(UI.allCards);
     } });
 }
 function openQuiz() {
@@ -350,7 +437,7 @@ const mini = $('#mini'), mg = mini.getContext('2d'), MW = mini.width, MH = mini.
 const toPlan = (x, z) => [(x - RECT[0]) * 2, (z - RECT[1]) * 2]; // plan canvas is 2 px per metre
 function markers() {
   const out = [];
-  for (const t of things) if (t.obj.visible) out.push({ x: t.pos.x, z: t.pos.z, kind: t.kind });
+  for (const t of things) if (t.obj.visible && !t.inside) out.push({ x: t.pos.x, z: t.pos.z, kind: t.kind });
   return out;
 }
 function drawMarker(g, x, y, kind, s = 1) {
@@ -366,6 +453,17 @@ function drawPlayer(g, x, y, s = 1) {
   g.fillStyle = '#ff6a2a'; g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, -10 * s); g.lineTo(7 * s, 8 * s); g.lineTo(0, 4 * s); g.lineTo(-7 * s, 8 * s); g.closePath(); g.fill(); g.stroke(); g.restore();
 }
 function drawMini() {
+  if (G.inside) {
+    mg.clearRect(0, 0, MW, MH); mg.save(); mg.beginPath(); mg.arc(MW / 2, MH / 2, MW / 2 - 2, 0, Math.PI * 2); mg.fillStyle = '#1a1712'; mg.fill();
+    const O = world.sets.grotto.origin, k = MW / 30, X = (x) => MW / 2 + (x - O.x) * k, Z = (z) => MH / 2 + (z - O.z - 1) * k;
+    mg.fillStyle = '#3b352d'; mg.beginPath(); mg.ellipse(MW / 2, MH / 2, 9.4 * k, 13.4 * k, 0, 0, Math.PI * 2); mg.fill();
+    mg.fillStyle = '#45d6dc'; mg.fillRect(X(O.x - 3.5), Z(O.z - 4.5), 7 * k, 13 * k); mg.fillStyle = '#b58a5a'; mg.fillRect(X(O.x - 4), Z(O.z + 0.5), 8 * k, 1.4 * k);
+    for (const t of things) if (t.inside && t.obj.visible) drawMarker(mg, X(t.pos.x), Z(t.pos.z), t.kind, 0.85);
+    mg.save(); mg.translate(X(P.pos.x), Z(P.pos.z)); mg.rotate(Math.PI - P.yaw); mg.fillStyle = '#ff6a2a'; mg.strokeStyle = '#fff'; mg.lineWidth = 2; mg.beginPath(); mg.moveTo(0, -9); mg.lineTo(6, 7); mg.lineTo(0, 3); mg.lineTo(-6, 7); mg.closePath(); mg.fill(); mg.stroke(); mg.restore();
+    mg.restore(); mg.strokeStyle = 'rgba(255,255,255,.9)'; mg.lineWidth = 3; mg.beginPath(); mg.arc(MW / 2, MH / 2, MW / 2 - 2, 0, Math.PI * 2); mg.stroke();
+    mg.fillStyle = '#fff'; mg.font = 'bold 12px sans-serif'; mg.textAlign = 'center'; mg.fillText(G.lang === 'vi' ? 'TRONG NÚI' : 'INSIDE', MW / 2, MH - 14);
+    return;
+  }
   const span = 260; // metres across
   const [px, pz] = toPlan(P.pos.x, P.pos.z), sc = MW / (span * 2);
   mg.clearRect(0, 0, MW, MH); mg.save(); mg.beginPath(); mg.arc(MW / 2, MH / 2, MW / 2 - 2, 0, Math.PI * 2); mg.clip();
@@ -386,7 +484,7 @@ function drawMini() {
   mg.fillStyle = '#12355b'; mg.font = 'bold 13px sans-serif'; mg.textAlign = 'center'; mg.fillText('N', MW / 2, 16);
 }
 function toggleMap() {
-  if (G.modal) return;
+  if (G.modal || G.inside) return;
   const W = Math.min(innerWidth * 0.86, (innerHeight * 0.78) * (planCanvas.width / planCanvas.height)), H = W * planCanvas.height / planCanvas.width;
   openModal(`<div class="tag">${L(UI.map)} · <kbd>M</kbd></div><canvas id="bigmap" width="${Math.round(W)}" height="${Math.round(H)}"></canvas>`, { cls: 'mapbox', key: (k) => { if (k === 'm' || k === 'escape' || k === 'tab') closeModal(); } });
   const c = $('#bigmap'), g = c.getContext('2d'), s = c.width / planCanvas.width;
@@ -427,9 +525,9 @@ const qualityText = () => (G.lang === 'vi' ? (G.quality ? 'Đồ họa: cao' : '
 // ───────────────────────── language, time of day ─────────────────────────
 function setLang(l) { G.lang = l; try { localStorage.setItem('ah_lang', l); } catch (e) {} document.querySelectorAll('[data-en]').forEach((el) => { el.innerHTML = el.dataset[l] || el.dataset.en; }); document.querySelectorAll('.lang button').forEach((b) => b.classList.toggle('on', b.dataset.l === l)); objective(); stats(); }
 function toggleTime() {
-  if (G.phase === 'finale') return;
+  if (G.phase === 'finale' || G.inside) return;
   world.setLook(world.look === 'sun' ? 'dusk' : 'sun'); world.captureEnvironment([P.pos.x, 20, P.pos.z]);
-  toast(world.look === 'sun' ? (G.lang === 'vi' ? 'Mặt trời nửa đêm' : 'Midnight sun') : (G.lang === 'vi' ? 'Hoàng hôn vùng cực' : 'Polar twilight'));
+  toast(world.look === 'sun' ? (G.lang === 'vi' ? 'Mặt trời nửa đêm' : 'Midnight sun') : (G.lang === 'vi' ? 'Đêm vùng cực · cực quang' : 'Polar night · northern lights'));
 }
 
 // ───────────────────────── loop ─────────────────────────
@@ -441,21 +539,26 @@ function update(dt) {
     let mx = 0, mz = 0;
     if (keys.has('KeyW') || keys.has('ArrowUp')) mz += 1; if (keys.has('KeyS') || keys.has('ArrowDown')) mz -= 1;
     if (keys.has('KeyD') || keys.has('ArrowRight')) mx += 1; if (keys.has('KeyA') || keys.has('ArrowLeft')) mx -= 1;
-    const run = keys.has('ShiftLeft') || keys.has('ShiftRight');
+    mx += PAD.lx; mz -= PAD.ly;
+    const mag = Math.min(1, Math.hypot(mx, mz));
+    const run = keys.has('ShiftLeft') || keys.has('ShiftRight') || PAD.run;
     const f = fwd(C.yaw), r = new THREE.Vector3(-Math.cos(C.yaw), 0, Math.sin(C.yaw));
     const dir = tmpV.set(0, 0, 0).addScaledVector(f, mz).addScaledVector(r, mx);
-    const want = dir.lengthSq() > 0 ? (run ? 13 : 5.5) : 0;
+    const want = dir.lengthSq() > 0.0004 ? (run ? 13 : 5.5) * Math.max(0.35, mag) : 0;
     P.speed += (want - P.speed) * Math.min(1, dt * 8);
     if (dir.lengthSq() > 0) {
       dir.normalize();
       const targetYaw = Math.atan2(dir.x, dir.z); let d = targetYaw - P.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); P.yaw += d * Math.min(1, dt * 12);
       const climb = onMountain(P.pos.x, P.pos.z) && groundAt(P.pos.x + dir.x * 0.6, P.pos.z + dir.z * 0.6) > P.pos.y + 0.25 ? 0.45 : 1;
       const step = P.speed * dt * climb, nx = P.pos.x + dir.x * step, nz = P.pos.z + dir.z * step;
-      if (!blocked(nx, nz, P.pos.y)) { P.pos.x = nx; P.pos.z = nz; }
+      if (G.inside) {
+        const ok = (x, z) => { const h = caveAt(x, z); return h !== null && h < P.pos.y + 0.8; };
+        if (ok(nx, nz)) { P.pos.x = nx; P.pos.z = nz; } else if (ok(nx, P.pos.z)) P.pos.x = nx; else if (ok(P.pos.x, nz)) P.pos.z = nz;
+      } else if (!blocked(nx, nz, P.pos.y)) { P.pos.x = nx; P.pos.z = nz; }
       else { if (!blocked(nx, P.pos.z, P.pos.y)) P.pos.x = nx; else if (!blocked(P.pos.x, nz, P.pos.y)) P.pos.z = nz; else P.speed *= 0.5; }
     }
-    P.pos.x = THREE.MathUtils.clamp(P.pos.x, RECT[0] + 5, RECT[2] - 5); P.pos.z = THREE.MathUtils.clamp(P.pos.z, RECT[1] + 5, RECT[3] - 5);
-    const gnd = groundAt(P.pos.x, P.pos.z);
+    if (!G.inside) { P.pos.x = THREE.MathUtils.clamp(P.pos.x, RECT[0] + 5, RECT[2] - 5); P.pos.z = THREE.MathUtils.clamp(P.pos.z, RECT[1] + 5, RECT[3] - 5); agents && agents.pushPlayer(P.pos); }
+    const gnd = G.inside ? (caveAt(P.pos.x, P.pos.z) ?? P.pos.y) : groundAt(P.pos.x, P.pos.z);
     P.vy -= 16 * dt; P.pos.y += P.vy * dt;
     if (P.pos.y <= gnd) { if (!P.ground && P.vy < -6) sfx.step(); P.pos.y = P.pos.y < gnd - 0.01 && gnd - P.pos.y < 1.5 ? THREE.MathUtils.lerp(P.pos.y, gnd, Math.min(1, dt * 18)) : gnd; P.vy = 0; P.ground = true; if (gnd - P.pos.y < 0.02) P.pos.y = gnd; }
     else P.ground = P.pos.y - gnd < 0.05;
@@ -468,7 +571,7 @@ function update(dt) {
     if (P.ground && P.speed > 1) { P.stepT -= dt * (1.4 + P.speed * 0.22); if (P.stepT <= 0) { P.stepT = 1; sfx.step(); } }
     // places of the magazine
     for (const p of PLACES) {
-      if (G.places.has(p.n)) continue;
+      if (G.inside || G.places.has(p.n)) continue;
       const s = p.spot; if (Math.hypot(s.x - P.pos.x, s.z - P.pos.z) < 14) { G.places.add(p.n); addScore(10); sfx.place(); toast(`<b>${L(UI.discovered)} ${p.n}/35</b> ${p.name}`, 'place'); stats(); }
     }
     // the blizzard drill
@@ -484,8 +587,11 @@ function update(dt) {
   const tgt = new THREE.Vector3(P.pos.x, P.pos.y + 1.6, P.pos.z), f = fwd(C.yaw);
   const want = new THREE.Vector3(tgt.x - f.x * C.dist * Math.cos(C.pitch), tgt.y + C.dist * Math.sin(C.pitch), tgt.z - f.z * C.dist * Math.cos(C.pitch));
   let dist = 1;
-  for (let s = 0.08; s <= 1.001; s += 0.04) { const q = tgt.clone().lerp(want, s); if (hm.at(q.x, q.z) > q.y - 0.35) { dist = Math.max(0.12, s - 0.08); break; } }
-  const camPos = tgt.clone().lerp(want, dist); camPos.y = Math.max(camPos.y, hm.at(camPos.x, camPos.z) + 0.4);
+  if (G.inside) {
+    const O = world.sets.grotto.origin;
+    for (let s = 0.08; s <= 1.001; s += 0.04) { const q = tgt.clone().lerp(want, s); if (((q.x - O.x) / 8.8) ** 2 + ((q.z - O.z - 1) / 12.8) ** 2 > 1 || q.y > O.y + 5.5) { dist = Math.max(0.12, s - 0.08); break; } }
+  } else for (let s = 0.08; s <= 1.001; s += 0.04) { const q = tgt.clone().lerp(want, s); if (hm.at(q.x, q.z) > q.y - 0.35) { dist = Math.max(0.12, s - 0.08); break; } }
+  const camPos = tgt.clone().lerp(want, dist); if (!G.inside) camPos.y = Math.max(camPos.y, hm.at(camPos.x, camPos.z) + 0.4);
   C.pos.lerp(camPos, G.playing ? Math.min(1, dt * 14) : 1);
   camera.position.copy(C.pos); camera.lookAt(tgt);
   // markers spin and bob
@@ -494,15 +600,18 @@ function update(dt) {
   // prompt
   const nt = G.playing && !G.modal ? nearThing() : null;
   const pr = $('#prompt');
-  if (nt) { pr.innerHTML = `<kbd>E</kbd> ${nt.kind === 'card' ? L(UI.readCard) : nt.kind === 'terminal' ? L(UI.talk) : L(UI.ride) + ' · ' + L(nt.name)}`; pr.classList.add('on'); } else pr.classList.remove('on');
+  if (nt) { pr.innerHTML = `<kbd>E</kbd> ${nt.kind === 'card' ? L(UI.readCard) : nt.kind === 'terminal' ? L(UI.talk) : nt.kind === 'portal' ? L(UI.enterMountain) : nt.kind === 'exit' ? L(UI.exitMountain) : L(UI.ride) + ' · ' + L(nt.name)}`; pr.classList.add('on'); } else pr.classList.remove('on');
   if (sayTimer > 0) { sayTimer -= dt; if (sayTimer <= 0) nextSay(); }
   world.follow(P.pos);
+  world.tick(dt);
+  if (agents && G.playing) agents.update(dt, P.pos, G.inside);
 }
 
 let last = performance.now(), miniT = 0, fpsN = 0, fpsT = 0, fpsLast = performance.now();
 function loop(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
   if (G.ready) {
+    pollPad(dt);
     if (!G.playing) { // the title screen slowly circles downtown
       const a = now / 1000 * 0.05; camera.position.set(Math.sin(a) * 260, 120, Math.cos(a) * 260 + 40); camera.lookAt(20, 0, 20);
     } else update(dt);
@@ -527,15 +636,19 @@ async function init() {
   { // water cells from the plan colours, so nothing is placed in a pool
     const d = planCanvas.getContext('2d').getImageData(0, 0, planCanvas.width, planCanvas.height).data, w = planCanvas.width;
     waterAt = (x, z) => { const c = Math.round((x - RECT[0]) * 2), r = Math.round((z - RECT[1]) * 2); if (c < 0 || r < 0 || c >= w || r >= planCanvas.height) return false; const i = (r * w + c) * 4; return d[i + 2] > 180 && d[i] < 160 && d[i + 2] - d[i] > 60; };
+    isRoad = (x, z) => { const c = Math.round((x - RECT[0]) * 2), r = Math.round((z - RECT[1]) * 2); if (c < 0 || r < 0 || c >= w || r >= planCanvas.height) return false; const i = (r * w + c) * 4; return Math.abs(d[i] - 79) < 16 && Math.abs(d[i + 1] - 90) < 16 && Math.abs(d[i + 2] - 105) < 16; };
   }
   // the places of the magazine, moved onto walkable ground
   for (const p of PLACES) p.spot = findOpen(p.x, p.z, 1, 40);
   MISSIONS.forEach((m, mi) => {
-    m.cards.forEach((c, ci) => addThing('card', c, { mi, ci, raw: !!c.summit }));
+    m.cards.forEach((c, ci) => addThing('card', c, { mi, ci, raw: !!c.summit, inside: !!c.inside }));
     addThing('terminal', m.terminal, { mi });
   });
   for (const s of STATIONS) addThing('station', s, { name: s.name, id: s.id });
   addThing('shelter', FINALE.target);
+  addThing('portal', { x: 0, z: SPA_FACE_Z - 7.5 }, { raw: true });          // in front of the North Portal doors
+  addThing('exit', { x: 0, z: -11.5 }, { inside: true });                       // the cave's entrance side
+  agents = createAgents(scene, hm, isRoad, waterAt);
   const sp = findOpen(SPAWN.x, SPAWN.z); P.pos.copy(sp); P.pos.y = groundAt(sp.x, sp.z);
   G.ready = true; $('#loading').classList.add('done');
   window.__plan = planCanvas;
@@ -549,7 +662,7 @@ async function init() {
     }
     return { ok: false, timeout: true };
   };
-  window.__game = { G, P, C, hm, things, world, walkTest, teleport: (x, z) => { const p = findOpen(x, z); P.pos.copy(p); P.vy = 0; }, missionDone, startMission, startFinale, finish, toggleTime, openQuiz, interact, nearThing };
+  window.__game = { G, P, C, hm, things, world, agents: () => agents, goInside, walkTest, teleport: (x, z) => { const p = findOpen(x, z); P.pos.copy(p); P.vy = 0; }, missionDone, startMission, startFinale, finish, toggleTime, openQuiz, interact, nearThing };
   if (QS.has('auto')) start();
 }
 function start() {

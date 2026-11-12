@@ -100,6 +100,10 @@ kbd { display: inline-block; min-width: 1.7em; padding: .05em .45em; margin-righ
 #modal .end b { display: block; font-size: 30px; color: var(--gold); }
 #modal .end span { font-size: 13px; color: #a9bfe3; }
 #bigmap { display: block; margin-top: 10px; border-radius: 12px; }
+#modal button.padfocus { outline: 3px solid #fff; outline-offset: 2px; }
+.padonly { display: none; } body.pad .padonly { display: block; } body.pad #keys { display: none; }
+#padkeys { position: absolute; right: 22px; top: 258px; width: 220px; padding: 10px 14px; font-size: 13px; line-height: 1.8; color: #bcd0f2; }
+.ps { display: inline-grid; place-items: center; width: 1.55em; height: 1.55em; margin-right: .35em; border-radius: 50%; border: 1px solid rgba(255,255,255,.45); font-size: .9em; font-weight: 700; }
 #fade { position: fixed; inset: 0; z-index: 26; display: grid; place-items: center; background: #050a18; opacity: 0; pointer-events: none; transition: opacity .6s; }
 #fade.on { opacity: 1; }
 #fade span { font-size: 26px; font-weight: 700; color: #8fc0ff; }
@@ -115,9 +119,11 @@ kbd { display: inline-block; min-width: 1.7em; padding: .05em .45em; margin-righ
   <div id="toasts"></div>
   <div id="prompt" class="panel"></div>
   <div id="hint-lock" class="panel" data-en="Click to look around" data-vi="Bấm chuột để xoay góc nhìn">Click to look around</div>
+  <div id="padkeys" class="panel padonly" data-en="<b>🎮 PS5 controller</b><br>Left stick walk · R2 run<br>Right stick look · R3 zoom<br><span class='ps'>✕</span>use / jump · <span class='ps'>□</span>jump<br><span class='ps'>△</span>map · L1 day / night<br>R1 graphics · Create language"
+    data-vi="<b>🎮 Tay cầm PS5</b><br>Cần trái: đi · R2: chạy<br>Cần phải: xoay · R3: xa / gần<br><span class='ps'>✕</span>tương tác / nhảy · <span class='ps'>□</span>nhảy<br><span class='ps'>△</span>bản đồ · L1 ngày / đêm<br>R1 đồ họa · Create ngôn ngữ"></div>
   <div id="aura" class="panel"><div class="av"></div><div class="nm">AURA</div><div class="txt"></div></div>
-  <div id="keys" class="panel" data-en="<kbd>WASD</kbd>walk · <kbd>Shift</kbd>run<br><kbd>Space</kbd>jump · <kbd>E</kbd>use<br><kbd>M</kbd>map · <kbd>T</kbd>day / twilight<br><kbd>G</kbd>graphics · <kbd>L</kbd>language"
-    data-vi="<kbd>WASD</kbd>đi · <kbd>Shift</kbd>chạy<br><kbd>Space</kbd>nhảy · <kbd>E</kbd>tương tác<br><kbd>M</kbd>bản đồ · <kbd>T</kbd>ngày / hoàng hôn<br><kbd>G</kbd>đồ họa · <kbd>L</kbd>ngôn ngữ"></div>
+  <div id="keys" class="panel" data-en="<kbd>WASD</kbd>walk · <kbd>Shift</kbd>run<br><kbd>Space</kbd>jump · <kbd>E</kbd>use<br><kbd>M</kbd>map · <kbd>T</kbd>day / night<br><kbd>G</kbd>graphics · <kbd>L</kbd>language"
+    data-vi="<kbd>WASD</kbd>đi · <kbd>Shift</kbd>chạy<br><kbd>Space</kbd>nhảy · <kbd>E</kbd>tương tác<br><kbd>M</kbd>bản đồ · <kbd>T</kbd>ngày / đêm<br><kbd>G</kbd>đồ họa · <kbd>L</kbd>ngôn ngữ"></div>
 </div>
 
 <div id="title">
@@ -127,8 +133,9 @@ kbd { display: inline-block; min-width: 1.7em; padding: .05em .45em; margin-righ
     data-vi="Dạo bước trong thành phố vùng cực của tương lai. Thu thẻ dữ liệu, trả lời AURA, đi tàu điện ngầm, leo núi Aurora và vượt qua buổi diễn tập bão tuyết."></div>
   <div class="row"><button id="play" data-en="▶ Play" data-vi="▶ Chơi">▶ Play</button>
     <div class="lang"><button data-l="en">English</button><button data-l="vi">Tiếng Việt</button></div></div>
-  <div class="keys" data-en="<div><kbd>W A S D</kbd> walk · <kbd>Shift</kbd> run</div><div><kbd>Mouse</kbd> look around · wheel to zoom</div><div><kbd>Space</kbd> jump · <kbd>E</kbd> use</div><div><kbd>M</kbd> city map · <kbd>T</kbd> sun / twilight</div><div><kbd>G</kbd> graphics high / fast</div><div><kbd>Esc</kbd> free the mouse</div>"
-    data-vi="<div><kbd>W A S D</kbd> đi · <kbd>Shift</kbd> chạy</div><div><kbd>Chuột</kbd> xoay góc nhìn · lăn để phóng to</div><div><kbd>Space</kbd> nhảy · <kbd>E</kbd> tương tác</div><div><kbd>M</kbd> bản đồ · <kbd>T</kbd> ngày / hoàng hôn</div><div><kbd>G</kbd> đồ họa cao / nhanh</div><div><kbd>Esc</kbd> nhả chuột</div>"></div>
+  <div class="keys" data-en="<div><kbd>W A S D</kbd> walk · <kbd>Shift</kbd> run</div><div><kbd>Mouse</kbd> look around · wheel to zoom</div><div><kbd>Space</kbd> jump · <kbd>E</kbd> use</div><div><kbd>M</kbd> city map · <kbd>T</kbd> day / night (aurora)</div><div><kbd>G</kbd> graphics high / fast</div><div><kbd>Esc</kbd> free the mouse</div><div>🎮 PS5 controller supported</div>"
+    data-vi="<div><kbd>W A S D</kbd> đi · <kbd>Shift</kbd> chạy</div><div><kbd>Chuột</kbd> xoay góc nhìn · lăn để phóng to</div><div><kbd>Space</kbd> nhảy · <kbd>E</kbd> tương tác</div><div><kbd>M</kbd> bản đồ · <kbd>T</kbd> ngày / đêm (cực quang)</div><div><kbd>G</kbd> đồ họa cao / nhanh</div><div><kbd>Esc</kbd> nhả chuột</div><div>🎮 Chơi được bằng tay cầm PS5</div>"></div>
+  <div class="padonly" style="margin-top:14px;font-size:15px;color:#9fe8ff" data-en="🎮 Controller ready: press ✕ to play" data-vi="🎮 Đã có tay cầm: nhấn ✕ để chơi"></div>
   <div class="credit" data-en="A game about our magazine city. Every fact comes from the Aurora Haven magazine." data-vi="Trò chơi về thành phố trong tạp chí của nhóm. Mọi thông tin đều lấy từ tạp chí Aurora Haven."></div>
 </div>
 
