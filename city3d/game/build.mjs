@@ -13,6 +13,9 @@ js = js.replace('textures/waternormals.jpg', wn).replace(/<\/script/gi, '<\\/scr
 let nVoice = 0;
 js = js.replace(/game\/voice\/([a-z_]+)\.mp3/g, (m, k) => { nVoice++; return 'data:audio/mpeg;base64,' + fs.readFileSync(path.join(D, 'voice', k + '.mp3')).toString('base64'); });
 if (!nVoice) throw new Error('no voice files found in the bundle');
+let nMusic = 0;
+js = js.replace(/game\/music\/([a-z_]+)\.mp3/g, (m, k) => { nMusic++; return 'data:audio/mpeg;base64,' + fs.readFileSync(path.join(D, 'music', k + '.mp3')).toString('base64'); });
+if (nMusic !== 3) throw new Error('expected 3 music files, found ' + nMusic);
 let html = fs.readFileSync(path.join(ROOT, 'game.html'), 'utf8');
 const a = html.indexOf('<script type="importmap">'), b = html.indexOf('</script>', html.indexOf('src="./game/game.js"')) + 9;
 if (a < 0 || b < 9) throw new Error('script tags not found');

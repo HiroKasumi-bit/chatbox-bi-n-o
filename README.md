@@ -23,6 +23,7 @@ Sau đó, các ảnh render được làm thành ảnh như chụp thật bằng
 - AURA nói thành tiếng (tiếng Anh hoặc tiếng Việt theo ngôn ngữ đã chọn). Xe chạy trên đường, người đi bộ trên vỉa hè, tuyết rơi thật, ban đêm có cực quang.
 - Khu spa nằm hẳn bên trong núi Aurora, giống sơ đồ mặt cắt trong tạp chí: đi vào qua cổng North Portal, thang máy kính lên được 4 tầng (1 sảnh đón và hồ khoáng, 2 các bậc hồ bùn ấm, 3 phòng xông hơi muối và trị liệu, 4 Summit Sanctuary với hồ nổi dưới mái kính Aurora Eye trên đỉnh núi). Trong game, các tầng spa nhô ra ngoài sườn núi được bỏ đi; ảnh trong tạp chí giữ nguyên.
 - Đi được bên dưới đường ống, xà, mái hiên (phần treo cao trên 2,2 m không còn chắn đường).
+- Nhạc nền nhẹ, lạnh: “Frozen Star” và “Floating Cities” ngoài phố, “Healing” trong spa (Kevin MacLeod, incompetech.com, giấy phép CC BY 4.0, đã ghi công trên màn hình đầu game). Nhạc nhỏ lại khi AURA nói, tắt dần khi diễn tập bão tuyết. Phím **N** (tay cầm: Options) bật / tắt nhạc.
 - 6 nhiệm vụ do AURA giao: Liberty Mall, nhà máy nhiệt hạch, nhà máy thực phẩm từ tuyết, nhà kính và tái chế, khu năng lượng phía bắc, núi Aurora (leo lên tận đỉnh). Mỗi nhiệm vụ có 3 thẻ dữ liệu và 1 câu đố; cuối game là buổi diễn tập bão tuyết, chạy về hầm trú ẩn trong 90 giây.
 - Sau nhiệm vụ đầu, tàu điện ngầm mở: đứng trong nhà ga phát sáng và nhấn E để đi nhanh giữa 5 ga.
 - Đi ngang 35 địa điểm của tạp chí thì địa điểm được đánh dấu "đã khám phá".

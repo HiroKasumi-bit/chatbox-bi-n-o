@@ -62,6 +62,25 @@ const sfx = {
   jump: () => noise(0.12, 600, 0.04, 1),
 };
 
+// ───────────────────────── music ─────────────────────────
+// Calm, cold background music by Kevin MacLeod (incompetech.com), CC BY 4.0: Frozen Star and Floating Cities
+// outdoors, Healing in the spa; it fades out for the blizzard drill and dips while AURA speaks.
+const MUSIC = { outside: ['game/music/frozen_star.mp3', 'game/music/floating_cities.mp3'], spa: ['game/music/healing.mp3'] };
+const MU = { on: (() => { try { return localStorage.getItem('ah_music') !== 'off'; } catch (e) { return true; } })(), mood: null, cur: null, idx: 0, vol: 0.3 };
+function musicMood(m) { if (m === MU.mood) return; MU.mood = m; MU.idx = 0; nextTrack(); }
+function nextTrack() {
+  if (MU.cur) fadeOut(MU.cur);
+  const list = MU.mood && MUSIC[MU.mood]; if (!list) { MU.cur = null; return; }
+  const a = new Audio(list[MU.idx++ % list.length]); a.volume = 0; a.play().catch(() => {});
+  a.addEventListener('ended', () => { if (MU.cur === a) nextTrack(); }); MU.cur = a;
+}
+function fadeOut(a) { const v0 = a.volume, t0 = performance.now(); const id = setInterval(() => { const k = (performance.now() - t0) / 2500; a.volume = Math.max(0, v0 * (1 - k)); if (k >= 1) { clearInterval(id); a.pause(); } }, 60); }
+function musicTick(dt) {
+  if (!MU.cur) return; const speaking = voice && !voice.paused && !voice.ended;
+  const target = MU.on ? MU.vol * (speaking ? 0.45 : 1) : 0; MU.cur.volume = Math.min(1, Math.max(0, MU.cur.volume + (target - MU.cur.volume) * Math.min(1, dt * 1.2)));
+}
+function toggleMusic() { MU.on = !MU.on; try { localStorage.setItem('ah_music', MU.on ? 'on' : 'off'); } catch (e) {} toast(G.lang === 'vi' ? (MU.on ? '♪ Nhạc: bật' : '♪ Nhạc: tắt') : (MU.on ? '♪ Music on' : '♪ Music off')); }
+
 // ───────────────────────── player ─────────────────────────
 const P = { pos: new THREE.Vector3(SPAWN.x, 0, SPAWN.z), vy: 0, yaw: SPAWN.yaw, ground: true, speed: 0, anim: 0, stepT: 0 };
 const C = { yaw: SPAWN.yaw, pitch: 0.32, dist: 7.5, pos: new THREE.Vector3() };
@@ -98,6 +117,7 @@ addEventListener('keydown', (e) => {
   else if (k === 't') toggleTime();
   else if (k === 'g') { G.quality = !G.quality; G.autoQ = false; world.setQuality(G.quality); toast(qualityText()); }
   else if (k === 'l') { setLang(G.lang === 'en' ? 'vi' : 'en'); }
+  else if (k === 'n') toggleMusic();
   else if (e.code === 'Space') { e.preventDefault(); jump(); }
 });
 addEventListener('keyup', (e) => keys.delete(e.code));
@@ -150,6 +170,7 @@ function pollPad(dt) {
     if (hit(4)) toggleTime();                                  // L1: midnight sun / polar night
     if (hit(5)) { G.quality = !G.quality; G.autoQ = false; world.setQuality(G.quality); toast(qualityText()); } // R1: graphics
     if (hit(8)) setLang(G.lang === 'en' ? 'vi' : 'en');        // Create: language
+    if (hit(9)) toggleMusic();                                 // Options: music on / off
     if (hit(11)) C.dist = C.dist > 10 ? 6 : 14;                // R3: camera near / far
   }
   PAD.prev = b;
@@ -377,7 +398,7 @@ function goRoom(r) {
   const label = r ? L(UI.levels[LEVELS.indexOf(r)]) : L(UI.exitMountain);
   sfx.metro(); $('#fade').classList.add('on'); $('#fade span').textContent = label;
   setTimeout(() => {
-    G.room = r;
+    G.room = r; if (G.phase !== 'finale') musicMood(r ? 'spa' : 'outside');
     if (r === 'L1' ) { const O = world.sets.grotto.origin; P.pos.set(O.x - 1.5, O.y, O.z - 8.5); P.yaw = 0; world.enterRoom('L1', null); }
     else if (r) { const d = SPA[r], O = d.origin; P.pos.set(O.x + d.arrive.x, O.y, O.z + d.arrive.z); P.yaw = d.arrive.yaw; world.enterRoom(r, d); }
     else { const t = things.find((x) => x.kind === 'portal'); P.pos.set(t.pos.x, t.pos.y, t.pos.z - 3); P.yaw = Math.PI; world.exitRoom([P.pos.x, 20, P.pos.z]); }
@@ -422,7 +443,7 @@ function missionDone() {
   showMission();
 }
 function startFinale() {
-  G.phase = 'finale'; G.finaleT = 0; showMission(); sfx.alarm();
+  G.phase = 'finale'; G.finaleT = 0; showMission(); sfx.alarm(); musicMood(null);
   world.setLook('storm'); world.captureEnvironment([P.pos.x, 20, P.pos.z]);
   $('#hud').classList.add('storm'); say(FINALE.intro);
   if (AU.windGain) AU.windGain.gain.setTargetAtTime(0.22, AU.ctx.currentTime, 1.5);
@@ -438,7 +459,7 @@ function finish() {
     <p>${L(inTime ? FINALE.win : FINALE.late)}</p>
     <div class="btns"><button data-act="free">${L(UI.again)}</button><button data-act="restart" class="ghost">${L(UI.restart)}</button></div>`,
   { cls: 'endbox', act: (a) => { if (a === 'restart') location.reload(); else { closeModal(); } }, key: (k) => { if (k === 'enter' || k === 'e') closeModal(); },
-    onClose: () => { G.free = true; world.setLook('sun'); world.captureEnvironment([P.pos.x, 20, P.pos.z]); $('#hud').classList.remove('storm'); if (AU.windGain) AU.windGain.gain.setTargetAtTime(0.05, AU.ctx.currentTime, 1); showMission(); } }), 2600);
+    onClose: () => { G.free = true; musicMood('outside'); world.setLook('sun'); world.captureEnvironment([P.pos.x, 20, P.pos.z]); $('#hud').classList.remove('storm'); if (AU.windGain) AU.windGain.gain.setTargetAtTime(0.05, AU.ctx.currentTime, 1); showMission(); } }), 2600);
 }
 
 // ───────────────────────── metro ─────────────────────────
@@ -626,6 +647,7 @@ function update(dt) {
   if (sayTimer > 0) { sayTimer -= dt; if (sayTimer <= 0) nextSay(); }
   world.follow(P.pos);
   world.tick(dt);
+  musicTick(dt);
   if (agents && G.playing) agents.update(dt, P.pos, !!G.room);
 }
 
@@ -687,13 +709,13 @@ async function init() {
     }
     return { ok: false, timeout: true };
   };
-  window.__game = { G, P, C, hm, things, world, agents: () => agents, goRoom, walkTest, teleport: (x, z) => { const p = findOpen(x, z); P.pos.copy(p); P.vy = 0; }, missionDone, startMission, startFinale, finish, toggleTime, openQuiz, interact, nearThing };
+  window.__game = { G, P, C, hm, things, world, agents: () => agents, music: () => ({ mood: MU.mood, on: MU.on, playing: !!MU.cur && !MU.cur.paused, t: MU.cur ? +MU.cur.currentTime.toFixed(1) : 0, vol: MU.cur ? +MU.cur.volume.toFixed(2) : 0 }), goRoom, walkTest, teleport: (x, z) => { const p = findOpen(x, z); P.pos.copy(p); P.vy = 0; }, missionDone, startMission, startFinale, finish, toggleTime, openQuiz, interact, nearThing };
   if (QS.has('auto')) start();
 }
 function start() {
   if (G.playing) return; ac(); G.playing = true; $('#title').classList.add('gone'); $('#hud').classList.add('on');
   C.yaw = P.yaw; C.pos.set(P.pos.x, P.pos.y + 6, P.pos.z + 8);
-  startMission(0); cv.requestPointerLock?.();
+  startMission(0); musicMood('outside'); cv.requestPointerLock?.();
 }
 $('#play').addEventListener('click', start);
 document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => { sfx.click(); setLang(b.dataset.l); }));
