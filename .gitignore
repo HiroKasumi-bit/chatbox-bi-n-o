@@ -4,3 +4,4 @@ city3d/renders_raw/
 __pycache__/
 output/gemini_pack/
 output/gemini_pack.zip
+city3d/game/dist/

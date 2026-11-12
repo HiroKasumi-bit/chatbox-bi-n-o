@@ -14,6 +14,19 @@ Bốn bản đồ 2D (bản đồ tổng thể, hai khu đặc trưng, các tầ
 
 Sau đó, các ảnh render được làm thành ảnh như chụp thật bằng AI tạo ảnh chạy trên máy tính (Stable Diffusion XL, model RealVisXL V5), lấy chính ảnh render làm đầu vào. Riêng ảnh chụp mô hình Eco-Polis của nhóm giữ nguyên. Cách làm ở mục [Làm ảnh như thật](#làm-ảnh-như-thật-sdxl).
 
+## Game khám phá thành phố
+
+`output/Aurora_Haven_Explorer.html` là game 3D **Aurora Haven Explorer**, chơi trên máy tính: mở file bằng Chrome hoặc Edge (không cần mạng), chọn English hoặc Tiếng Việt, bấm Play.
+
+- Đi bộ trong chính thành phố 3D của tạp chí (góc nhìn thứ ba): **W A S D** đi, **Shift** chạy, **Space** nhảy, **chuột** xoay góc nhìn, **E** tương tác, **M** bản đồ, **T** đổi mặt trời nửa đêm / hoàng hôn vùng cực, **G** đồ họa cao / nhanh, **L** đổi ngôn ngữ, **Esc** nhả chuột.
+- 6 nhiệm vụ do AURA giao: Liberty Mall, nhà máy nhiệt hạch, nhà máy thực phẩm từ tuyết, nhà kính và tái chế, khu năng lượng phía bắc, núi Aurora (leo lên tận đỉnh). Mỗi nhiệm vụ có 3 thẻ dữ liệu và 1 câu đố; cuối game là buổi diễn tập bão tuyết, chạy về hầm trú ẩn trong 90 giây.
+- Sau nhiệm vụ đầu, tàu điện ngầm mở: đứng trong nhà ga phát sáng và nhấn E để đi nhanh giữa 5 ga.
+- Đi ngang 35 địa điểm của tạp chí thì địa điểm được đánh dấu "đã khám phá".
+- Mọi thông tin trong thẻ và câu đố lấy từ tạp chí (thẻ ghi số trang). Vị trí 5 nhà ga là do game đặt, tạp chí chỉ nêu tên 2 tuyến và ga trung tâm.
+- Máy yếu: game tự chuyển sang đồ họa nhanh (tắt bóng đổ) nếu bị giật; nhấn G để đổi lại.
+
+Mã nguồn ở `city3d/game/` và `city3d/game.html`. Dựng lại file game: `cd city3d && npm install && npm run game:build`.
+
 ## Mở tạp chí
 
 | File | Dùng để |

@@ -25,6 +25,7 @@
 | `magazine/source/Aurora_Haven.json` | The team's Eco-Polis Builder map. It opens at https://ecopolis3d.netlify.app/. |
 | `magazine/tools/` | Helper scripts: `prepare_renders.py`, `make_graphics.py` (QR codes and logo, each code test-scanned), `export_docx.py` (all text to Word), `make_shades.py`, `apply_theme.js`. |
 | `city3d/` | The 3D city in three.js 0.160. `src/layout.js` holds the city plan: one unit is 1 m, x points east, z points south. `tools/shots.json` lists every camera. `tools/render.js` renders through Playwright and Chromium. `tools/plans.js` draws the 2D plans. |
+| `city3d/game/`, `city3d/game.html` | **Aurora Haven Explorer**, a desktop 3D game in the same city: missions, data cards, quizzes, metro, blizzard drill. Text and facts in `game/missions.js` (en + vi, each card cites its magazine page). `npm run game:build` bundles it with esbuild into `output/Aurora_Haven_Explorer.html`. QA scripts: `game/qa_flow.js` (plays every mission), `game/qa_offline.js`, `game/run_check.js`, `game/dump_maps.js`; they expect `python3 -m http.server 8790` in `city3d/`. |
 | `output/` | Finished files, listed below. |
 | `.github/workflows/map-release.yml` | Re-uploads `Aurora_Haven.json` to the GitHub Release `map-v1` whenever the file changes, so the page 21 QR code always downloads the latest map. |
 | `image_kit/prompts.md` | Zip only. The pending AI-photo job: one prompt per picture; see section 6. |

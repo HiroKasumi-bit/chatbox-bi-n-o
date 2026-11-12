@@ -8,6 +8,10 @@
   },
   "scripts": {
     "render": "node tools/render.js tools/shots.json ../magazine/renders_raw",
-    "plans": "node tools/plans.js ../magazine/assets/plans"
+    "plans": "node tools/plans.js ../magazine/assets/plans",
+    "game:build": "node game/build.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0"
   }
 }
