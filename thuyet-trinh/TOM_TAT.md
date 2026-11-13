@@ -1,6 +1,6 @@
 # Tóm tắt các bài thuyết trình đã làm (đọc file này thay cho lịch sử chat)
 
-Cập nhật: 07/11/2026. Mọi thứ nằm trên nhánh `ccr-32dbab14-4ki8g2` của repo `hirokasumi-bit/chatbox-bi-n-o`, trong thư mục `thuyet-trinh/`.
+Cập nhật: 13/11/2026. Mọi thứ nằm trên nhánh `ccr-32dbab14-4ki8g2` của repo `hirokasumi-bit/chatbox-bi-n-o`, trong thư mục `thuyet-trinh/`.
 
 ## Người dùng
 - Sinh viên sư phạm (Khoa Lý – Hoá, ĐHSP – ĐHĐN), trả lời bằng tiếng Việt, muốn giao việc rồi duyệt.
@@ -39,6 +39,13 @@ Cập nhật: 07/11/2026. Mọi thứ nằm trên nhánh `ccr-32dbab14-4ki8g2` c
 - Phong cách học từ video TikTok "Figma final boss" (Neu Web Studio): bay xuyên đường hầm nhiều lớp, dải chéo quét ngang + chữ khổng lồ sau vật thể tách nền, phóng qua "cửa sổ", lật khối 3D, tán lá mở, các thẻ lắp ghép isometric.
 - Toàn bộ slide sinh từ mảng `HTML` trong `nguon/app.js`; chuyển cảnh khai báo bằng `data-tr` (tunnel, bands, window, flip, leaves, flash).
 - Ảnh: Wikimedia Commons (ghi nguồn ở slide cuối, chi tiết trong `nguon/credits.json`) + ảnh trong Doc của nhóm.
+
+## 5. Eco-Polis VR · xem bản đồ Living City bằng kính VR Box
+- Thư mục: `thuyet-trinh/eco-polis-vr/` (trang web chạy được ngay) + `thuyet-trinh/eco-polis-vr_offline.zip`. Hướng dẫn: `eco-polis-vr/HUONG_DAN.md`.
+- Link HTTPS: https://raw.githack.com/HiroKasumi-bit/chatbox-bi-n-o/ccr-32dbab14-4ki8g2/thuyet-trinh/eco-polis-vr/index.html
+- Dữ liệu: `city.json` = file `EcoPolis_Project_LivingCity_1.json` của người dùng (4002 vật, 65 mô hình, crisis "cave"). Mô hình + ảnh nền tải từ `ecopolis3d.netlify.app`.
+- Kỹ thuật: three.js r160 local, InstancedMesh chia 4 góc, 2 hình cạnh nhau (StereoCamera), cảm biến `deviceorientation` (cần https hoặc localhost), vòng 9 điểm đến hiện khi cúi xuống (nhìn 1,5 s), chạm = bay tới trước, nhìn công trình hiện `details`.
+- Artifact claude.ai không đọc được cảm biến xoay → phải mở bằng link https hoặc localhost.
 
 ## Bài học kỹ thuật (để không lặp lỗi)
 - Trang đăng online tự thêm `img{max-width:100%}` → ảnh trong khung phóng to bị méo. Phải đặt `max-width:none` cho ảnh đó, và khi chạy thử thì chèn quy tắc này vào trang để kiểm tra giống bản online.
