@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurora Haven Explorer</title>
+<style>
+:root { --navy: #12355b; --ink: #0d1b2e; --cyan: #3fe0ff; --gold: #ffc857; --red: #ff4d5e; --ok: #3ddc97; --glass: rgba(10, 20, 38, .72); --line: rgba(160, 200, 255, .22);
+  --sans: "Segoe UI", "Be Vietnam Pro", Roboto, "Helvetica Neue", Arial, sans-serif; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #0a1030; font-family: var(--sans); color: #fff; user-select: none; }
+#c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+kbd { display: inline-block; min-width: 1.7em; padding: .05em .45em; margin-right: .35em; border-radius: 6px; border: 1px solid rgba(255,255,255,.45); background: rgba(255,255,255,.12); font: 700 .85em var(--sans); text-align: center; }
+
+/* loading + title */
+#loading { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 30%, #1b2f63, #070c22 70%); transition: opacity .8s; }
+#loading.done { opacity: 0; pointer-events: none; }
+#loading .in { width: min(460px, 80vw); text-align: center; }
+#loading .k { font-size: 14px; letter-spacing: .3em; color: #9fc1ff; }
+#loadbar { margin-top: 18px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.12); overflow: hidden; }
+#loadbar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #3fe0ff, #6effb4); transition: width .3s; }
+#loadtxt { margin-top: 12px; font-size: 14px; color: #9fb3d9; }
+#title { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; justify-content: center; padding: 0 8vw; background: linear-gradient(90deg, rgba(5,10,28,.88), rgba(5,10,28,.35) 55%, rgba(5,10,28,0)); transition: opacity .6s; }
+#title.gone { opacity: 0; pointer-events: none; }
+#title .k { font-size: 15px; letter-spacing: .32em; color: #8fd9ff; font-weight: 700; }
+#title h1 { margin: 10px 0 6px; font-size: clamp(44px, 7vw, 96px); line-height: 1; font-weight: 800; letter-spacing: -.01em; text-shadow: 0 6px 40px rgba(0,0,0,.4); }
+#title h1 span { color: var(--cyan); }
+#title .sub { max-width: 560px; font-size: 19px; line-height: 1.5; color: #cfe0ff; }
+#title .row { margin-top: 28px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+#play { font: 800 22px var(--sans); color: #06203a; background: linear-gradient(180deg, #8ff3ff, #3fe0ff); border: 0; border-radius: 14px; padding: 16px 44px; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+#play:hover { filter: brightness(1.08); }
+.lang { display: inline-flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.lang button { font: 700 15px var(--sans); color: #cfe0ff; background: rgba(255,255,255,.06); border: 0; padding: 12px 16px; cursor: pointer; }
+.lang button.on { background: #fff; color: var(--navy); }
+.keys { margin-top: 34px; display: grid; grid-template-columns: repeat(2, minmax(0, 280px)); gap: 8px 26px; font-size: 15px; color: #bcd0f2; }
+.credit { position: absolute; left: 8vw; bottom: 26px; font-size: 13px; color: #8ea4c9; }
+
+/* HUD */
+#hud { position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0; transition: opacity .6s; }
+#hud.on { opacity: 1; }
+.panel { background: var(--glass); border: 1px solid var(--line); border-radius: 16px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+#leftcol { position: absolute; left: 22px; top: 22px; width: 340px; display: flex; flex-direction: column; gap: 10px; }
+#obj { padding: 16px 18px; }
+#obj .k { font-size: 12px; font-weight: 800; letter-spacing: .22em; color: var(--cyan); }
+#obj .t { margin-top: 6px; font-size: 21px; font-weight: 800; line-height: 1.2; }
+#obj .a { margin-top: 3px; font-size: 14px; color: #a9bfe3; }
+#obj .row { margin-top: 10px; font-size: 16px; }
+#obj .row b { color: var(--cyan); }
+#obj .row.ok { color: var(--ok); } #obj .row.ok b { color: var(--ok); }
+#obj .row.dim { opacity: .5; }
+#obj .row.red { color: #ffb3bb; } #obj .row.red b { color: var(--red); font-size: 20px; }
+#stats { display: flex; gap: 8px; flex-wrap: wrap; }
+#stats span { padding: 7px 12px; font-size: 14px; color: #bcd0f2; background: var(--glass); border: 1px solid var(--line); border-radius: 12px; }
+#stats b { color: #fff; font-size: 16px; margin-left: 4px; }
+#mini { position: absolute; right: 22px; top: 22px; width: 220px; height: 220px; filter: drop-shadow(0 8px 24px rgba(0,0,0,.35)); }
+#keys { position: absolute; right: 22px; top: 258px; width: 220px; padding: 10px 14px; font-size: 13px; line-height: 1.8; color: #bcd0f2; }
+#compassWrap { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); text-align: center; }
+#compass { width: 440px; height: 34px; border-radius: 10px; display: block; }
+#dist { margin-top: 4px; font-size: 14px; font-weight: 700; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+#prompt { position: absolute; left: 50%; top: 62%; transform: translate(-50%, 10px); padding: 10px 18px; font-size: 18px; font-weight: 700; opacity: 0; transition: opacity .2s, transform .2s; }
+#prompt.on { opacity: 1; transform: translate(-50%, 0); }
+#speedo { position: absolute; right: 22px; bottom: 22px; padding: 10px 16px; font-size: 15px; color: #bcd0f2; display: none; text-align: right; }
+#speedo.on { display: block; } body.driving #keys, body.driving #padkeys { display: none; } #speedo b { font-size: 34px; color: #fff; margin-right: 4px; } #speedo span { display: block; font-size: 13px; margin-top: 2px; }
+#aura { position: absolute; left: 50%; bottom: 26px; width: min(820px, 64vw); transform: translate(-50%, 20px); padding: 16px 20px 16px 84px; opacity: 0; transition: opacity .35s, transform .35s; }
+#aura.on { opacity: 1; transform: translate(-50%, 0); }
+#aura .av { position: absolute; left: 18px; top: 16px; width: 48px; height: 48px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #dffbff, #3fe0ff 45%, #0b5d8a); border: 2px solid rgba(255,255,255,.5); }
+#aura .nm { font-size: 12px; font-weight: 800; letter-spacing: .25em; color: var(--cyan); }
+#aura .txt { margin-top: 4px; font-size: 18px; line-height: 1.45; min-height: 1.45em; }
+#toasts { position: absolute; left: 50%; top: 90px; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.toast { padding: 9px 16px; font-size: 15px; background: var(--glass); border: 1px solid var(--line); border-radius: 12px; transition: opacity .5s, transform .5s; }
+.toast.place b { color: var(--gold); margin-right: 6px; }
+.toast.out { opacity: 0; transform: translateY(-8px); }
+.plus { position: absolute; left: 50%; top: 45%; font-size: 30px; font-weight: 800; color: var(--gold); text-shadow: 0 2px 12px rgba(0,0,0,.5); animation: up 1.2s ease-out forwards; }
+@keyframes up { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -60px); } }
+#hint-lock { display: none; position: absolute; left: 50%; top: 44%; transform: translateX(-50%); padding: 10px 18px; font-size: 16px; }
+#hud.storm #obj { border-color: rgba(255,77,94,.75); border-width: 2px; }
+
+/* modals */
+#modal { position: fixed; inset: 0; z-index: 25; display: none; place-items: center; background: rgba(4,8,20,.45); }
+#modal.on { display: grid; }
+#modal .box { width: min(640px, 90vw); padding: 28px 32px; background: rgba(9,18,36,.94); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+#modal .box.mapbox { width: auto; padding: 18px; }
+#modal .tag { font-size: 12px; font-weight: 800; letter-spacing: .22em; color: var(--cyan); text-transform: uppercase; }
+#modal .tag.gold { color: var(--gold); } #modal .tag.blue { color: #8fc0ff; }
+#modal h2 { margin: 10px 0 12px; font-size: 30px; line-height: 1.2; }
+#modal p { margin: 0; font-size: 19px; line-height: 1.6; color: #d9e6ff; }
+#modal .src { margin-top: 14px; font-size: 13px; color: #8ea4c9; }
+#modal .btns { margin-top: 22px; display: flex; gap: 12px; justify-content: flex-end; }
+#modal button { font: 700 17px var(--sans); color: #06203a; background: var(--cyan); border: 0; border-radius: 12px; padding: 12px 20px; cursor: pointer; }
+#modal button.ghost { background: rgba(255,255,255,.08); color: #dce8ff; border: 1px solid var(--line); }
+#modal .opts { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+#modal .opts button { text-align: left; background: rgba(255,255,255,.06); color: #fff; border: 1px solid var(--line); font-weight: 600; font-size: 18px; padding: 14px 16px; }
+#modal .opts button:hover:not([disabled]) { border-color: var(--cyan); }
+#modal .opts button.right { background: rgba(61,220,151,.18); border-color: var(--ok); }
+#modal .opts button.wrong { background: rgba(255,77,94,.16); border-color: var(--red); }
+#modal .opts button[disabled] { opacity: .45; cursor: default; }
+#modal .opts em { color: #8fc0ff; font-style: normal; font-size: 14px; }
+#modal .fb { margin-top: 14px; min-height: 26px; font-size: 17px; color: #d9e6ff; }
+#modal .okc { color: var(--ok); } #modal .bad { color: var(--red); margin-right: 6px; }
+#modal .end { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 6px 0 18px; }
+#modal .end div { padding: 14px; border-radius: 14px; background: rgba(255,255,255,.06); text-align: center; }
+#modal .end b { display: block; font-size: 30px; color: var(--gold); }
+#modal .end span { font-size: 13px; color: #a9bfe3; }
+#bigmap { display: block; margin-top: 10px; border-radius: 12px; }
+#modal button.padfocus { outline: 3px solid #fff; outline-offset: 2px; }
+.padonly { display: none; } body.pad .padonly { display: block; } body.pad #keys { display: none; }
+#padkeys { position: absolute; right: 22px; top: 258px; width: 220px; padding: 10px 14px; font-size: 13px; line-height: 1.8; color: #bcd0f2; }
+.ps { display: inline-grid; place-items: center; width: 1.55em; height: 1.55em; margin-right: .35em; border-radius: 50%; border: 1px solid rgba(255,255,255,.45); font-size: .9em; font-weight: 700; }
+#fade { position: fixed; inset: 0; z-index: 26; display: grid; place-items: center; background: #050a18; opacity: 0; pointer-events: none; transition: opacity .6s; }
+#fade.on { opacity: 1; }
+#fade span { font-size: 26px; font-weight: 700; color: #8fc0ff; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <div id="leftcol"><div id="obj" class="panel"></div><div id="stats"></div></div>
+  <div id="compassWrap"><canvas id="compass" width="440" height="34"></canvas><div id="dist"></div></div>
+  <canvas id="mini" width="220" height="220"></canvas>
+  <div id="toasts"></div>
+  <div id="prompt" class="panel"></div>
+  <div id="speedo" class="panel"></div>
+  <div id="hint-lock" class="panel" data-en="Click to look around" data-vi="Bấm chuột để xoay góc nhìn">Click to look around</div>
+  <div id="padkeys" class="panel padonly" data-en="<b>🎮 PS5 controller</b><br>Left stick walk · R2 run<br>Right stick look · R3 zoom<br><span class='ps'>✕</span>use / jump · <span class='ps'>□</span>jump<br><span class='ps'>△</span>map · L1 day / night<br>R1 graphics · Create language<br>Options music on / off<br>D-pad ↑ call your car<br>In the car: R2 gas · L2 brake · <span class='ps'>□</span>handbrake"
+    data-vi="<b>🎮 Tay cầm PS5</b><br>Cần trái: đi · R2: chạy<br>Cần phải: xoay · R3: xa / gần<br><span class='ps'>✕</span>tương tác / nhảy · <span class='ps'>□</span>nhảy<br><span class='ps'>△</span>bản đồ · L1 ngày / đêm<br>R1 đồ họa · Create ngôn ngữ<br>Options bật / tắt nhạc<br>D-pad ↑ gọi xe<br>Trên xe: R2 ga · L2 phanh · <span class='ps'>□</span>phanh tay"></div>
+  <div id="aura" class="panel"><div class="av"></div><div class="nm">AURA</div><div class="txt"></div></div>
+  <div id="keys" class="panel" data-en="<kbd>WASD</kbd>walk · <kbd>Shift</kbd>run<br><kbd>Space</kbd>jump · <kbd>E</kbd>use<br><kbd>M</kbd>map · <kbd>T</kbd>day / night<br><kbd>G</kbd>graphics · <kbd>L</kbd>language<br><kbd>N</kbd>music on / off<br><kbd>C</kbd>call your car · <kbd>E</kbd>get in"
+    data-vi="<kbd>WASD</kbd>đi · <kbd>Shift</kbd>chạy<br><kbd>Space</kbd>nhảy · <kbd>E</kbd>tương tác<br><kbd>M</kbd>bản đồ · <kbd>T</kbd>ngày / đêm<br><kbd>G</kbd>đồ họa · <kbd>L</kbd>ngôn ngữ<br><kbd>N</kbd>bật / tắt nhạc<br><kbd>C</kbd>gọi xe · <kbd>E</kbd>lên xe"></div>
+</div>
+
+<div id="title">
+  <div class="k">POLAR CITY · CLASS 11A4 · LÊ QUÝ ĐÔN</div>
+  <h1>Aurora Haven <span>Explorer</span></h1>
+  <div class="sub" data-en="Walk the polar city of the future. Collect data cards, answer AURA, ride the metro, climb Mount Aurora and beat the blizzard drill."
+    data-vi="Dạo bước trong thành phố vùng cực của tương lai. Thu thẻ dữ liệu, trả lời AURA, đi tàu điện ngầm, leo núi Aurora và vượt qua buổi diễn tập bão tuyết."></div>
+  <div class="row"><button id="play" data-en="▶ Play" data-vi="▶ Chơi">▶ Play</button>
+    <div class="lang"><button data-l="en">English</button><button data-l="vi">Tiếng Việt</button></div></div>
+  <div class="keys" data-en="<div><kbd>W A S D</kbd> walk · <kbd>Shift</kbd> run</div><div><kbd>Mouse</kbd> look around · wheel to zoom</div><div><kbd>Space</kbd> jump · <kbd>E</kbd> use</div><div><kbd>M</kbd> city map · <kbd>T</kbd> day / night (aurora)</div><div><kbd>G</kbd> graphics high / fast</div><div>🚗 <kbd>E</kbd> get in your car · <kbd>C</kbd> call it · <kbd>W S</kbd> gas / brake · <kbd>A D</kbd> steer</div><div><kbd>Esc</kbd> free the mouse</div><div>🎮 PS5 controller supported</div>"
+    data-vi="<div><kbd>W A S D</kbd> đi · <kbd>Shift</kbd> chạy</div><div><kbd>Chuột</kbd> xoay góc nhìn · lăn để phóng to</div><div><kbd>Space</kbd> nhảy · <kbd>E</kbd> tương tác</div><div><kbd>M</kbd> bản đồ · <kbd>T</kbd> ngày / đêm (cực quang)</div><div><kbd>G</kbd> đồ họa cao / nhanh</div><div>🚗 <kbd>E</kbd> lên xe · <kbd>C</kbd> gọi xe · <kbd>W S</kbd> ga / phanh · <kbd>A D</kbd> lái</div><div><kbd>Esc</kbd> nhả chuột</div><div>🎮 Chơi được bằng tay cầm PS5</div>"></div>
+  <div class="padonly" style="margin-top:14px;font-size:15px;color:#9fe8ff" data-en="🎮 Controller ready: press ✕ to play" data-vi="🎮 Đã có tay cầm: nhấn ✕ để chơi"></div>
+  <div class="credit" data-en="A game about our magazine city. Every fact comes from the Aurora Haven magazine.<br>Music: “Frozen Star”, “Floating Cities”, “Healing” by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 4.0.<br>Ho Chi Minh statue: photos by Steffen Schmitz (Wikimedia Commons), CC BY-SA 4.0, cut out from their background." data-vi="Trò chơi về thành phố trong tạp chí của nhóm. Mọi thông tin đều lấy từ tạp chí Aurora Haven.<br>Nhạc: “Frozen Star”, “Floating Cities”, “Healing” của Kevin MacLeod (incompetech.com), giấy phép Creative Commons: By Attribution 4.0.<br>Tượng Bác Hồ: ảnh của Steffen Schmitz (Wikimedia Commons), giấy phép CC BY-SA 4.0, đã tách nền."></div>
+</div>
+
+<div id="modal"></div>
+<div id="fade"><span></span></div>
+<div id="loading"><div class="in"><div class="k">AURORA HAVEN</div><div id="loadbar"><i></i></div><div id="loadtxt" data-en="Building the city…" data-vi="Đang dựng thành phố…">Building the city…</div></div></div>
+
+<script type="importmap">{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }</script>
+<script type="module" src="./game/game.js"></script>
+</body>
+</html>

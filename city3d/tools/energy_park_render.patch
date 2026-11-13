@@ -1,0 +1,56 @@
+diff --git a/city3d/src/industry.js b/city3d/src/industry.js
+index b340264..5a0675e 100644
+--- a/city3d/src/industry.js
++++ b/city3d/src/industry.js
+@@ -134,21 +134,26 @@ function turbine(b, x, z, h = 42, phase = 0) {
+ }
+ 
+ export function renewablePark(b) {
+-  // Ice-Proof Wind Farm: two offset rows on the windy northern edge.
+-  for (let i = 0; i < 9; i++) turbine(b, -280 + i * 46, -330, 42, i * 0.7);
+-  for (let i = 0; i < 8; i++) turbine(b, -257 + i * 46, -295, 40, i * 1.3 + 0.4);
+-  // Bifacial Solar Farm: steep double-sided rows in front of the lookout.
+-  for (let row = 0; row < 7; row++) {
+-    const z = -262 + row * 7;
+-    for (let k = 0; k < 12; k++) {
+-      const x = -110 + k * 14;
++  // Render-only copy (not the team's model): the park in two equal bands along an east-west
++  // service road at z = -420 — the solar farm in front, the wind farm behind it to the horizon.
++  const SPLIT_Z = -420;
++  for (let r = 0; r < 10; r++) for (let i = 0; i < 16; i++) {
++    turbine(b, -600 + (r % 2) * 40 + i * 80, SPLIT_Z - 25 - r * 70, 42, i * 0.9 + r);
++  }
++  road(b, -620, SPLIT_Z, 620, SPLIT_Z, { width: 8, sidewalk: false, marking: false });
++  const blocked = (x, z) => x < -150 && z > -250; // the water recycling line
++  for (let z = -214; z > SPLIT_Z + 12; z -= 8) {
++    const near = z > -330;
++    for (let x = -600; x < 600; x += 14) {
++      if (blocked(x, z)) continue;
+       b.add('solar', new THREE.BoxGeometry(12.6, 0.12, 3.2), matrix(x, 2.2, z, 0, 1, 1, 1, -0.85));
+-      b.add('panelGrey', new THREE.BoxGeometry(12.8, 0.08, 0.12), matrix(x, 1.0, z + 1.05));
+-      b.add('steel', new THREE.BoxGeometry(0.15, 2.2, 0.15), matrix(x - 5, 1.1, z));
+-      b.add('steel', new THREE.BoxGeometry(0.15, 2.2, 0.15), matrix(x + 5, 1.1, z));
++      if (near) {
++        b.add('panelGrey', new THREE.BoxGeometry(12.8, 0.08, 0.12), matrix(x, 1.0, z + 1.05));
++        b.add('steel', new THREE.BoxGeometry(0.15, 2.2, 0.15), matrix(x - 5, 1.1, z));
++        b.add('steel', new THREE.BoxGeometry(0.15, 2.2, 0.15), matrix(x + 5, 1.1, z));
++      }
+     }
+   }
+-  road(b, -20, -270, -20, -212, { width: 5, sidewalk: false, marking: false }); // service spine
+   // Water Recycling Line: intake, pumps, two settling basins, filters, UV and the water tower.
+   const z = -238;
+   b.add('stone', new THREE.BoxGeometry(16, 0.8, 11), matrix(-282, 0.4, z));
+diff --git a/city3d/src/main.js b/city3d/src/main.js
+index ae676e2..2274798 100644
+--- a/city3d/src/main.js
++++ b/city3d/src/main.js
+@@ -50,7 +50,7 @@ fusionStation(b);
+ foodPlant(b);
+ renewablePark(b);
+ energyHub(b);
+-airport(b);
++// airport(b); // render-only copy: the airport is left out of the energy-park picture
+ stadium(b);
+ greenhouses(b);
+ airBase(b);

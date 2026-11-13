@@ -1,0 +1,32 @@
+# Publishes the team's Eco-Polis map file as a GitHub release, so the QR code in the magazine
+# can download it: https://github.com/HiroKasumi-bit/chatbox-bi-n-o/releases/latest/download/Aurora_Haven.json
+# Runs whenever the map file (or this workflow) changes, and can be started by hand.
+name: Publish 3D map file
+
+on:
+  push:
+    paths:
+      - magazine/source/Aurora_Haven.json
+      - .github/workflows/map-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create or update release map-v1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view map-v1 >/dev/null 2>&1; then
+            gh release upload map-v1 magazine/source/Aurora_Haven.json --clobber
+          else
+            gh release create map-v1 magazine/source/Aurora_Haven.json \
+              --title "Aurora Haven 3D map" \
+              --notes "Our city map for the Eco-Polis Builder. Open https://ecopolis3d.netlify.app/, click Load and choose Aurora_Haven.json." \
+              --target "$GITHUB_SHA" --latest
+          fi

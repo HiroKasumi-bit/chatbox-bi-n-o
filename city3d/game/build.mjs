@@ -1,0 +1,33 @@
+// Bundles the game into one HTML file that opens offline with a double-click (and an artifact page).
+// node game/build.mjs  → ../output/Aurora_Haven_Explorer.html and game/dist/explorer_artifact.html
+import * as esbuild from 'esbuild';
+import fs from 'fs';
+import path from 'path';
+const D = path.dirname(new URL(import.meta.url).pathname), ROOT = path.join(D, '..');
+const r = await esbuild.build({ entryPoints: [path.join(D, 'game.js')], bundle: true, format: 'esm', minify: true, write: false, target: 'es2020', legalComments: 'none' });
+let js = r.outputFiles[0].text;
+const wn = 'data:image/jpeg;base64,' + fs.readFileSync(path.join(ROOT, 'textures/waternormals.jpg')).toString('base64');
+if (js.split('textures/waternormals.jpg').length !== 2) throw new Error('water normal path not found once');
+js = js.replace('textures/waternormals.jpg', wn).replace(/<\/script/gi, '<\\/script');
+// AURA's recorded lines go inside the file too
+let nVoice = 0;
+js = js.replace(/game\/voice\/([a-z_]+)\.mp3/g, (m, k) => { nVoice++; return 'data:audio/mpeg;base64,' + fs.readFileSync(path.join(D, 'voice', k + '.mp3')).toString('base64'); });
+if (!nVoice) throw new Error('no voice files found in the bundle');
+let nMusic = 0;
+js = js.replace(/game\/music\/([a-z_]+)\.mp3/g, (m, k) => { nMusic++; return 'data:audio/mpeg;base64,' + fs.readFileSync(path.join(D, 'music', k + '.mp3')).toString('base64'); });
+if (nMusic !== 3) throw new Error('expected 3 music files, found ' + nMusic);
+// photographs used as textures (the statue)
+let nImg = 0;
+js = js.replace(/game\/img\/([a-z_]+)\.webp/g, (m, k) => { nImg++; return 'data:image/webp;base64,' + fs.readFileSync(path.join(D, 'img', k + '.webp')).toString('base64'); });
+if (nImg !== 2) throw new Error('expected 2 statue images, found ' + nImg);
+let html = fs.readFileSync(path.join(ROOT, 'game.html'), 'utf8');
+const a = html.indexOf('<script type="importmap">'), b = html.indexOf('</script>', html.indexOf('src="./game/game.js"')) + 9;
+if (a < 0 || b < 9) throw new Error('script tags not found');
+html = html.slice(0, a) + '<script type="module">\n' + js + '\n</script>' + html.slice(b);
+fs.mkdirSync(path.join(D, 'dist'), { recursive: true });
+fs.writeFileSync(path.join(ROOT, '..', 'output', 'Aurora_Haven_Explorer.html'), html);
+// artifact page: the host adds doctype, head and body
+const head = html.slice(html.indexOf('<title>'), html.indexOf('</head>'));
+const body = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>'));
+fs.writeFileSync(path.join(D, 'dist', 'explorer_artifact.html'), head + body);
+console.log('bundle KB', Math.round(js.length / 1024), 'html KB', Math.round(html.length / 1024));
