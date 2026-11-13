@@ -516,9 +516,9 @@ async function enter(vr) {
   try { await document.documentElement.requestFullscreen?.({ navigationUI: 'hide' }); } catch {}
   try { await screen.orientation?.lock?.('landscape'); } catch {}
   try { await navigator.wakeLock?.request('screen'); } catch {}
-  const state = await perm;
+  await perm; // nếu bị từ chối thì sẽ không có sự kiện cảm biến → tự chuyển sang vuốt màn hình
   mode = vr ? 'vr' : 'mono';
-  gyroOn = vr && state === 'granted';
+  gyroOn = vr;
   started = true;
   rig.rotation.y = 0;
   $('#start').style.display = 'none';
@@ -527,10 +527,7 @@ async function enter(vr) {
   goTo(current);
   if (vr) {
     setTimeout(() => {
-      if (!gyroSeen) {
-        gyroOn = false;
-        toast('Không đọc được cảm biến xoay — vuốt màn hình để nhìn');
-      }
+      if (!gyroSeen) toast('Không đọc được cảm biến xoay — vuốt màn hình để nhìn');
     }, 2000);
   } else {
     showHint('Kéo để nhìn · cúi nhìn xuống để chọn điểm đến · chạm để bay tới trước');
@@ -547,7 +544,7 @@ $('#btnExit').addEventListener('click', async () => {
 });
 $('#btnMode').addEventListener('click', () => {
   mode = mode === 'vr' ? 'mono' : 'vr';
-  if (mode === 'vr' && gyroSeen) gyroOn = true;
+  if (mode === 'vr') gyroOn = true;
   layout();
 });
 $('#btnRecenter').addEventListener('click', () => { dragYaw = 0; const v = VIEWS[current]; const d = new THREE.Vector3(...v.look).sub(new THREE.Vector3(...v.pos)); recenterTo(Math.atan2(-d.x, -d.z)); });
@@ -586,4 +583,5 @@ loadCity().then((r) => {
 
 // cho phép công cụ kiểm thử điều khiển
 window.__vr = { goTo, get views() { return VIEWS; }, setLook(y, p) { yaw = y; pitch = p; }, enter, renderer, scene, camera, rig, setInset(v) { inset = v; layout(); },
+  state() { return { gyroOn, gyroSeen, mode, yawOffset, started, W: innerWidth, H: innerHeight, cw: renderer.domElement.width, csw: renderer.domElement.style.width, vv: window.visualViewport && visualViewport.width, q: camera.quaternion.toArray().map((v) => +v.toFixed(3)) }; },
   stop() { renderer.setAnimationLoop(null); }, step(n = 1) { for (let i = 0; i < n; i++) frame(performance.now()); } };

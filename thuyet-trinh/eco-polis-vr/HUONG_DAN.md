@@ -7,7 +7,7 @@ Mở link này trên điện thoại bằng Chrome (Android) hoặc Safari (iPho
 
 https://raw.githack.com/HiroKasumi-bit/chatbox-bi-n-o/ccr-32dbab14-4ki8g2/thuyet-trinh/eco-polis-vr/index.html
 
-Link chạy bằng HTTPS nên được dùng cảm biến xoay. Lần đầu mở cần mạng; tải khoảng 9 MB.
+Lần đầu mở, trang githack hiện một trang thông báo "External Content Notice": bấm nút **Open the page** để vào. Link chạy bằng HTTPS nên được dùng cảm biến xoay. Cần mạng, tải khoảng 9 MB.
 
 ## Tự chạy trên điện thoại (không cần mạng)
 Cảm biến xoay chỉ hoạt động khi trang mở bằng `https://` hoặc `http://localhost`. Mở thẳng file `index.html` sẽ không tải được mô hình.
