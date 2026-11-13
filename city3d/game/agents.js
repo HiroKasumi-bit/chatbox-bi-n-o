@@ -95,12 +95,14 @@ export function createAgents(scene, hm, isRoad, isWater) {
   });
   const COAT = local(0, 1.12, 0, 0, 0, 0, 1, 1, 0.78), SH = local(0, 1.54, 0, 0, 0, 0, 1, 0.45, 0.78), SCARF = local(0, 1.6, 0), HEAD = local(0, 1.73, 0), HAT = local(0, 1.75, 0), BOOT = local(0, -0.78, 0.04);
 
-  function update(dt, player, inside) {
-    // cars: keep a gap to the car ahead on the same route, and stop for the player
+  function update(dt, player, inside, extra) {
+    // cars: keep a gap to the car ahead on the same route, and stop for the player (and the player's parked car)
     for (const c of cars) {
       at(c.path, c.s, tmp); const L = Math.hypot(tmp.dx, tmp.dz) || 1, fx = tmp.dx / L, fz = tmp.dz / L;
       let want = c.v;
-      if (!inside) { const px = player.x - tmp.x, pz = player.z - tmp.z, ahead = px * fx + pz * fz, side = Math.abs(-px * fz + pz * fx); if (ahead > 0 && ahead < 9 && side < 1.8) want = 0; }
+      const stopFor = (q, w) => { const px = q.x - tmp.x, pz = q.z - tmp.z, ahead = px * fx + pz * fz, side = Math.abs(-px * fz + pz * fx); if (ahead > 0 && ahead < 9 && side < w) want = 0; };
+      if (!inside) stopFor(player, 1.8);
+      if (extra) stopFor(extra, 1.7);
       for (const o of cars) if (o !== c && o.route === c.route) { let gap = o.s - c.s; if (gap < 0) gap += c.path.len; if (gap < 8) want = 0; else if (gap < 14) want = Math.min(want, o.cur); }
       c.cur += (want - c.cur) * Math.min(1, dt * (want < c.cur ? 5 : 1.5)); c.s += c.cur * dt;
       c.x = tmp.x; c.z = tmp.z; c.fx = fx; c.fz = fz;
@@ -146,6 +148,21 @@ export function createAgents(scene, hm, isRoad, isWater) {
       if (Math.abs(lz) < 2.5 && Math.abs(lx) < 1.25) { const s = lx >= 0 ? 1 : -1, push = 1.25 - Math.abs(lx); p.x += -c.fz * s * push; p.z += c.fx * s * push; }
     }
   }
+  // the player's car: does a point touch a car of the traffic?
+  function hitCar(x, z) {
+    for (const c of cars) {
+      if (c.x === undefined) continue; const dx = x - c.x, dz = z - c.z; if (dx * dx + dz * dz > 9) continue;
+      if (Math.abs(dx * c.fx + dz * c.fz) < 2.4 && Math.abs(-dx * c.fz + dz * c.fx) < 1.05) return true;
+    }
+    return false;
+  }
+  // people step out of the way of the player's car
+  function clearPeople(x, z, r) {
+    for (const p of people) {
+      const dx = p.x - x, dz = p.z - z, d = Math.hypot(dx, dz); if (d >= r) continue;
+      const k = d > 0.01 ? r / d : 0; p.x = x + (d > 0.01 ? dx * k : r); p.z = z + dz * k; p.wait = 0.6; p.yaw = Math.atan2(dx, dz);
+    }
+  }
   update(0, { x: 1e9, z: 1e9 }, false);
-  return { update, pushPlayer, count: { cars: NC, people: NP } };
+  return { update, pushPlayer, hitCar, clearPeople, count: { cars: NC, people: NP } };
 }

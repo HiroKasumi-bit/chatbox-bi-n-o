@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import './flag.js'; // first: the city builders leave out the static cars and walkers; agents.js moves real ones
 import { createWorld } from './world.js';
+import { createCar } from './drive.js';
 import { createAgents } from './agents.js';
 import { VOICE } from './voice.js';
 import { SPA_FACE_Z } from '../src/mountain.js';
@@ -17,7 +18,8 @@ const QS = new URLSearchParams(location.search);
 const savedLang = (() => { try { return localStorage.getItem('ah_lang'); } catch (e) { return null; } })();
 const G = { lang: savedLang || 'en', ready: false, playing: false, modal: null, mi: 0, phase: 'cards', got: new Set(), score: 0, t: 0,
   places: new Set(), metro: false, tries: 0, finaleT: 0, done: false, free: false, quality: true, room: null, seenInside: false };
-let agents = null, SPA = null;
+let agents = null, SPA = null, car = null;
+const driving = () => !!(car && car.S.on);
 const L = (o) => (o == null ? '' : typeof o === 'string' ? o : o[G.lang] ?? o.en);
 
 // ───────────────────────── world ─────────────────────────
@@ -113,12 +115,13 @@ addEventListener('keydown', (e) => {
   if (!G.playing) return;
   keys.add(e.code);
   if (k === 'e') interact();
+  else if (k === 'c') callCar();
   else if (k === 'm' || k === 'tab') { e.preventDefault(); toggleMap(); }
   else if (k === 't') toggleTime();
   else if (k === 'g') { G.quality = !G.quality; G.autoQ = false; world.setQuality(G.quality); toast(qualityText()); }
   else if (k === 'l') { setLang(G.lang === 'en' ? 'vi' : 'en'); }
   else if (k === 'n') toggleMusic();
-  else if (e.code === 'Space') { e.preventDefault(); jump(); }
+  else if (e.code === 'Space') { e.preventDefault(); if (!driving()) jump(); }
 });
 addEventListener('keyup', (e) => keys.delete(e.code));
 addEventListener('blur', () => keys.clear());
@@ -128,7 +131,7 @@ cv.addEventListener('mousedown', () => { if (G.playing && !G.modal) { if (docume
 addEventListener('mouseup', () => { dragging = false; });
 addEventListener('mousemove', (e) => {
   if (!G.playing || G.modal) return;
-  if (document.pointerLockElement === cv || dragging) { C.yaw -= e.movementX * 0.0026; C.pitch = THREE.MathUtils.clamp(C.pitch + e.movementY * 0.002, -0.25, 1.25); }
+  if (document.pointerLockElement === cv || dragging) { C.look = performance.now(); C.yaw -= e.movementX * 0.0026; C.pitch = THREE.MathUtils.clamp(C.pitch + e.movementY * 0.002, -0.25, 1.25); }
 });
 addEventListener('wheel', (e) => { if (G.playing && !G.modal) C.dist = THREE.MathUtils.clamp(C.dist * (e.deltaY > 0 ? 1.1 : 0.9), 3.5, 40); }, { passive: true });
 document.addEventListener('pointerlockchange', () => { $('#hint-lock').style.display = G.playing && !G.modal && document.pointerLockElement !== cv ? 'block' : 'none'; });
@@ -152,6 +155,7 @@ function pollPad(dt) {
   const b = gp.buttons.map((x) => x.pressed || x.value > 0.5), hit = (i) => b[i] && !PAD.prev[i];
   PAD.lx = dead(gp.axes[0] || 0); PAD.ly = dead(gp.axes[1] || 0); PAD.rx = dead(gp.axes[2] || 0); PAD.ry = dead(gp.axes[3] || 0);
   PAD.run = (gp.buttons[7]?.value || 0) > 0.3 || b[10] || Math.hypot(PAD.lx, PAD.ly) > 0.97 && b[6];
+  PAD.r2 = gp.buttons[7]?.value || 0; PAD.l2 = gp.buttons[6]?.value || 0; PAD.sq = b[2];
   if (!G.playing) { if (hit(0) || hit(9)) start(); }
   else if (G.modal) {
     // D-pad or left stick picks a button, Cross presses it, Circle closes
@@ -163,9 +167,12 @@ function pollPad(dt) {
     if (hit(1)) G.modal?.key?.('escape', {});
     if (hit(3) && document.querySelector('#bigmap')) closeModal();
   } else {
+    if (PAD.rx || PAD.ry) C.look = performance.now();
     C.yaw -= PAD.rx * dt * 2.6; C.pitch = THREE.MathUtils.clamp(C.pitch + PAD.ry * dt * 1.8, -0.25, 1.25);
-    if (hit(0)) { if (nearThing()) interact(); else jump(); }   // Cross: use what is near, otherwise jump
-    if (hit(2)) jump();                                        // Square: jump
+    if (driving()) { if (hit(0) || hit(1)) leaveCar(); }       // in the car: Cross or Circle gets out, Square is the handbrake
+    else { if (hit(0)) { if (nearThing() || nearCar()) interact(); else jump(); } // Cross: use what is near, otherwise jump
+      if (hit(2)) jump(); }                                    // Square: jump
+    if (hit(12)) callCar();                                    // D-pad up: call your car
     if (hit(3)) toggleMap();                                   // Triangle: city map
     if (hit(4)) toggleTime();                                  // L1: midnight sun / polar night
     if (hit(5)) { G.quality = !G.quality; G.autoQ = false; world.setQuality(G.quality); toast(qualityText()); } // R1: graphics
@@ -379,7 +386,8 @@ function nearThing() {
   return best;
 }
 function interact() {
-  const t = nearThing(); if (!t) return;
+  if (driving()) { leaveCar(); return; }
+  const t = nearThing(); if (!t) { if (nearCar()) enterCar(); return; }
   if (t.kind === 'card') openCard(t);
   else if (t.kind === 'terminal') { if (G.got.size < MISSIONS[G.mi].cards.length) { toast(L(UI.needCards)); sfx.buzz(); } else openQuiz(); }
   else if (t.kind === 'station') openMetro(t);
@@ -387,6 +395,49 @@ function interact() {
   else if (t.kind === 'exit') goRoom(null);
   else if (t.kind === 'lift') openLift();
 }
+// ───────────────────────── your car ─────────────────────────
+const CAR_UI = {
+  getIn: { en: 'Get in your car', vi: 'Lên xe của bạn' }, getOut: { en: 'get out', vi: 'xuống xe' },
+  keysHint: { en: 'W / S gas, brake · A / D steer · Space handbrake', vi: 'W / S ga, phanh · A / D lái · Space phanh tay' },
+  padHint: { en: 'R2 gas · L2 brake · stick steer · □ handbrake', vi: 'R2 ga · L2 phanh · cần trái lái · □ phanh tay' },
+  here: { en: '🚗 Your car is here', vi: '🚗 Xe của bạn đã tới' }, notHere: { en: 'No room for the car here', vi: 'Chỗ này không đỗ xe được' },
+  inside: { en: 'Cars stay outside the mountain', vi: 'Xe không vào được trong núi' }, slow: { en: 'Stop the car to get out', vi: 'Dừng xe lại rồi mới xuống' },
+  how: { en: '<b>Driving</b> W / S gas and brake · A / D steer · Space handbrake · E get out', vi: '<b>Lái xe</b> W / S ga và phanh · A / D lái · Space phanh tay · E xuống xe' },
+  howPad: { en: '<b>Driving</b> R2 gas · L2 brake · left stick steer · □ handbrake · ✕ get out', vi: '<b>Lái xe</b> R2 ga · L2 phanh · cần trái lái · □ phanh tay · ✕ xuống xe' },
+};
+const nearCar = () => !!car && !driving() && !G.room && car.dist(P.pos) < 3.4 && Math.abs(car.S.y - P.pos.y) < 2;
+function enterCar() {
+  if (!car || G.room) return;
+  car.S.on = true; hero.root.visible = false; P.speed = 0; noise(0.16, 260, 0.12, 0.9); tone(70, 0.5, 'sawtooth', 0.05, 0.12, 110);
+  if (!G.droveOnce) { G.droveOnce = true; toast(L(PAD.on ? CAR_UI.howPad : CAR_UI.how)); }
+}
+function leaveCar() {
+  if (!driving()) return;
+  if (Math.abs(car.S.v) > 4) { toast(L(CAR_UI.slow)); return; }
+  car.S.on = false; car.S.v = 0; const d = car.door(); P.pos.set(d.x, groundAt(d.x, d.z), d.z); P.vy = 0; P.yaw = car.S.yaw; hero.root.visible = true; noise(0.16, 260, 0.12, 0.9);
+}
+function callCar() {
+  if (!car || driving() || G.modal) return;
+  if (G.room) { toast(L(CAR_UI.inside)); sfx.buzz(); return; }
+  const f = fwd(C.yaw), r = new THREE.Vector3(-Math.cos(C.yaw), 0, Math.sin(C.yaw));
+  if (car.parkNear(P.pos.x + r.x * 3.2 + f.x * 1.5, P.pos.z + r.z * 3.2 + f.z * 1.5, C.yaw, P.pos.y)) { toast(L(CAR_UI.here)); tone(392, 0.16, 'square', 0.04); tone(330, 0.22, 'square', 0.04, 0.2); }
+  else { toast(L(CAR_UI.notHere)); sfx.buzz(); }
+}
+function driveStep(dt) {
+  const k = (...c) => (c.some((x) => keys.has(x)) ? 1 : 0);
+  const inp = {
+    throttle: Math.max(k('KeyW', 'ArrowUp'), PAD.r2 || 0, Math.max(0, -PAD.ly)),
+    brake: Math.max(k('KeyS', 'ArrowDown'), PAD.l2 || 0, Math.max(0, PAD.ly)),
+    steer: THREE.MathUtils.clamp(k('KeyD', 'ArrowRight') - k('KeyA', 'ArrowLeft') + PAD.lx, -1, 1),
+    handbrake: keys.has('Space') || !!PAD.sq,
+  };
+  if (car.update(dt, inp)) noise(0.3, 160, 0.18, 0.7);
+  car.sound(inp.throttle);
+  P.pos.set(car.S.x, car.S.y, car.S.z); P.yaw = car.S.yaw; P.vy = 0; P.ground = true; P.speed = 0;
+  // the camera swings in behind the car unless you are looking around
+  if (performance.now() - (C.look || 0) > 1200 && Math.abs(car.S.v) > 1.5) { let d = car.S.yaw - C.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); C.yaw += d * Math.min(1, dt * 2.2); }
+}
+
 function openLift() {
   const html = `<div class="tag blue">⇅ ${L(UI.liftTitle)}</div><div class="opts">${LEVELS.map((r, i) => `<button data-act="${i}" ${r === G.room ? 'disabled' : ''}><kbd>${i + 1}</kbd>${L(UI.levels[i])}${r === G.room ? ` <em>· ${L(UI.here)}</em>` : ''}</button>`).join('')}</div>
     <div class="btns"><button data-act="x" class="ghost">${L(UI.cancel)} <kbd>Esc</kbd></button></div>`;
@@ -579,6 +630,8 @@ const tmpV = new THREE.Vector3();
 function update(dt) {
   if (G.playing && !G.modal) {
     G.t += dt;
+    if (driving()) driveStep(dt);
+    else {
     // move relative to the camera
     let mx = 0, mz = 0;
     if (keys.has('KeyW') || keys.has('ArrowUp')) mz += 1; if (keys.has('KeyS') || keys.has('ArrowDown')) mz -= 1;
@@ -601,7 +654,7 @@ function update(dt) {
       } else if (!blocked(nx, nz, P.pos.y)) { P.pos.x = nx; P.pos.z = nz; }
       else { if (!blocked(nx, P.pos.z, P.pos.y)) P.pos.x = nx; else if (!blocked(P.pos.x, nz, P.pos.y)) P.pos.z = nz; else P.speed *= 0.5; }
     }
-    if (!G.room) { P.pos.x = THREE.MathUtils.clamp(P.pos.x, RECT[0] + 5, RECT[2] - 5); P.pos.z = THREE.MathUtils.clamp(P.pos.z, RECT[1] + 5, RECT[3] - 5); agents && agents.pushPlayer(P.pos); }
+    if (!G.room) { P.pos.x = THREE.MathUtils.clamp(P.pos.x, RECT[0] + 5, RECT[2] - 5); P.pos.z = THREE.MathUtils.clamp(P.pos.z, RECT[1] + 5, RECT[3] - 5); if (!driving()) { agents && agents.pushPlayer(P.pos); car && car.pushOut(P.pos); } }
     const gnd = G.room ? (roomGround(G.room, P.pos.x, P.pos.z) ?? P.pos.y) : groundAt(P.pos.x, P.pos.z);
     P.vy -= 16 * dt; P.pos.y += P.vy * dt;
     if (P.pos.y <= gnd) { if (!P.ground && P.vy < -6) sfx.step(); P.pos.y = P.pos.y < gnd - 0.01 && gnd - P.pos.y < 1.5 ? THREE.MathUtils.lerp(P.pos.y, gnd, Math.min(1, dt * 18)) : gnd; P.vy = 0; P.ground = true; if (gnd - P.pos.y < 0.02) P.pos.y = gnd; }
@@ -613,6 +666,7 @@ function update(dt) {
     hero.legs[0].rotation.x = sw; hero.legs[1].rotation.x = -sw; hero.arms[0].rotation.x = -sw * 0.8; hero.arms[1].rotation.x = sw * 0.8;
     hero.body.position.y = Math.abs(Math.cos(P.anim)) * 0.05 * k;
     if (P.ground && P.speed > 1) { P.stepT -= dt * (1.4 + P.speed * 0.22); if (P.stepT <= 0) { P.stepT = 1; sfx.step(); } }
+    }
     // places of the magazine
     for (const p of PLACES) {
       if (G.room || G.places.has(p.n)) continue;
@@ -628,8 +682,8 @@ function update(dt) {
   }
   hero.root.position.copy(P.pos); hero.body.rotation.y = P.yaw;
   // camera: behind and above, pulled in when a building is in the way
-  const tgt = new THREE.Vector3(P.pos.x, P.pos.y + 1.6, P.pos.z), f = fwd(C.yaw);
-  const want = new THREE.Vector3(tgt.x - f.x * C.dist * Math.cos(C.pitch), tgt.y + C.dist * Math.sin(C.pitch), tgt.z - f.z * C.dist * Math.cos(C.pitch));
+  const tgt = new THREE.Vector3(P.pos.x, P.pos.y + 1.6, P.pos.z), f = fwd(C.yaw), cd = driving() ? Math.max(C.dist, 9.5) : C.dist;
+  const want = new THREE.Vector3(tgt.x - f.x * cd * Math.cos(C.pitch), tgt.y + cd * Math.sin(C.pitch), tgt.z - f.z * cd * Math.cos(C.pitch));
   let dist = 1;
   if (G.room) {
     for (let s = 0.08; s <= 1.001; s += 0.04) { const q = tgt.clone().lerp(want, s); if (!roomCamOK(G.room, q)) { dist = Math.max(0.12, s - 0.08); break; } }
@@ -642,14 +696,17 @@ function update(dt) {
   const time = performance.now() / 1000;
   for (const t of things) if (t.obj.visible && t.obj.userData.spin) { t.obj.userData.spin.rotation.y = time * 1.4; t.obj.userData.spin.position.y = (t.kind === 'card' ? 1.5 : 2.0) + Math.sin(time * 2 + t.pos.x) * 0.12; }
   // prompt
-  const nt = G.playing && !G.modal ? nearThing() : null;
+  const nt = G.playing && !G.modal && !driving() ? nearThing() : null;
   const pr = $('#prompt');
-  if (nt) { pr.innerHTML = `<kbd>E</kbd> ${nt.kind === 'card' ? L(UI.readCard) : nt.kind === 'terminal' ? L(UI.talk) : nt.kind === 'portal' ? L(UI.enterMountain) : nt.kind === 'exit' ? L(UI.exitMountain) : nt.kind === 'lift' ? L(UI.liftTitle) : L(UI.ride) + ' · ' + L(nt.name)}`; pr.classList.add('on'); } else pr.classList.remove('on');
+  if (nt) { pr.innerHTML = `<kbd>E</kbd> ${nt.kind === 'card' ? L(UI.readCard) : nt.kind === 'terminal' ? L(UI.talk) : nt.kind === 'portal' ? L(UI.enterMountain) : nt.kind === 'exit' ? L(UI.exitMountain) : nt.kind === 'lift' ? L(UI.liftTitle) : L(UI.ride) + ' · ' + L(nt.name)}`; pr.classList.add('on'); } else if (G.playing && !G.modal && nearCar()) { pr.innerHTML = `<kbd>${PAD.on ? '✕' : 'E'}</kbd> ${L(CAR_UI.getIn)}`; pr.classList.add('on'); } else pr.classList.remove('on');
+  const sp = $('#speedo'); if (driving()) { sp.innerHTML = `<b>${Math.round(Math.abs(car.S.v) * 3.6)}</b> km/h<span>${L(PAD.on ? CAR_UI.padHint : CAR_UI.keysHint)}</span><span><kbd>${PAD.on ? '✕' : 'E'}</kbd> ${L(CAR_UI.getOut)}</span>`; sp.classList.add('on'); } else sp.classList.remove('on');
+  document.body.classList.toggle('driving', driving());
+  if (car) { car.lights(world.look !== 'sun'); if (!driving()) car.sound(0); }
   if (sayTimer > 0) { sayTimer -= dt; if (sayTimer <= 0) nextSay(); }
   world.follow(P.pos);
   world.tick(dt);
   musicTick(dt);
-  if (agents && G.playing) agents.update(dt, P.pos, !!G.room);
+  if (agents && G.playing) agents.update(dt, P.pos, !!G.room, car && !driving() ? car.S : null);
 }
 
 let last = performance.now(), miniT = 0, fpsN = 0, fpsT = 0, fpsLast = performance.now();
@@ -697,7 +754,10 @@ async function init() {
   addThing('lift', { x: 5.6, z: -3.5 }, { room: 'L1' });                         // the grotto's glass lift
   for (const r of ['L2', 'L3', 'L4']) addThing('lift', SPA[r].lift, { room: r });
   agents = createAgents(scene, hm, isRoad, waterAt);
+  car = createCar(scene, { ground: groundAt, walk: (x, z) => hm.walk(x, z), water: (x, z) => waterAt(x, z), road: (x, z) => isRoad(x, z), mountain: onMountain, traffic: agents, rect: RECT });
   const sp = findOpen(SPAWN.x, SPAWN.z); P.pos.copy(sp); P.pos.y = groundAt(sp.x, sp.z);
+  // your car waits beside you, facing an open street
+  for (const yaw of [SPAWN.yaw - Math.PI / 2, SPAWN.yaw + Math.PI / 2, SPAWN.yaw]) if (car.parkNear(SPAWN.x + 6, SPAWN.z + 2, yaw, P.pos.y, 12)) break;
   G.ready = true; $('#loading').classList.add('done');
   window.__plan = planCanvas;
   const walkTest = (x0, z0, x1, z1) => {
@@ -710,13 +770,14 @@ async function init() {
     }
     return { ok: false, timeout: true };
   };
-  window.__game = { G, P, C, hm, things, world, agents: () => agents, music: () => ({ mood: MU.mood, on: MU.on, playing: !!MU.cur && !MU.cur.paused, t: MU.cur ? +MU.cur.currentTime.toFixed(1) : 0, vol: MU.cur ? +MU.cur.volume.toFixed(2) : 0 }), goRoom, walkTest, teleport: (x, z) => { const p = findOpen(x, z); P.pos.copy(p); P.vy = 0; }, missionDone, startMission, startFinale, finish, toggleTime, openQuiz, interact, nearThing };
+  window.__game = { G, P, C, hm, things, world, agents: () => agents, music: () => ({ mood: MU.mood, on: MU.on, playing: !!MU.cur && !MU.cur.paused, t: MU.cur ? +MU.cur.currentTime.toFixed(1) : 0, vol: MU.cur ? +MU.cur.volume.toFixed(2) : 0 }), goRoom, walkTest, teleport: (x, z) => { const p = findOpen(x, z); P.pos.copy(p); P.vy = 0; }, missionDone, startMission, startFinale, finish, toggleTime, openQuiz, interact, nearThing, car: () => car, enterCar, leaveCar, callCar, keys };
   if (QS.has('auto')) start();
 }
 function start() {
   if (G.playing) return; ac(); G.playing = true; $('#title').classList.add('gone'); $('#hud').classList.add('on');
   C.yaw = P.yaw; C.pos.set(P.pos.x, P.pos.y + 6, P.pos.z + 8);
   startMission(0); musicMood('outside'); cv.requestPointerLock?.();
+  if (car && AU.ctx) car.audio(AU.ctx, AU.out);
 }
 $('#play').addEventListener('click', start);
 document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => { sfx.click(); setLang(b.dataset.l); }));
