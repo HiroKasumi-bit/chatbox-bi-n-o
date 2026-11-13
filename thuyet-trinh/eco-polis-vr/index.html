@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<title>Eco-Polis VR</title>
+<style>
+  :root { color-scheme: dark; --amber:#ffb24a; --teal:#5ff2c8; --ink:#f4ead8; }
+  html, body { margin:0; height:100%; background:#000; overflow:hidden; touch-action:none;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink);
+    -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent; }
+  canvas { display:block; position:fixed; inset:0; width:100%; height:100%; }
+
+  /* màn hình bắt đầu */
+  #start { position:fixed; inset:0; z-index:20; display:flex; justify-content:center; overflow-y:auto; touch-action:pan-y;
+    padding:16px; box-sizing:border-box;
+    background: radial-gradient(120% 90% at 50% 10%, #5a2c0c 0%, #1d0d05 55%, #000 100%); }
+  #start .card { max-width:560px; width:100%; text-align:center; margin:auto; }
+  #start h1 { margin:0 0 4px; font-size:clamp(28px,7vw,46px); letter-spacing:.02em; line-height:1.05; }
+  #start h1 b { color:var(--teal); font-weight:800; }
+  #start .sub { margin:0 0 18px; opacity:.75; font-size:15px; }
+  #bar { height:6px; border-radius:6px; background:#ffffff18; overflow:hidden; margin:0 auto 8px; max-width:360px; }
+  #bar i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--amber),var(--teal)); transition:width .2s; }
+  #status { font-size:13px; opacity:.7; min-height:18px; margin-bottom:16px; }
+  .btns { display:flex; flex-direction:column; gap:10px; align-items:center; }
+  button { font:inherit; border:0; border-radius:14px; cursor:pointer; }
+  .big { width:100%; max-width:360px; padding:16px 20px; font-size:18px; font-weight:700;
+    background:linear-gradient(180deg,#ffc56e,#f08a1c); color:#2a1300; box-shadow:0 6px 24px #f08a1c55; }
+  .big:disabled { opacity:.4; box-shadow:none; }
+  .ghost { width:100%; max-width:360px; padding:13px 20px; font-size:16px; background:#ffffff14; color:var(--ink); }
+  .ghost:disabled { opacity:.4; }
+  #start ul { text-align:left; font-size:13.5px; line-height:1.55; opacity:.8; margin:18px auto 0; max-width:420px; padding-left:20px; }
+  #warn { color:#ffcf8a; font-size:13px; margin-top:12px; display:none; }
+
+  /* giao diện khi đang xem */
+  #hud { position:fixed; inset:0; z-index:10; pointer-events:none; display:none; }
+  #hud.on { display:block; }
+  #topbar { position:absolute; top:calc(8px + env(safe-area-inset-top)); right:calc(8px + env(safe-area-inset-right)); display:flex; gap:8px; pointer-events:auto; }
+  #topbar button { width:44px; height:44px; border-radius:22px; background:#0008; color:#fff; font-size:20px; line-height:44px; padding:0; }
+  /* mỗi mắt một dấu ngắm và một nhãn (HTML đặt theo nửa màn hình) */
+  .eye { position:absolute; top:0; bottom:0; }
+  .reticle { position:absolute; left:50%; top:50%; width:22px; height:22px; margin:-11px 0 0 -11px; }
+  .reticle svg { width:100%; height:100%; overflow:visible; }
+  .label { position:absolute; left:50%; top:calc(50% + 22px); transform:translateX(-50%); max-width:80%;
+    text-align:center; font-size:12px; line-height:1.3; padding:5px 9px; border-radius:8px; background:#000a;
+    opacity:0; transition:opacity .2s; white-space:normal; }
+  .label.on { opacity:1; }
+  .label b { color:var(--teal); display:block; font-size:12.5px; }
+  #divider { position:absolute; left:50%; top:0; bottom:0; width:2px; margin-left:-1px; background:#000; }
+  #hint { position:absolute; left:50%; bottom:calc(10px + env(safe-area-inset-bottom)); transform:translateX(-50%);
+    font-size:12px; background:#000a; padding:6px 10px; border-radius:10px; opacity:.85; white-space:nowrap; transition:opacity 1s; }
+  #rotate { position:fixed; inset:0; z-index:30; display:none; align-items:center; justify-content:center; text-align:center;
+    background:#000e; font-size:18px; padding:24px; }
+</style>
+<script type="importmap">
+{ "imports": {
+    "three": "./vendor/three.module.js",
+    "three/addons/": "./vendor/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="start">
+  <div class="card">
+    <h1>ECO-POLIS <b>VR</b></h1>
+    <p class="sub">Living City · thành phố trong hang động</p>
+    <div id="bar"><i></i></div>
+    <div id="status">Đang tải mô hình…</div>
+    <div class="btns">
+      <button id="goVR" class="big" disabled>Đeo kính VR</button>
+      <button id="goMono" class="ghost" disabled>Xem không kính (kéo để nhìn)</button>
+    </div>
+    <div id="warn"></div>
+    <ul>
+      <li>Xoay ngang điện thoại, bấm <b>Đeo kính VR</b>, rồi đặt máy vào kính.</li>
+      <li>Quay đầu để nhìn xung quanh. Chấm tròn giữa tầm nhìn là dấu ngắm.</li>
+      <li><b>Cúi nhìn xuống chân</b>: hiện vòng 9 điểm đến. Giữ dấu ngắm trên một thẻ khoảng 1,5 giây để bay tới đó.</li>
+      <li>Chạm màn hình (hoặc nút trên kính) để bay tới trước theo hướng đang nhìn.</li>
+      <li>Nhìn vào công trình để đọc tên và chức năng của nó.</li>
+    </ul>
+  </div>
+</div>
+
+<div id="hud">
+  <div class="eye" id="eyeL"><div class="reticle"></div><div class="label"></div></div>
+  <div class="eye" id="eyeR"><div class="reticle"></div><div class="label"></div></div>
+  <div id="divider"></div>
+  <div id="hint"></div>
+  <div id="topbar">
+    <button id="btnRecenter" title="Đặt lại hướng nhìn">⟲</button>
+    <button id="btnMode" title="Đổi chế độ 1 mắt / 2 mắt">◫</button>
+    <button id="btnExit" title="Thoát">✕</button>
+  </div>
+</div>
+<div id="rotate">Xoay ngang điện thoại để xem bằng kính VR ↻</div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
