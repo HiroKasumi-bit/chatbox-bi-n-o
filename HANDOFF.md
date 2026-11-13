@@ -91,7 +91,7 @@ Check every build:
 
   Each breakthrough has an "In brief" panel (problem, idea, what's new, impact) plus "Where the world is today" and "Reality check" boxes with cited sources. Page 5 sums up the three.
 - **Mount Aurora is small (35 m).** AI image tools tend to turn it into a huge alpine peak, which breaks the concept. The Aurora Eye is a glowing glass dome on top of spa level 4.
-- **The statue is a generic "Founding Mayor Monument"**, not any real person.
+- **The statue is a generic "Founding Mayor Monument"**, not any real person. (Magazine images only. In the explorer game the monument carries the Ho Chi Minh statue from Nguyen Hue walking street, made from two cut-out photos: `city3d/game/statue.js`, credits in `city3d/game/ref/CREDITS.md`.)
 - **Sources:** facts are cited [1]–[20] on the sources page (page 36). Estimates are labelled as estimates, and nothing is claimed as tested.
 - **QR codes:**
 

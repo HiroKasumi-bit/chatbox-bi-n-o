@@ -16,6 +16,10 @@ if (!nVoice) throw new Error('no voice files found in the bundle');
 let nMusic = 0;
 js = js.replace(/game\/music\/([a-z_]+)\.mp3/g, (m, k) => { nMusic++; return 'data:audio/mpeg;base64,' + fs.readFileSync(path.join(D, 'music', k + '.mp3')).toString('base64'); });
 if (nMusic !== 3) throw new Error('expected 3 music files, found ' + nMusic);
+// photographs used as textures (the statue)
+let nImg = 0;
+js = js.replace(/game\/img\/([a-z_]+)\.webp/g, (m, k) => { nImg++; return 'data:image/webp;base64,' + fs.readFileSync(path.join(D, 'img', k + '.webp')).toString('base64'); });
+if (nImg !== 2) throw new Error('expected 2 statue images, found ' + nImg);
 let html = fs.readFileSync(path.join(ROOT, 'game.html'), 'utf8');
 const a = html.indexOf('<script type="importmap">'), b = html.indexOf('</script>', html.indexOf('src="./game/game.js"')) + 9;
 if (a < 0 || b < 9) throw new Error('script tags not found');

@@ -171,7 +171,7 @@ export function createWorld(canvas, onStep = () => {}) {
   let look = 'sun';
   function setLook(name) {
     look = name; const L = LOOKS[name];
-    sky.visible = false; dome.visible = false; snowfall.visible = name !== 'sun'; domeU.aur.value = name === 'dusk' ? 1.1 : 0; if (statue) statue.spot.intensity = name === 'dusk' ? 130 : 0;
+    sky.visible = false; dome.visible = false; snowfall.visible = name !== 'sun'; domeU.aur.value = name === 'dusk' ? 1.1 : 0; if (statue) statue.setLook(name);
     sun.castShadow = Q.shadows;
     setMode(L.mode, L.env ?? (L.mode === 'sun' ? 0.45 : 0.6));
     setPoolStrength(L.mode === 'dusk' ? 1 : 0);
